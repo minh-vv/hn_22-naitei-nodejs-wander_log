@@ -1,0 +1,186 @@
+:root {
+  --primary-green: #28a745;
+  --light-green: #218838;
+  --text-dark: #333;
+  --text-light: #555;
+  --form-bg: rgba(255, 255, 255, 0.9);
+  --border-color: #ced4da;
+  --font-family-soft: 'Poppins', sans-serif;
+}
+
+.wrapper {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  width: 100vw;
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  position: relative;
+  overflow: hidden;
+}
+
+.wrapper::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.4);
+  backdrop-filter: blur(2px);
+  z-index: 0;
+}
+
+.container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 40px;
+  background-color: var(--form-bg);
+  border-radius: 12px;
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+  width: 100%;
+  max-width: 450px;
+  font-family: var(--font-family-soft);
+  position: relative;
+  z-index: 1;
+}
+
+.title {
+  color: var(--primary-green);
+  margin-bottom: 25px;
+  font-weight: 600;
+  font-size: 2.2rem;
+  text-shadow: 1px 1px 2px rgba(0,0,0,0.1);
+}
+
+.form {
+  width: 100%;
+}
+
+.formGroup {
+  margin-bottom: 20px;
+}
+
+.formGroup label {
+  display: block;
+  margin-bottom: 8px;
+  color: var(--text-dark);
+  font-weight: 500;
+  font-size: 1.05rem;
+}
+
+.input {
+  width: 100%;
+  padding: 12px 15px;
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  box-sizing: border-box;
+  font-size: 1rem;
+  font-family: var(--font-family-soft);
+  transition: border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+.input:focus {
+  outline: none;
+  border-color: var(--primary-green);
+  box-shadow: 0 0 0 3px rgba(40, 167, 69, 0.2);
+}
+
+.button {
+  width: 100%;
+  padding: 14px;
+  background-color: var(--primary-green);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 1.1rem;
+  font-weight: 600;
+  font-family: var(--font-family-soft);
+  transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+.button:hover {
+  background-color: var(--light-green);
+  transform: translateY(-2px);
+}
+
+.button:disabled {
+  background-color: #cccccc;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.error {
+  color: #dc3545;
+  margin-bottom: 18px;
+  text-align: center;
+  font-weight: 500;
+  font-size: 0.95rem;
+}
+
+.linkText {
+  margin-top: 25px;
+  color: var(--text-light);
+  font-size: 1rem;
+}
+
+.linkText a {
+  color: var(--primary-green);
+  text-decoration: none;
+  font-weight: 500;
+  transition: color 0.3s ease;
+}
+
+.linkText a:hover {
+  color: var(--light-green);
+  text-decoration: underline;
+}
+
+.socialLogin {
+  margin-top: 25px;
+  text-align: center;
+  width: 100%;
+}
+
+.socialLogin p {
+  margin-bottom: 15px;
+  color: var(--text-dark);
+  font-weight: 500;
+}
+
+.socialButton {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  max-width: 280px;
+  padding: 12px 15px;
+  margin: 10px auto;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 1rem;
+  font-weight: 600;
+  color: white;
+  font-family: var(--font-family-soft);
+  transition: opacity 0.3s ease, transform 0.2s ease;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+
+.socialButton:hover {
+  opacity: 0.9;
+  transform: translateY(-1px);
+}
+
+.google {
+  background-color: #dd4b39;
+}
+
+.facebook {
+  background-color: #3b5998;
+}
