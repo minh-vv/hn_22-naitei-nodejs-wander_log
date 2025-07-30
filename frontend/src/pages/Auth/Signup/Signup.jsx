@@ -26,7 +26,13 @@ function Signup(){
       alert('Sign up successful! Please log in.');
       navigate('/signin');
     } catch (err) {
-      setError(err || 'Sign up failed. Please try again.');
+      // Handle error properly - extract message from object if needed
+      const errorMessage = typeof err === 'object' && err.message 
+        ? err.message 
+        : typeof err === 'string' 
+        ? err 
+        : 'Sign up failed. Please try again.';
+      setError(errorMessage);
     } finally {
       setLoading(false);
     }
