@@ -50,7 +50,7 @@ function Signup(){
             />
           </div>
           <div className={styles.formGroup}>
-            <label htmlFor="username">Username:</label> {/* Input for username */}
+            <label htmlFor="username">Username:</label>
             <input
               type="text"
               id="username"
@@ -61,7 +61,7 @@ function Signup(){
             />
           </div>
           <div className={styles.formGroup}>
-            <label htmlFor="name">Display Name:</label> {/* Input for name */}
+            <label htmlFor="name">Display Name:</label> 
             <input
               type="text"
               id="name"

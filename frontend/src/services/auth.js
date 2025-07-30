@@ -49,7 +49,7 @@ const authService = {
   },
   changePassword: async (currentPassword, newPassword, token) => { // 
     try {
-      const response = await axios.put(`${API_BASE_URL}/auth/change-password`, { currentPassword, newPassword }, { // 
+      const response = await axios.put(`${API_BASE_URL}/auth/change-password`, { currentPassword, newPassword }, {
         headers: {
           Authorization: `Bearer ${token}`
         }
