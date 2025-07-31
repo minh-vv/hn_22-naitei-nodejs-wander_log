@@ -4,13 +4,15 @@ import { SignUpDto } from './dto/signup.dto';
 import { SignInDto } from './dto/signin.dto';
 import { hash, compare } from 'bcrypt';
 import { JwtService } from '@nestjs/jwt';
+import { I18nContext, I18nService } from 'nestjs-i18n';
 
 @Injectable()
 export class AuthService {
 
   constructor(
     private prisma: PrismaService, 
-    private jwtService: JwtService
+    private jwtService: JwtService,
+    private readonly i18n: I18nService
   ) {}
 
   async signUp(signUpDto: SignUpDto) {
@@ -21,7 +23,9 @@ export class AuthService {
     });
 
     if (userExists) {
-      throw new ConflictException('Email đã tồn tại');
+      throw new ConflictException(
+        this.i18n.t('auth.email_exists', { lang: I18nContext.current()?.lang })
+      );
     }
 
     const passwordHash = await hash(password, 10);
@@ -51,16 +55,22 @@ export class AuthService {
     });
 
     if (!user || !user.passwordHash) {
-      throw new UnauthorizedException('Email hoặc mật khẩu không đúng');
+      throw new UnauthorizedException(
+        this.i18n.t('auth.invalid_credentials', { lang: I18nContext.current()?.lang })
+      );
     }
 
     const passwordValid = await compare(password, user.passwordHash);
     if (!passwordValid) {
-      throw new UnauthorizedException('Email hoặc mật khẩu không đúng');
+      throw new UnauthorizedException(
+        this.i18n.t('auth.invalid_credentials', { lang: I18nContext.current()?.lang })
+      );
     }
 
     if (!user.isActive) {
-      throw new UnauthorizedException('Tài khoản đã bị vô hiệu hóa');
+      throw new UnauthorizedException(
+        this.i18n.t('auth.account_disabled', { lang: I18nContext.current()?.lang })
+      );
     }
 
     const payload = { sub: user.id, email: user.email };

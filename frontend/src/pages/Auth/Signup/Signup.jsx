@@ -26,7 +26,6 @@ function Signup(){
       alert('Sign up successful! Please log in.');
       navigate('/signin');
     } catch (err) {
-      // Handle error properly - extract message from object if needed
       const errorMessage = typeof err === 'object' && err.message 
         ? err.message 
         : typeof err === 'string' 
