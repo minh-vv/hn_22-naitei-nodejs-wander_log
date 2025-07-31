@@ -21,7 +21,12 @@ function Signin() {
       alert('Sign in successful!');
       navigate('/dashboard');
     } catch (err) {
-      setError(err || 'Sign in failed. Please check your email and password.');
+      const errorMessage = typeof err === 'object' && err.message 
+        ? err.message 
+        : typeof err === 'string' 
+        ? err 
+        : 'Sign in failed. Please check your email and password.';
+      setError(errorMessage);
     } finally {
       setLoading(false);
     }

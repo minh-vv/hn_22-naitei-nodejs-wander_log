@@ -1,0 +1,24 @@
+{
+  "auth": {
+    "email_exists": "Email đã tồn tại",
+    "invalid_credentials": "Email hoặc mật khẩu không đúng",
+    "account_disabled": "Tài khoản đã bị vô hiệu hóa",
+    "signup_success": "Đăng ký thành công",
+    "signin_success": "Đăng nhập thành công"
+  },
+  "validation": {
+    "email_invalid": "Email không hợp lệ",
+    "email_required": "Email không được để trống",
+    "password_required": "Mật khẩu không được để trống",
+    "password_min_length": "Mật khẩu phải có ít nhất {min} ký tự",
+    "name_required": "Tên không được để trống"
+  },
+  "common": {
+    "success": "Thành công",
+    "error": "Lỗi",
+    "not_found": "Không tìm thấy",
+    "unauthorized": "Không có quyền truy cập",
+    "forbidden": "Truy cập bị cấm",
+    "internal_server_error": "Lỗi máy chủ nội bộ"
+  }
+}
