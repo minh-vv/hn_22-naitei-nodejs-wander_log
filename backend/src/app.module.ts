@@ -5,15 +5,22 @@ import { PrismaModule } from './prisma/prisma.module';
 import { AuthModule } from './auth/auth.module';
 import { ConfigModule } from '@nestjs/config';
 import { CustomI18nModule } from './i18n/i18n.module';
+import { MailsModule } from './mails/mails.module';
+import { MailerModule } from './mailer/mailer.module';
+import mailerConfig from './config/mailer.config';
+import appConfig from './config/app.config';
 
 @Module({
   imports: [
     ConfigModule.forRoot({
-      isGlobal: true, 
+      isGlobal: true,
+      load: [mailerConfig, appConfig],
     }),
     CustomI18nModule,
     PrismaModule, 
-    AuthModule
+    MailerModule,
+    AuthModule, 
+    MailsModule
   ],
   controllers: [AppController],
   providers: [AppService],
