@@ -19,7 +19,10 @@ function ForgotPassword() {
       await authService.forgotPassword(email);
       setMessage('A password reset link has been sent to your email. Please check your inbox.');
     } catch (err) {
-      setError(err || 'An error occurred while sending the request. Please try again.');
+      const errorMessage = typeof err === 'object' 
+        ? err.message || err.error || JSON.stringify(err)
+        : err || 'An error occurred while sending the request. Please try again.';
+      setError(errorMessage);
     } finally {
       setLoading(false);
     }

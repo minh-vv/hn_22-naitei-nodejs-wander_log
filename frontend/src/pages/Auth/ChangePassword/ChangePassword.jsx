@@ -37,7 +37,11 @@ function ChangePassword() {
       setNewPassword('');
       setConfirmNewPassword('');
     } catch (err) {
-      setError(err || 'Failed to change password. Please check your current password.');
+      // Handle both object and string errors
+      const errorMessage = typeof err === 'object' 
+        ? err.message || err.error || JSON.stringify(err)
+        : err || 'Failed to change password. Please check your current password.';
+      setError(errorMessage);
     } finally {
       setLoading(false);
     }

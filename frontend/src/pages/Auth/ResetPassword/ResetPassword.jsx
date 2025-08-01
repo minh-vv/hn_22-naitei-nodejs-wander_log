@@ -44,7 +44,10 @@ function ResetPassword() {
         navigate('/signin');
       }, 3000);
     } catch (err) {
-      setError(err || 'Unable to reset password. Please try again or request a new token.');
+      const errorMessage = typeof err === 'object' 
+        ? err.message || err.error || JSON.stringify(err)
+        : err || 'Unable to reset password. Please try again or request a new token.';
+      setError(errorMessage);
     } finally {
       setLoading(false);
     }
