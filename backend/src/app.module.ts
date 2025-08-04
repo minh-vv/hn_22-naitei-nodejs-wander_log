@@ -7,6 +7,7 @@ import { ConfigModule } from '@nestjs/config';
 import { CustomI18nModule } from './i18n/i18n.module';
 import { MailsModule } from './mails/mails.module';
 import { MailerModule } from './mailer/mailer.module';
+import { ItineraryModule } from './itinerary/itinerary.module';
 import { PostsService } from './posts/posts.service';
 import { PostsController } from './posts/posts.controller';
 import { PostsModule } from './posts/posts.module';
@@ -23,7 +24,9 @@ import appConfig from './config/app.config';
     PrismaModule, 
     MailerModule,
     AuthModule, 
-    MailsModule, PostsModule
+    MailsModule, 
+    ItineraryModule,
+    PostsModule
   ],
   controllers: [AppController, PostsController],
   providers: [AppService, PostsService],

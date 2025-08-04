@@ -36,6 +36,7 @@ model User {
   updatedAt       DateTime          @updatedAt
 
   passwordResets PasswordReset[]
+  itineraries    Itinerary[]
   @@map("users")
 
   itineraries Itinerary[]
@@ -63,7 +64,6 @@ model Itinerary {
   userId      String     @map("user_id")
   createdAt   DateTime   @default(now()) @map("created_at")
   updatedAt   DateTime   @updatedAt
-
   user        User       @relation(fields: [userId], references: [id], onDelete: Cascade)
   posts       Post[]
   @@map("itineraries")
@@ -98,3 +98,4 @@ model Media {
   @@index([postId])
   @@map("media")
 }
+
