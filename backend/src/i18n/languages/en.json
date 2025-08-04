@@ -4,7 +4,7 @@
     "invalid_credentials": "Invalid email or password",
     "account_disabled": "Account has been disabled",
     "signup_success": "Registration successful",
-      "signin_success": "Login successful",
+    "signin_success": "Login successful",
     "user_not_found": "User not found with this email",
     "reset_password_email_sent": "Password reset email has been sent",
     "invalid_reset_token": "Invalid password reset token",
@@ -48,5 +48,19 @@
     "unauthorized": "Unauthorized",
     "forbidden": "Forbidden",
     "internal_server_error": "Internal server error"
+  },
+  "posts": {
+    "post_not_found": "Post not found.",
+    "post_not_have_permission": "You do not have permission to modify this post.",
+    "post_in_private_itinerary": "Posts can only be created for public itineraries.",
+    "post_create_success": "Post created successfully",
+    "post_update_success": "Post updated successfully",
+    "post_delete_success": "Post deleted successfully"
+  },
+  "itineraries": {
+    "itinerary_not_found": "Itinerary not found."
+  },
+  "users": {
+    "user_not_found": "User not found."
   }
 }
