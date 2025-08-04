@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import itineraryService from '../../../services/itinerary';
-import { Plus, Edit, Trash2, Calendar, DollarSign } from 'lucide-react';
+import { Plus, Edit, Trash2, Calendar, DollarSign, Globe, Lock } from 'lucide-react';
 import moment from 'moment';
 import styles from './ItineraryList.module.css';
 
@@ -82,6 +82,19 @@ const ItineraryList = () => {
                 className={styles.itineraryCard}
                 onClick={() => navigate(`/itineraries/${itinerary.id}`)}
               >
+                {itinerary.visibility === 'PUBLIC' && (
+                  <div className={styles.cardVisibility}>
+                    <Globe size={14} />
+                    <span>Public</span>
+                  </div>
+                )}
+                {itinerary.visibility === 'PRIVATE' && (
+                  <div className={`${styles.cardVisibility} ${styles.private}`}>
+                    <Lock size={14} />
+                    <span>Private</span>
+                  </div>
+                )}
+
                 <div className={styles.cardContent}>
                   <h2 className={styles.cardTitle}>{itinerary.title}</h2>
                   <div className={styles.cardInfo}>

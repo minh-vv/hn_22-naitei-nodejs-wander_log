@@ -84,7 +84,7 @@ const ItineraryDetail = () => {
           <button onClick={() => navigate('/itineraries')} className={styles.backButton}>
             <ArrowLeft size={24} />
           </button>
-          <h1 className={styles.title}>{itinerary.name}</h1>
+          <h1 className={styles.title}>{itinerary.title}</h1>
         </div>
         
         <div className={styles.detailCard}>
