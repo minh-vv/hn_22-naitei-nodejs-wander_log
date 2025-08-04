@@ -20,6 +20,18 @@
     "reset_password_security_title": "Lưu ý bảo mật",
     "reset_password_security_content": "Nếu bạn không yêu cầu đặt lại mật khẩu, vui lòng liên hệ với chúng tôi ngay lập tức. Không chia sẻ link này với bất kỳ ai."
   },
+  "itinerary": {
+  "not_found": "Không tìm thấy lịch trình với ID {id}.",
+  "forbidden_update": "Bạn không có quyền cập nhật lịch trình này.",
+  "forbidden_delete": "Bạn không có quyền xóa lịch trình này.",
+  "title_required": "Tiêu đề lịch trình không được để trống.",
+  "start_date_required": "Ngày bắt đầu không được để trống.",
+  "start_date_invalid": "Ngày bắt đầu không hợp lệ.",
+  "end_date_required": "Ngày kết thúc không được để trống.",
+  "end_date_invalid": "Ngày kết thúc không hợp lệ.",
+  "budget_invalid": "Ngân sách phải là một số.",
+  "visibility_invalid": "Chế độ hiển thị không hợp lệ."
+  },
   "validation": {
     "email_invalid": "Email không hợp lệ",
     "email_required": "Email không được để trống",

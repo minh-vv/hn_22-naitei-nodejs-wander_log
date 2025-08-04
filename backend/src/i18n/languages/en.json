@@ -20,6 +20,18 @@
     "reset_password_security_title": "Security Notice",
     "reset_password_security_content": "If you did not request a password reset, please contact us immediately. Do not share this link with anyone."
   },
+  "itinerary": {
+    "not_found": "Itinerary with ID {id} not found.",
+    "forbidden_update": "You do not have permission to update this itinerary.",
+    "forbidden_delete": "You do not have permission to delete this itinerary.",
+    "title_required": "Itinerary title is required.",
+    "start_date_required": "Start date is required.",
+    "start_date_invalid": "Invalid start date format.",
+    "end_date_required": "End date is required.",
+    "end_date_invalid": "Invalid end date format.",
+    "budget_invalid": "Budget must be a number.",
+    "visibility_invalid": "Invalid visibility type."
+  },
   "validation": {
     "email_invalid": "Invalid email format",
     "email_required": "Email is required",
