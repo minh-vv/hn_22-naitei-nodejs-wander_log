@@ -24,6 +24,7 @@
   "not_found": "Không tìm thấy lịch trình với ID {id}.",
   "forbidden_update": "Bạn không có quyền cập nhật lịch trình này.",
   "forbidden_delete": "Bạn không có quyền xóa lịch trình này.",
+  "deleted_success": "Đã xóa lịch trình có ID {id} thành công.",
   "title_required": "Tiêu đề lịch trình không được để trống.",
   "start_date_required": "Ngày bắt đầu không được để trống.",
   "start_date_invalid": "Ngày bắt đầu không hợp lệ.",

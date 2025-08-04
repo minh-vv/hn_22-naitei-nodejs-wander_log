@@ -92,7 +92,12 @@ export class ItineraryService {
     await this.prisma.itinerary.delete({
       where: { id },
     });
-
-    return { message: `Itinerary with ID ${id} has been deleted.` };
+    
+    return { 
+      message: this.i18n.t('itinerary.deleted_success', {
+        args: { id },
+        lang: I18nContext.current()?.lang
+      }) 
+    };
   }
 }
