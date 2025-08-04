@@ -4,8 +4,10 @@ import Signup from './pages/Auth/Signup/Signup';
 import Signin from './pages/Auth/Signin/Signin';
 import ForgotPassword from './pages/Auth/ForgotPassword/ForgotPassword';
 import ResetPassword from './pages/Auth/ResetPassword/ResetPassword';
-import ChangePassword from './pages/Auth/ChangePassword/ChangePassword'
-
+import ChangePassword from './pages/Auth/ChangePassword/ChangePassword';
+import ItineraryForm from './pages/Itinerary/ItineraryForm/ItineraryForm';
+import ItineraryList from './pages/Itinerary/ItineraryList/ItineraryList';
+import ItineraryDetail from './pages/Itinerary/ItineraryDetail/ItineraryDetail';
 const ProtectedRoute = ({ children }) => {
   const token = localStorage.getItem('userToken');
   if (!token) {
@@ -32,6 +34,10 @@ function App() {
         />
         <Route path="/" element={<Navigate to="/signin" replace />} />
         <Route path="*" element={<div>404 - Page Not Found</div>} />
+                <Route path="/itineraries" element={<ItineraryList />} />
+        <Route path="/itineraries/new" element={<ItineraryForm />} />
+        <Route path="/itineraries/edit/:id" element={<ItineraryForm />} />
+        <Route path="/itineraries/:id" element={<ItineraryDetail />} />
       </Routes>
     </Router>
   );
