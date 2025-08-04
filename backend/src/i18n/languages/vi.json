@@ -36,5 +36,19 @@
     "unauthorized": "Không có quyền truy cập",
     "forbidden": "Truy cập bị cấm",
     "internal_server_error": "Lỗi máy chủ nội bộ"
+  },
+  "posts": {
+    "post_not_found": "Không tìm thấy bài viết.",
+    "post_not_have_permission": "Bạn không có quyền chỉnh sửa bài viết này.",
+    "post_in_private_itinerary": "Chỉ có thể tạo bài viết trong hành trình công khai.",
+    "post_create_success": "Tạo bài viết thành công.",
+    "post_update_success": "Cập nhật bài viết thành công.",
+    "post_delete_success": "Xoá bài viết thành công."
+  },
+  "itineraries": {
+    "itinerary_not_found": "Không tìm thấy hành trình."
+  },
+  "users": {
+    "user_not_found": "Không tìm thấy người dùng."
   }
 }
