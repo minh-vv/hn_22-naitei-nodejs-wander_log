@@ -25,13 +25,13 @@ export class PostsService {
 
     if (!itinerary) {
       throw new NotFoundException(
-        await this.i18n.t('itineraries.itinerary_not_found'),
+        this.i18n.t('itinerary.not_found', { args: { id: itineraryId } }),
       );
     }
 
     if (itinerary.visibility !== Visibility.PUBLIC) {
       throw new ForbiddenException(
-        await this.i18n.t('posts.post_in_private_itinerary'),
+        this.i18n.t('post.post_in_private_itinerary'),
       );
     }
 
@@ -95,7 +95,7 @@ export class PostsService {
     });
 
     if (!updatedPost) {
-      throw new NotFoundException(await this.i18n.t('posts.post_not_found'));
+      throw new NotFoundException(this.i18n.t('post.post_not_found'));
     }
 
     return updatedPost;
@@ -105,7 +105,7 @@ export class PostsService {
     await this.findPostAndCheckOwnership(postId, userId);
 
     await this.prisma.post.delete({ where: { id: postId } });
-    return { message: await this.i18n.t('posts.post_delete_success') };
+    return { message: this.i18n.t('post.post_delete_success') };
   }
 
   private async findPostAndCheckOwnership(postId: string, userId: string) {
@@ -113,11 +113,11 @@ export class PostsService {
       where: { id: postId },
     });
     if (!post) {
-      throw new NotFoundException(await this.i18n.t('posts.post_not_found'));
+      throw new NotFoundException(this.i18n.t('post.post_not_found'));
     }
     if (post.userId !== userId) {
       throw new ForbiddenException(
-        await this.i18n.t('posts.post_not_have_permission'),
+        this.i18n.t('post.post_not_have_permission'),
       );
     }
     return post;

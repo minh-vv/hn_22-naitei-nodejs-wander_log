@@ -1,0 +1,8 @@
+{
+  "success": "Success",
+  "error": "Error",
+  "not_found": "Not found",
+  "unauthorized": "Unauthorized",
+  "forbidden": "Forbidden",
+  "internal_server_error": "Internal server error"
+}

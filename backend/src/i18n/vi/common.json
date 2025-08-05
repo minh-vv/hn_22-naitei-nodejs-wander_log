@@ -1,0 +1,8 @@
+{
+  "success": "Thành công",
+  "error": "Lỗi",
+  "not_found": "Không tìm thấy",
+  "unauthorized": "Không có quyền truy cập",
+  "forbidden": "Truy cập bị cấm",
+  "internal_server_error": "Lỗi máy chủ nội bộ"
+}
