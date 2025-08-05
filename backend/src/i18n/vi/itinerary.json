@@ -1,0 +1,13 @@
+{
+  "not_found": "Không tìm thấy lịch trình với ID {id}.",
+  "forbidden_update": "Bạn không có quyền cập nhật lịch trình này.",
+  "forbidden_delete": "Bạn không có quyền xóa lịch trình này.",
+  "deleted_success": "Đã xóa lịch trình có ID {id} thành công.",
+  "title_required": "Tiêu đề lịch trình không được để trống.",
+  "start_date_required": "Ngày bắt đầu không được để trống.",
+  "start_date_invalid": "Ngày bắt đầu không hợp lệ.",
+  "end_date_required": "Ngày kết thúc không được để trống.",
+  "end_date_invalid": "Ngày kết thúc không hợp lệ.",
+  "budget_invalid": "Ngân sách phải là một số.",
+  "visibility_invalid": "Chế độ hiển thị không hợp lệ."
+}
