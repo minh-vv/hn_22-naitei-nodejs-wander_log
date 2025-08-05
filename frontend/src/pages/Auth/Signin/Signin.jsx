@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
+import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import authService from '../../../services/auth';
 import styles from './Signin.module.css';
 import backgroundImage from '../../../assets/images/background.jpg';
@@ -10,6 +10,14 @@ function Signin() {
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+
+  useEffect(() => {
+    const authError = searchParams.get('error');
+    if (authError === 'auth_failed') {
+      setError('Đăng nhập Google thất bại. Vui lòng thử lại.');
+    }
+  }, [searchParams]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -19,7 +27,7 @@ function Signin() {
       const data = await authService.signin(email, password);
       localStorage.setItem('userToken', data.token);
       alert('Sign in successful!');
-      navigate('/dashboard');
+      navigate('/itineraries');
     } catch (err) {
       const errorMessage = typeof err === 'object' && err.message 
         ? err.message 
@@ -33,7 +41,11 @@ function Signin() {
   };
 
   const handleSocialSignin = async (provider) => {
-    alert(`Social sign-in with ${provider} will be implemented here.`);
+    if (provider === 'google') {
+      window.location.href = 'http://localhost:3000/auth/google';
+    } else {
+      alert(`Social sign-in with ${provider} will be implemented here.`);
+    }
   };
 
   return (

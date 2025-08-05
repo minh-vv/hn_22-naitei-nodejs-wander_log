@@ -171,4 +171,58 @@ export class AuthService {
       message: this.i18n.t('auth.password_reset_success', { lang: I18nContext.current()?.lang })
     };
   }
+  async validateOAuthUser(oauthUser: {
+    googleId: string;
+    email: string;
+    name: string;
+    avatar?: string;
+    authProvider: string;
+  }) {
+    // Tìm user theo googleId hoặc email
+    let user = await this.prisma.user.findFirst({
+      where: {
+        OR: [
+          { googleId: oauthUser.googleId },
+          { email: oauthUser.email }
+        ]
+      }
+    });
+
+    if (user) {
+      if (!user.googleId) {
+        user = await this.prisma.user.update({
+          where: { id: user.id },
+          data: {
+            googleId: oauthUser.googleId,
+            authProvider: 'GOOGLE',
+            avatar: oauthUser.avatar || user.avatar,
+          }
+        });
+      }
+    } else {
+      user = await this.prisma.user.create({
+        data: {
+          googleId: oauthUser.googleId,
+          email: oauthUser.email,
+          name: oauthUser.name,
+          avatar: oauthUser.avatar,
+          authProvider: 'GOOGLE',
+        }
+      });
+    }
+
+    const payload = { sub: user.id, email: user.email };
+    const token = this.jwtService.sign(payload);
+
+    return {
+      user: {
+        id: user.id,
+        email: user.email,
+        name: user.name,
+        role: user.role,
+        avatar: user.avatar,
+      },
+      token,
+    };
+  }
 }

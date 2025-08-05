@@ -5,6 +5,7 @@ import Signin from './pages/Auth/Signin/Signin';
 import ForgotPassword from './pages/Auth/ForgotPassword/ForgotPassword';
 import ResetPassword from './pages/Auth/ResetPassword/ResetPassword';
 import ChangePassword from './pages/Auth/ChangePassword/ChangePassword';
+import AuthSuccess from './pages/Auth/AuthSuccess/AuthSuccess';
 import ItineraryForm from './pages/Itinerary/ItineraryForm/ItineraryForm';
 import ItineraryList from './pages/Itinerary/ItineraryList/ItineraryList';
 import ItineraryDetail from './pages/Itinerary/ItineraryDetail/ItineraryDetail';
@@ -24,6 +25,7 @@ function App() {
         <Route path="/signin" element={<Signin />} />
         <Route path="/forgot-password" element={<ForgotPassword />} />
         <Route path="/reset-password" element={<ResetPassword />} />
+        <Route path="/auth/success" element={<AuthSuccess />} />
         <Route
           path="/change-password"
           element={
