@@ -31,7 +31,26 @@
   "end_date_required": "Ngày kết thúc không được để trống.",
   "end_date_invalid": "Ngày kết thúc không hợp lệ.",
   "budget_invalid": "Ngân sách phải là một số.",
-  "visibility_invalid": "Chế độ hiển thị không hợp lệ."
+  "visibility_invalid": "Chế độ hiển thị không hợp lệ.",
+  "itineraryId_required": "ID lịch trình là bắt buộc.",
+  "itineraryId_invalid": "ID lịch trình phải là một UUID hợp lệ."
+  
+  },
+  "activity": {
+    "not_found": "Hoạt động có ID {id} không tìm thấy.",
+    "forbidden_access": "Bạn không có quyền xem hoạt động này.",
+    "forbidden_create": "Bạn không có quyền thêm hoạt động vào lịch trình này.",
+    "forbidden_update": "Bạn không có quyền cập nhật hoạt động này.",
+    "forbidden_delete": "Bạn không có quyền xóa hoạt động này.",
+    "deleted_success": "Hoạt động có ID {id} đã được xóa thành công.",
+    "id_invalid": "ID hoạt động phải là một UUID hợp lệ.",
+    "date_invalid": "Ngày phải là chuỗi ngày tháng theo chuẩn ISO 8601.",
+    "date_required": "Ngày là bắt buộc.",
+    "name_invalid": "Tên phải là một chuỗi.",
+    "name_required": "Tên là bắt buộc.",
+    "startTime_invalid": "Thời gian bắt đầu phải là một chuỗi.",
+    "description_invalid": "Mô tả phải là một chuỗi.",
+    "location_invalid": "Địa điểm phải là một chuỗi."
   },
   "validation": {
     "email_invalid": "Email không hợp lệ",

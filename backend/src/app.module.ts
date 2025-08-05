@@ -11,6 +11,7 @@ import { ItineraryModule } from './itinerary/itinerary.module';
 import { PostsService } from './posts/posts.service';
 import { PostsController } from './posts/posts.controller';
 import { PostsModule } from './posts/posts.module';
+import { ActivitiesModule } from './activities/activities.module';
 import mailerConfig from './config/mailer.config';
 import appConfig from './config/app.config';
 
@@ -26,7 +27,8 @@ import appConfig from './config/app.config';
     AuthModule, 
     MailsModule, 
     ItineraryModule,
-    PostsModule
+    PostsModule,
+    ActivitiesModule
   ],
   controllers: [AppController, PostsController],
   providers: [AppService, PostsService],

@@ -31,7 +31,25 @@
     "end_date_required": "End date is required.",
     "end_date_invalid": "Invalid end date format.",
     "budget_invalid": "Budget must be a number.",
-    "visibility_invalid": "Invalid visibility type."
+    "visibility_invalid": "Invalid visibility type.",
+    "itineraryId_required": "Itinerary ID is required.",
+    "itineraryId_invalid": "Itinerary ID must be a valid UUID."
+  },
+  "activity": {
+    "not_found": "Activity with ID {id} not found.",
+    "forbidden_access": "You do not have permission to view this activity.",
+    "forbidden_create": "You do not have permission to add an activity to this itinerary.",
+    "forbidden_update": "You do not have permission to update this activity.",
+    "forbidden_delete": "You do not have permission to delete this activity.",
+    "deleted_success": "Activity with ID {id} has been successfully deleted.",
+    "id_invalid": "Activity ID must be a valid UUID.",
+    "date_invalid": "Date must be a valid ISO 8601 string.",
+    "date_required": "Date is required.",
+    "name_invalid": "Name must be a string.",
+    "name_required": "Name is required.",
+    "startTime_invalid": "Start time must be a string.",
+    "description_invalid": "Description must be a string.",
+    "location_invalid": "Location must be a string."
   },
   "validation": {
     "email_invalid": "Invalid email format",
