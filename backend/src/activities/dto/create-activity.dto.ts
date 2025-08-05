@@ -1,7 +1,7 @@
-import { IsUUID, IsString, IsNotEmpty, IsOptional, IsDateString } from 'class-validator';
+import { IsString, IsNotEmpty, IsOptional, IsDateString } from 'class-validator';
 
 export class CreateActivityDto {
-  @IsUUID(undefined, { message: 'itinerary.itineraryId_invalid' })
+  @IsString({ message: 'itinerary.itineraryId_invalid' })
   @IsNotEmpty({ message: 'itinerary.itineraryId_required' })
   itineraryId: string;
 

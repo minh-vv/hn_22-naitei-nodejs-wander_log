@@ -60,9 +60,13 @@ export class ActivitiesService {
       throw new ForbiddenException(this.i18n.t('activity.forbidden_update', { lang: I18nContext.current()?.lang }));
     }
 
-    const updatedData = updateActivityDto.date
-      ? { ...updateActivityDto, date: new Date(updateActivityDto.date) }
-      : updateActivityDto;
+    // Tạo một đối tượng mới để chứa dữ liệu cập nhật
+    const updatedData: any = { ...updateActivityDto };
+
+    // Kiểm tra và chuyển đổi 'date' nếu nó tồn tại
+    if (updateActivityDto.date) {
+      updatedData.date = new Date(updateActivityDto.date);
+    }
 
     return this.prisma.activity.update({
       where: { id },
