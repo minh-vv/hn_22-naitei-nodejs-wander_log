@@ -1,27 +1,27 @@
 import { IsString, IsNotEmpty, IsOptional, IsDateString } from 'class-validator';
 
 export class CreateActivityDto {
-  @IsString({ message: 'itinerary.itineraryId_invalid' })
-  @IsNotEmpty({ message: 'itinerary.itineraryId_required' })
+  @IsString()
+  @IsNotEmpty()
   itineraryId: string;
 
-  @IsDateString(undefined, { message: 'activity.date_invalid' })
-  @IsNotEmpty({ message: 'activity.date_required' })
+  @IsDateString(undefined)
+  @IsNotEmpty()
   date: string;
 
-  @IsString({ message: 'activity.name_invalid' })
-  @IsNotEmpty({ message: 'activity.name_required' })
+  @IsString()
+  @IsNotEmpty()
   name: string;
 
   @IsOptional()
-  @IsString({ message: 'activity.startTime_invalid' })
+  @IsString()
   startTime?: string;
 
   @IsOptional()
-  @IsString({ message: 'activity.description_invalid' })
+  @IsString()
   description?: string;
 
   @IsOptional()
-  @IsString({ message: 'activity.location_invalid' })
+  @IsString()
   location?: string;
 }

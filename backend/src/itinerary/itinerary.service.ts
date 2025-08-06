@@ -2,7 +2,7 @@ import { Injectable, NotFoundException, ForbiddenException } from '@nestjs/commo
 import { PrismaService } from '../prisma/prisma.service';
 import { CreateItineraryDto } from './dto/create-itinerary.dto';
 import { UpdateItineraryDto } from './dto/update-itinerary.dto';
-import { I18nService, I18nContext } from 'nestjs-i18n';
+import { I18nService } from 'nestjs-i18n';
 
 @Injectable()
 export class ItineraryService {
@@ -39,12 +39,10 @@ export class ItineraryService {
 
     if (!itinerary) {
       throw new NotFoundException(
-        this.i18n.t('itinerary.not_found', { 
-          args: { id },
-          lang: I18nContext.current()?.lang 
-        })
+        this.i18n.t('itinerary.not_found', { args: { id: id } }),
       );
     }
+
     return itinerary;
   }
 
@@ -57,16 +55,13 @@ export class ItineraryService {
       throw new NotFoundException(
         this.i18n.t('itinerary.not_found', { 
           args: { id },
-          lang: I18nContext.current()?.lang 
         })
       );
     }
     
     if (itinerary.userId !== userId) {
       throw new ForbiddenException(
-        this.i18n.t('itinerary.forbidden_update', {
-          lang: I18nContext.current()?.lang
-        })
+        this.i18n.t('itinerary.forbidden_update')
       );
     }
 
@@ -84,16 +79,13 @@ export class ItineraryService {
       throw new NotFoundException(
         this.i18n.t('itinerary.not_found', { 
           args: { id },
-          lang: I18nContext.current()?.lang 
         })
       );
     }
     
     if (itinerary.userId !== userId) {
       throw new ForbiddenException(
-        this.i18n.t('itinerary.forbidden_delete', {
-          lang: I18nContext.current()?.lang
-        })
+        this.i18n.t('itinerary.forbidden_delete')
       );
     }
     
@@ -104,7 +96,6 @@ export class ItineraryService {
     return { 
       message: this.i18n.t('itinerary.deleted_success', {
         args: { id },
-        lang: I18nContext.current()?.lang
       }) 
     };
   }

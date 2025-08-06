@@ -1,0 +1,8 @@
+{
+  "not_found": "Hoạt động có ID {id} không tìm thấy.",
+  "forbidden_access": "Bạn không có quyền xem hoạt động này.",
+  "forbidden_create": "Bạn không có quyền thêm hoạt động vào lịch trình này.",
+  "forbidden_update": "Bạn không có quyền cập nhật hoạt động này.",
+  "forbidden_delete": "Bạn không có quyền xóa hoạt động này.",
+  "deleted_success": "Hoạt động có ID {id} đã được xóa thành công."
+}

@@ -2,7 +2,7 @@ import { Injectable, NotFoundException, ForbiddenException } from '@nestjs/commo
 import { PrismaService } from '../prisma/prisma.service';
 import { CreateActivityDto } from './dto/create-activity.dto';
 import { UpdateActivityDto } from './dto/update-activity.dto';
-import { I18nService, I18nContext } from 'nestjs-i18n';
+import { I18nService } from 'nestjs-i18n';
 
 @Injectable()
 export class ActivitiesService {
@@ -14,10 +14,10 @@ export class ActivitiesService {
     });
 
     if (!itinerary) {
-      throw new NotFoundException(this.i18n.t('itinerary.not_found', { args: { id: createActivityDto.itineraryId }, lang: I18nContext.current()?.lang }));
+      throw new NotFoundException(this.i18n.t('itinerary.not_found', { args: { id: createActivityDto.itineraryId } }));
     }
     if (itinerary.userId !== userId) {
-      throw new ForbiddenException(this.i18n.t('activity.forbidden_create', { lang: I18nContext.current()?.lang }));
+      throw new ForbiddenException(this.i18n.t('activity.forbidden_create'));
     }
 
     return this.prisma.activity.create({
@@ -37,10 +37,10 @@ export class ActivitiesService {
     });
 
     if (!activity) {
-      throw new NotFoundException(this.i18n.t('activity.not_found', { args: { id }, lang: I18nContext.current()?.lang }));
+      throw new NotFoundException(this.i18n.t('activity.not_found', { args: { id } }));
     }
     if (activity.itinerary.userId !== userId) {
-      throw new ForbiddenException(this.i18n.t('activity.forbidden_access', { lang: I18nContext.current()?.lang }));
+      throw new ForbiddenException(this.i18n.t('activity.forbidden_access'));
     }
     return activity;
   }
@@ -54,10 +54,10 @@ export class ActivitiesService {
     });
 
     if (!activity) {
-      throw new NotFoundException(this.i18n.t('activity.not_found', { args: { id }, lang: I18nContext.current()?.lang }));
+      throw new NotFoundException(this.i18n.t('activity.not_found', { args: { id } }));
     }
     if (activity.itinerary.userId !== userId) {
-      throw new ForbiddenException(this.i18n.t('activity.forbidden_update', { lang: I18nContext.current()?.lang }));
+      throw new ForbiddenException(this.i18n.t('activity.forbidden_update'));
     }
 
     const updatedData: any = { ...updateActivityDto };
@@ -81,10 +81,10 @@ export class ActivitiesService {
     });
 
     if (!activity) {
-      throw new NotFoundException(this.i18n.t('activity.not_found', { args: { id }, lang: I18nContext.current()?.lang }));
+      throw new NotFoundException(this.i18n.t('activity.not_found', { args: { id } }));
     }
     if (activity.itinerary.userId !== userId) {
-      throw new ForbiddenException(this.i18n.t('activity.forbidden_delete', { lang: I18nContext.current()?.lang }));
+      throw new ForbiddenException(this.i18n.t('activity.forbidden_delete'));
     }
 
     await this.prisma.activity.delete({
@@ -92,7 +92,7 @@ export class ActivitiesService {
     });
 
     return {
-      message: this.i18n.t('activity.deleted_success', { args: { id }, lang: I18nContext.current()?.lang }),
+      message: this.i18n.t('activity.deleted_success', { args: { id } }),
     };
   }
 }

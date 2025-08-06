@@ -1,0 +1,8 @@
+{
+  "not_found": "Activity with ID {id} not found.",
+  "forbidden_access": "You do not have permission to view this activity.",
+  "forbidden_create": "You do not have permission to add an activity to this itinerary.",
+  "forbidden_update": "You do not have permission to update this activity.",
+  "forbidden_delete": "You do not have permission to delete this activity.",
+  "deleted_success": "Activity with ID {id} has been successfully deleted."
+}
