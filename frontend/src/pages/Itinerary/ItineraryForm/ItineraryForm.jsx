@@ -11,7 +11,7 @@ const ItineraryForm = () => {
     startDate: '',
     endDate: '',
     budget: '',
-    isPublic: false,
+    visibility: 'PRIVATE',
   });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
@@ -36,7 +36,7 @@ const ItineraryForm = () => {
             startDate: itinerary.startDate.split('T')[0],
             endDate: itinerary.endDate.split('T')[0],
             budget: itinerary.budget !== null ? itinerary.budget : '',
-            isPublic: itinerary.visibility === 'PUBLIC',
+            visibility: itinerary.visibility,
           });
         } catch (err) {
           setError('Failed to load itinerary for editing.');
@@ -52,7 +52,7 @@ const ItineraryForm = () => {
     const { name, value, type, checked } = e.target;
     setFormData(prev => ({
       ...prev,
-      [name]: type === 'checkbox' ? checked : value,
+      [name]: type === 'checkbox' ? (checked ? 'PUBLIC' : 'PRIVATE') : value, 
     }));
   };
 
@@ -61,15 +61,14 @@ const ItineraryForm = () => {
     setLoading(true);
     setError(null);
     setMessage('');
-    
-    // Tạo đối tượng dữ liệu để gửi đi, đảm bảo các trường có định dạng chính xác
+
     const dataToSend = {
       title: formData.title,
       destination: formData.destination,
       startDate: new Date(formData.startDate).toISOString(),
       endDate: new Date(formData.endDate).toISOString(),
       budget: formData.budget !== '' ? Number(formData.budget) : null,
-      isPublic: formData.isPublic,
+      visibility: formData.visibility,
     };
 
     try {
@@ -112,19 +111,19 @@ const ItineraryForm = () => {
           </button>
           <h2 className={styles.title}>{isEditing ? 'Edit Itinerary' : 'Create New Itinerary'}</h2>
         </div>
-        
+
         {message && <p className={styles.success}>{message}</p>}
         {error && <p className={styles.error}>{error}</p>}
 
         <form onSubmit={handleSubmit} className={styles.form}>
           <div className={styles.formGroup}>
             <label htmlFor="title">Itinerary Name:</label>
-            <input 
-              type="text" 
-              id="title" 
-              name="title" 
-              value={formData.title} 
-              onChange={handleChange} 
+            <input
+              type="text"
+              id="title"
+              name="title"
+              value={formData.title}
+              onChange={handleChange}
               required
               className={styles.input} />
           </div>
@@ -149,11 +148,16 @@ const ItineraryForm = () => {
               className={styles.input} />
           </div>
           <div className={`${styles.formGroup} ${styles.checkboxGroup}`}>
-            <input type="checkbox" id="isPublic" name="isPublic" checked={formData.isPublic} onChange={handleChange}
+            <input
+              type="checkbox"
+              id="visibility"
+              name="visibility"
+              checked={formData.visibility === 'PUBLIC'}
+              onChange={handleChange}
               className={styles.checkbox} />
-            <label htmlFor="isPublic">Make Public</label>
+            <label htmlFor="visibility">Make Public</label>
           </div>
-          
+
           <button
             type="submit"
             className={styles.button}
