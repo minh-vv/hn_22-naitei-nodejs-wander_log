@@ -14,6 +14,9 @@ import mailerConfig from './config/mailer.config';
 import appConfig from './config/app.config';
 import { i18nConfig } from './config/i18n.config';
 import { I18nModule } from 'nestjs-i18n';
+import { FilesModule } from './files/files.module';
+import { ServeStaticModule } from '@nestjs/serve-static';
+import { join } from 'path';
 
 @Module({
   imports: [
@@ -28,6 +31,11 @@ import { I18nModule } from 'nestjs-i18n';
     ItineraryModule,
     PostsModule,
     I18nModule.forRoot(i18nConfig),
+    FilesModule,
+    ServeStaticModule.forRoot({
+      rootPath: join(__dirname, '..', 'uploads'),
+      serveRoot: '/uploads',
+    }),
   ],
   controllers: [AppController, PostsController],
   providers: [AppService, PostsService],
