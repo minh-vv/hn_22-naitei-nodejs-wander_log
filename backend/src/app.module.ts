@@ -10,6 +10,7 @@ import { ItineraryModule } from './itinerary/itinerary.module';
 import { PostsService } from './posts/posts.service';
 import { PostsController } from './posts/posts.controller';
 import { PostsModule } from './posts/posts.module';
+import { ActivitiesModule } from './activities/activities.module';
 import mailerConfig from './config/mailer.config';
 import appConfig from './config/app.config';
 import { i18nConfig } from './config/i18n.config';
@@ -36,6 +37,7 @@ import { join } from 'path';
       rootPath: join(__dirname, '..', 'uploads'),
       serveRoot: '/uploads',
     }),
+    ActivitiesModule,
   ],
   controllers: [AppController, PostsController],
   providers: [AppService, PostsService],
