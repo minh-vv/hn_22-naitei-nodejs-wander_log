@@ -1,5 +1,6 @@
-import { IsArray, IsOptional, IsString, IsUrl } from 'class-validator';
+import { IsArray, IsOptional, IsString } from 'class-validator';
 import { IsCuid } from 'src/common/validators/is-cuid.validator';
+import { IsCustomUrl } from 'src/common/validators/is-custom-url.validator';
 
 export class UpdatePostDto {
   @IsString()
@@ -7,7 +8,7 @@ export class UpdatePostDto {
   content?: string;
 
   @IsArray()
-  @IsUrl({}, { each: true })
+  @IsCustomUrl({ each: true })
   @IsOptional()
   mediaUrlsToAdd?: string[];
 
