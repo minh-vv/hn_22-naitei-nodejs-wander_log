@@ -10,6 +10,7 @@ import { ItineraryModule } from './itinerary/itinerary.module';
 import { PostsService } from './posts/posts.service';
 import { PostsController } from './posts/posts.controller';
 import { PostsModule } from './posts/posts.module';
+import { ActivitiesModule } from './activities/activities.module';
 import mailerConfig from './config/mailer.config';
 import appConfig from './config/app.config';
 import { i18nConfig } from './config/i18n.config';
@@ -27,7 +28,8 @@ import { I18nModule } from 'nestjs-i18n';
     MailsModule,
     ItineraryModule,
     PostsModule,
-    I18nModule.forRoot(i18nConfig),
+    ActivitiesModule,
+    I18nModule.forRoot(i18nConfig)
   ],
   controllers: [AppController, PostsController],
   providers: [AppService, PostsService],

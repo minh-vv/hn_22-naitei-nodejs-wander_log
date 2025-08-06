@@ -28,7 +28,15 @@ export class ItineraryService {
   async findOne(id: string) {
     const itinerary = await this.prisma.itinerary.findUnique({
       where: { id },
+      include: {
+        activities: {
+          orderBy: {
+            startTime: 'asc', 
+          },
+        },
+      },
     });
+
     if (!itinerary) {
       throw new NotFoundException(
         this.i18n.t('itinerary.not_found', { 
