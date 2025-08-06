@@ -32,6 +32,10 @@ model User {
   bio             String?           @db.Text
   role            Role              @default(USER)
   isActive        Boolean           @default(true) @map("is_active")
+
+  googleId        String?           @unique @map("google_id")
+  authProvider    AuthProvider?     @map("auth_provider")
+  
   createdAt       DateTime          @default(now()) @map("created_at")
   updatedAt       DateTime          @updatedAt
 
