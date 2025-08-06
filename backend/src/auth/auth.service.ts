@@ -178,7 +178,7 @@ export class AuthService {
     avatar?: string;
     authProvider: string;
   }) {
-    // Tìm user theo googleId hoặc email
+    
     let user = await this.prisma.user.findFirst({
       where: {
         OR: [

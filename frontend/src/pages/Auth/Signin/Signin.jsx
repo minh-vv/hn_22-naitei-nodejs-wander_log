@@ -15,7 +15,7 @@ function Signin() {
   useEffect(() => {
     const authError = searchParams.get('error');
     if (authError === 'auth_failed') {
-      setError('Đăng nhập Google thất bại. Vui lòng thử lại.');
+      setError('Google sign-in failed. Please try again.');
     }
   }, [searchParams]);
 

@@ -21,7 +21,7 @@ function AuthSuccess() {
   return (
     <div className={styles.container}>
       <div className={styles.loadingMessage}>
-        Đang xử lý đăng nhập Google...
+        Processing Google sign-in...
       </div>
     </div>
   );
