@@ -21,9 +21,9 @@ function EditPostForm({ post, onCancel, onSubmit }) {
         onChange={(e) => setContent(e.target.value)}
         rows={4}
       />
-      <button type="submit">Lưu</button>
+      <button type="submit">Save</button>
       <button type="button" onClick={onCancel}>
-        Hủy
+        Cancel
       </button>
     </form>
   );
@@ -49,7 +49,7 @@ export default function FeedPage() {
         setPosts(data);
       } catch (err) {
         console.error("Failed to fetch posts:", err);
-        setError("Không thể tải bài viết. Vui lòng thử lại sau.");
+        setError("Unable to load posts. Please try again later.");
       } finally {
         setLoading(false);
       }
@@ -59,7 +59,7 @@ export default function FeedPage() {
   }, []);
 
   const handleDeletePost = async (postId) => {
-    if (!window.confirm("Bạn có chắc chắn muốn xóa bài viết này không?")) {
+    if (!window.confirm("Are you sure you want to delete this post?")) {
       return;
     }
 
@@ -68,7 +68,7 @@ export default function FeedPage() {
       setPosts((currentPosts) =>
         currentPosts.filter((post) => post.id !== postId)
       );
-      alert("Đã xóa bài viết thành công!");
+      alert("Post deleted successfully!");
     } catch (error) {
       console.error("Failed to delete post:", error);
       alert(error.message);
@@ -89,16 +89,16 @@ export default function FeedPage() {
         posts.map((post) => (post.id === updated.id ? updated : post))
       );
       setEditingPostId(null);
-      alert("Đã chỉnh sửa bài viết thành công!");
+      alert("Post updated successfully!");
     } catch (error) {
-      console.error("Lỗi khi cập nhật bài viết:", error);
-      alert(error.message || "Đã xảy ra lỗi.");
+      console.error("Error updating post:", error);
+      alert(error.message || "An error occurred.");
     }
   };
 
   const renderContent = () => {
     if (loading) {
-      return <div className={styles.statusMessage}>Đang tải bài viết...</div>;
+      return <div className={styles.statusMessage}>Loading posts...</div>;
     }
 
     if (error) {
@@ -126,7 +126,7 @@ export default function FeedPage() {
         </div>
 
         <div className={styles.loadMoreContainer}>
-          <button className={styles.loadMoreButton}>Xem thêm bài đăng</button>
+          <button className={styles.loadMoreButton}>Load more posts</button>
         </div>
       </>
     );

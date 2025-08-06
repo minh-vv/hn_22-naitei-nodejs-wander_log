@@ -49,7 +49,7 @@ const PostCard = ({
   };
 
   const handleDeleteClick = () => {
-    if (window.confirm("Bạn có chắc chắn muốn xóa bài viết này không?")) {
+    if (window.confirm("Are you sure you want to delete this post?")) {
       onDelete(post.id);
     }
     setIsMenuOpen(false);
@@ -68,7 +68,7 @@ const PostCard = ({
 
   const handleSaveEdit = () => {
     if (editedContent.trim() === "") {
-      alert("Nội dung không được để trống.");
+      alert("Content cannot be empty.");
       return;
     }
     onSubmitEdit({ id: post.id, content: editedContent });
@@ -169,11 +169,11 @@ const PostCard = ({
               <ul>
                 <li onClick={handleEditClick}>
                   <i className="ri-pencil-line"></i>
-                  <span>Chỉnh sửa</span>
+                  <span>Edit</span>
                 </li>
                 <li onClick={handleDeleteClick} className={styles.deleteOption}>
                   <i className="ri-delete-bin-line"></i>
-                  <span>Xóa bài đăng</span>
+                  <span>Delete</span>
                 </li>
               </ul>
             </div>
@@ -190,7 +190,7 @@ const PostCard = ({
               </div>
               <span className={styles.tripTitle}>{post.itinerary.title}</span>
               <span className={styles.tripBudget}>
-                {post.itinerary.budget} VNĐ
+                {post.itinerary.budget} VND
               </span>
               <div className={styles.tripArrow}>
                 <i className="ri-arrow-right-line"></i>
@@ -214,13 +214,13 @@ const PostCard = ({
                 className={`${styles.editButton} ${styles.saveButton}`}
                 onClick={handleSaveEdit}
               >
-                Lưu
+                Save
               </button>
               <button
                 className={`${styles.editButton} ${styles.cancelButton}`}
                 onClick={onCancelEdit}
               >
-                Hủy
+                Cancel
               </button>
             </div>
           </>
@@ -246,10 +246,10 @@ const PostCard = ({
               onClick={() => setShowComments(!showComments)}
               className={styles.statsButton}
             >
-              {post.comments} bình luận
+              {post.comments} comments
             </button>
           </div>
-          <span>{post.shares} chia sẻ</span>
+          <span>{post.shares} shares</span>
         </div>
       </div>
 
@@ -262,7 +262,7 @@ const PostCard = ({
             <div className={styles.iconWrapper}>
               <i className={isLiked ? "ri-heart-fill" : "ri-heart-line"}></i>
             </div>
-            <span>Thích</span>
+            <span>Like</span>
           </button>
           <button
             onClick={() => setShowComments(!showComments)}
@@ -271,13 +271,13 @@ const PostCard = ({
             <div className={styles.iconWrapper}>
               <i className="ri-chat-1-line"></i>
             </div>
-            <span>Bình luận</span>
+            <span>Comment</span>
           </button>
           <button className={styles.actionButton}>
             <div className={styles.iconWrapper}>
               <i className="ri-share-line"></i>
             </div>
-            <span>Chia sẻ</span>
+            <span>Share</span>
           </button>
         </div>
       </div>
@@ -295,7 +295,7 @@ const PostCard = ({
                 type="text"
                 value={commentText}
                 onChange={(e) => setCommentText(e.target.value)}
-                placeholder="Viết bình luận..."
+                placeholder="Write a comment..."
                 className={styles.commentInput}
                 maxLength={200}
               />
@@ -329,8 +329,8 @@ const PostCard = ({
                     </div>
                     <div className={styles.commentActions}>
                       <span>{comment.createdAt}</span>
-                      <button>Thích</button>
-                      <button>Trả lời</button>
+                      <button>Like</button>
+                      <button>Reply</button>
                     </div>
                   </div>
                 </div>

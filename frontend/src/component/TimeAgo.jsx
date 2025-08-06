@@ -1,6 +1,6 @@
 import React from "react";
 import { formatDistanceToNow } from "date-fns";
-import { vi } from "date-fns/locale";
+import { enUS } from "date-fns/locale";
 
 const TimeAgo = ({ timestamp }) => {
   let timeAgo = "";
@@ -9,7 +9,7 @@ const TimeAgo = ({ timestamp }) => {
       const date = new Date(timestamp);
       const timePeriod = formatDistanceToNow(date, {
         addSuffix: true,
-        locale: vi,
+        locale: enUS,
       });
       timeAgo = timePeriod;
     } catch (error) {
@@ -21,9 +21,10 @@ const TimeAgo = ({ timestamp }) => {
     }
   }
 
-  if (timeAgo === "dưới một phút trước") {
-    timeAgo = "Vừa xong";
+  if (timeAgo === "less than a minute ago") {
+    timeAgo = "Just now";
   }
+
   return <time dateTime={timestamp}>{timeAgo}</time>;
 };
 

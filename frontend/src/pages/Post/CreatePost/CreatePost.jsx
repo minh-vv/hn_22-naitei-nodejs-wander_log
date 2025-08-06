@@ -64,7 +64,7 @@ const CreatePost = () => {
       await postService.create(postData, token);
       handleCancel();
     } catch (error) {
-      console.error("Lỗi khi đăng bài:", error.message);
+      console.error("Error posting:", error.message);
     }
   };
 
@@ -79,7 +79,7 @@ const CreatePost = () => {
       const data = await itineraryService.getAllItineraries(token);
       setItineraries(data);
     } catch (err) {
-      setError("Không thể tải danh sách lịch trình.");
+      setError("Unable to load itinerary list.");
     } finally {
       setLoading(false);
     }
@@ -102,7 +102,7 @@ const CreatePost = () => {
           <textarea
             value={postContent}
             onChange={(e) => setPostContent(e.target.value)}
-            placeholder="Chia sẻ trải nghiệm du lịch của bạn..."
+            placeholder="Share your travel experience..."
             className={styles.postTextarea}
             rows={3}
             maxLength={500}
@@ -134,7 +134,7 @@ const CreatePost = () => {
         <div className={styles.itinerarySelected}>
           <i className={`ri-route-fill ${styles.iconBlue}`}></i>
           <span>
-            Lịch trình đã chọn: <strong>{selectedItinerary.title}</strong>
+            Selected itinerary: <strong>{selectedItinerary.title}</strong>
           </span>
         </div>
       )}
@@ -174,7 +174,7 @@ const CreatePost = () => {
               <div className={styles.iconWrapper}>
                 <i className={`ri-image-line ${styles.iconGreen}`}></i>
               </div>
-              <span className={styles.actionButtonLabel}>Ảnh/Video</span>
+              <span className={styles.actionButtonLabel}>Photo/Video</span>
             </button>
 
             <button
@@ -184,21 +184,21 @@ const CreatePost = () => {
               <div className={styles.iconWrapper}>
                 <i className={`ri-route-line ${styles.iconBlue}`}></i>
               </div>
-              <span className={styles.actionButtonLabel}>Lịch trình</span>
+              <span className={styles.actionButtonLabel}>Itinerary</span>
             </button>
           </div>
 
           <div className={styles.postControls}>
             <span className={styles.charCount}>{postContent.length}/500</span>
             <button onClick={handleCancel} className={styles.cancelButton}>
-              Huỷ
+              Cancel
             </button>
             <button
               onClick={handlePost}
               disabled={!isPostButtonEnabled}
               className={styles.postButton}
             >
-              Đăng bài
+              Post
             </button>
           </div>
         </div>
