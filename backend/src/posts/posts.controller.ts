@@ -2,6 +2,7 @@ import {
   Body,
   Controller,
   Delete,
+  Get,
   Param,
   Post,
   Put,
@@ -22,6 +23,11 @@ export class PostsController {
   @Post()
   async create(@GetUser() user: User, @Body() createPostDto: CreatePostDto) {
     return this.postsService.create(user.id, createPostDto);
+  }
+
+  @Get()
+  async getAll() {
+    return this.postsService.getAll();
   }
 
   @Put(':id')
