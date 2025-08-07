@@ -50,6 +50,30 @@ export class PostsService {
     });
   }
 
+  async getAll() {
+    const posts = await this.prisma.post.findMany({
+      orderBy: {
+        createdAt: 'desc',
+      },
+      include: {
+        user: {
+          select: {
+            name: true,
+            avatar: true,
+          },
+        },
+        itinerary: {
+          select: {
+            title: true,
+            budget: true,
+          },
+        },
+      },
+    });
+
+    return posts;
+  }
+
   async update(postId: string, userId: string, updatePostDto: UpdatePostDto) {
     await this.findPostAndCheckOwnership(postId, userId);
 

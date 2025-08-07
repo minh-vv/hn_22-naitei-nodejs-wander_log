@@ -1,0 +1,50 @@
+.feedPageContainer {
+  min-height: 100vh;
+  background-color: #f9fafb;
+}
+
+.contentWrapper {
+  max-width: 64rem;
+  margin-left: auto;
+  margin-right: auto;
+  padding: 1.5rem 1rem;
+}
+
+.feedList {
+  margin-top: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.loadMoreContainer {
+  text-align: center;
+  margin-top: 2rem;
+}
+
+.loadMoreButton {
+  padding: 0.75rem 1.5rem;
+  background-color: white;
+  border: 1px solid #e5e7eb;
+  border-radius: 0.5rem;
+  color: #4b5563;
+  transition: background-color 0.2s;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.loadMoreButton:hover {
+  background-color: #f9fafb;
+}
+
+.statusMessage {
+  text-align: center;
+  margin-top: 2rem;
+  font-size: 1rem;
+  color: #6b7280;
+}
+
+.errorMessage {
+  color: #ef4444;
+  font-weight: 500;
+}

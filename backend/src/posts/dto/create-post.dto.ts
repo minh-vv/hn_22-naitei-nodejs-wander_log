@@ -1,10 +1,5 @@
-import {
-  IsArray,
-  IsNotEmpty,
-  IsOptional,
-  IsString,
-  IsUrl,
-} from 'class-validator';
+import { IsArray, IsNotEmpty, IsOptional, IsString } from 'class-validator';
+import { IsCustomUrl } from 'src/common/validators/is-custom-url.validator';
 
 export class CreatePostDto {
   @IsString()
@@ -15,7 +10,7 @@ export class CreatePostDto {
   itineraryId: string;
 
   @IsArray()
-  @IsUrl({}, { each: true })
+  @IsCustomUrl({ each: true })
   @IsNotEmpty({ each: true })
   mediaUrls: string[];
 }
