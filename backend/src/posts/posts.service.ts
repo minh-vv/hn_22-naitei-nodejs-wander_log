@@ -68,6 +68,12 @@ export class PostsService {
             budget: true,
           },
         },
+        media: {
+          select: {
+            id: true,
+            url: true,
+          },
+        },
       },
     });
 

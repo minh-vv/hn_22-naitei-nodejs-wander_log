@@ -5,7 +5,7 @@ import avatarDefault from "../../../assets/images/default_avatar.png";
 import itineraryService from "../../../services/itinerary";
 import postService from "../../../services/post";
 
-const CreatePost = () => {
+const CreatePost = ({ onPostCreated }) => {
   const [postContent, setPostContent] = useState("");
   const [selectedFiles, setSelectedFiles] = useState([]);
   const [previewUrls, setPreviewUrls] = useState([]);
@@ -13,6 +13,8 @@ const CreatePost = () => {
   const [itineraries, setItineraries] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
+
+  const token = localStorage.getItem("userToken");
 
   const navigate = useNavigate();
   const fileInputRef = useRef(null);
@@ -46,7 +48,6 @@ const CreatePost = () => {
     if (!isPostButtonEnabled) return;
 
     try {
-      const token = localStorage.getItem("userToken");
       if (!token) {
         navigate("/signin");
         return;
@@ -61,7 +62,10 @@ const CreatePost = () => {
         mediaUrls,
       };
 
-      await postService.create(postData, token);
+      const createdPost = await postService.create(postData, token);
+      if (onPostCreated) {
+        onPostCreated(createdPost);
+      }
       handleCancel();
     } catch (error) {
       console.error("Error posting:", error.message);
@@ -71,7 +75,6 @@ const CreatePost = () => {
   const handleSelectItinerary = async () => {
     try {
       setLoading(true);
-      const token = localStorage.getItem("userToken");
       if (!token) {
         navigate("/signin");
         return;

@@ -135,7 +135,9 @@ export default function FeedPage() {
   return (
     <div className={styles.feedPageContainer}>
       <div className={styles.contentWrapper}>
-        <CreatePost />
+        <CreatePost
+          onPostCreated={(newPost) => setPosts((prev) => [newPost, ...prev])}
+        />
 
         {renderContent()}
       </div>
