@@ -6,10 +6,14 @@ export class SignUpDto {
   @IsNotEmpty({ message: i18nValidationMessage('validation.email_required') })
   email: string;
 
+  @IsNotEmpty()
   name?: string;
 
-  @MinLength(6, { message: i18nValidationMessage('validation.password_min_length') })
-  @IsNotEmpty({ message: i18nValidationMessage('validation.password_required') })
+  @MinLength(6, {
+    message: i18nValidationMessage('validation.password_min_length'),
+  })
+  @IsNotEmpty({
+    message: i18nValidationMessage('validation.password_required'),
+  })
   password: string;
-
 }

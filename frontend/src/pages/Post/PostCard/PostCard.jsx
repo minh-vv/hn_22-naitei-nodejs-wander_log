@@ -18,20 +18,19 @@ const PostCard = ({
   const [likesCount, setLikesCount] = useState(post.likes);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [editedContent, setEditedContent] = useState(post.content);
+  const [isLightboxOpen, setIsLightboxOpen] = useState(false);
+  const [currentImageIndex, setCurrentImageIndex] = useState(0);
 
   const menuRef = useRef(null);
 
   useEffect(() => {
     if (!isMenuOpen) return;
-
     function handleClickOutside(event) {
       if (menuRef.current && !menuRef.current.contains(event.target)) {
         setIsMenuOpen(false);
       }
     }
-
     document.addEventListener("mousedown", handleClickOutside);
-
     return () => {
       document.removeEventListener("mousedown", handleClickOutside);
     };
@@ -42,6 +41,28 @@ const PostCard = ({
       setEditedContent(post.content);
     }
   }, [isEditing, post.content]);
+
+  useEffect(() => {
+    const handleKeyDown = (e) => {
+      if (e.key === "Escape") {
+        handleCloseLightbox();
+      }
+      if (e.key === "ArrowRight") {
+        handleNextImage();
+      }
+      if (e.key === "ArrowLeft") {
+        handlePrevImage();
+      }
+    };
+
+    if (isLightboxOpen) {
+      document.addEventListener("keydown", handleKeyDown);
+    }
+
+    return () => {
+      document.removeEventListener("keydown", handleKeyDown);
+    };
+  }, [isLightboxOpen, currentImageIndex]);
 
   const handleEditClick = () => {
     onEdit(post);
@@ -74,15 +95,39 @@ const PostCard = ({
     onSubmitEdit({ id: post.id, content: editedContent });
   };
 
+  const handleImageClick = (index) => {
+    setCurrentImageIndex(index);
+    setIsLightboxOpen(true);
+  };
+
+  const handleCloseLightbox = () => {
+    setIsLightboxOpen(false);
+  };
+
+  const handleNextImage = () => {
+    setCurrentImageIndex((prevIndex) => (prevIndex + 1) % post.media.length);
+  };
+
+  const handlePrevImage = () => {
+    setCurrentImageIndex(
+      (prevIndex) => (prevIndex - 1 + post.media.length) % post.media.length
+    );
+  };
+
+  const stopPropagation = (e) => e.stopPropagation();
+
   const renderImages = () => {
-    if (!post.media || post.media.length === 0) return null;
+    if (!post.media || post.media.length === 0) {
+      return null;
+    }
 
     if (post.media.length === 1) {
       return (
         <img
-          src={post.media[0]}
+          src={post.media[0].url}
           alt="Post media"
           className={styles.imageSingle}
+          onClick={() => handleImageClick(0)}
         />
       );
     }
@@ -93,9 +138,10 @@ const PostCard = ({
           {post.media.map((image, index) => (
             <img
               key={index}
-              src={image}
+              src={image.url}
               alt={`Post image ${index + 1}`}
               className={styles.imageGridItem}
+              onClick={() => handleImageClick(index)}
             />
           ))}
         </div>
@@ -103,34 +149,25 @@ const PostCard = ({
     }
 
     return (
-      <div className={styles.imageGridThreePlus}>
+      <div className={styles.imageGridTwo}>
         <img
-          src={post.media[0]}
+          src={post.media[0].url}
           alt="Post image 1"
-          className={styles.imageGridMain}
+          className={styles.imageGridItem}
+          onClick={() => handleImageClick(0)}
         />
-        <div className={styles.imageGridSide}>
+        <div
+          className={styles.imageGridMore}
+          onClick={() => handleImageClick(1)}
+        >
           <img
-            src={post.media[1]}
-            alt="Post image 2"
-            className={styles.imageGridSideItem}
+            src={post.media[1].url}
+            alt="More post images"
+            className={styles.imageGridItem}
           />
-          {post.media.length > 2 ? (
-            <div className={styles.imageGridMore}>
-              <img
-                src={post.media[2]}
-                alt="Post image 3"
-                className={styles.imageGridSideItem}
-              />
-              {post.media.length > 3 && (
-                <div className={styles.imageOverlay}>
-                  <span>+{post.media.length - 3}</span>
-                </div>
-              )}
-            </div>
-          ) : (
-            <div className={styles.imagePlaceholder}></div>
-          )}
+          <div className={styles.imageOverlay}>
+            <span>+{post.media.length - 1}</span>
+          </div>
         </div>
       </div>
     );
@@ -163,7 +200,6 @@ const PostCard = ({
               <i className="ri-more-line"></i>
             </div>
           </button>
-
           {isMenuOpen && (
             <div className={styles.optionsPopup}>
               <ul>
@@ -229,7 +265,7 @@ const PostCard = ({
         )}
       </div>
 
-      {post.images && post.images.length > 0 && (
+      {post.media && post.media.length > 0 && (
         <div className={styles.imagesSection}>{renderImages()}</div>
       )}
 
@@ -338,7 +374,47 @@ const PostCard = ({
           </div>
         </div>
       )}
+
+      {isLightboxOpen && post.media && post.media.length > 0 && (
+        <div className={styles.lightboxOverlay} onClick={handleCloseLightbox}>
+          <button
+            className={`${styles.lightboxButton} ${styles.closeButton}`}
+            onClick={handleCloseLightbox}
+          >
+            <i className="ri-close-line"></i>
+          </button>
+          <button
+            className={`${styles.lightboxButton} ${styles.prevButton}`}
+            onClick={(e) => {
+              stopPropagation(e);
+              handlePrevImage();
+            }}
+          >
+            <i className="ri-arrow-left-s-line"></i>
+          </button>
+          <div className={styles.lightboxContent} onClick={stopPropagation}>
+            <img
+              src={post.media[currentImageIndex].url}
+              alt={`View ${currentImageIndex + 1}`}
+              className={styles.lightboxImage}
+            />
+            <div className={styles.lightboxCounter}>
+              {currentImageIndex + 1} / {post.media.length}
+            </div>
+          </div>
+          <button
+            className={`${styles.lightboxButton} ${styles.nextButton}`}
+            onClick={(e) => {
+              stopPropagation(e);
+              handleNextImage();
+            }}
+          >
+            <i className="ri-arrow-right-s-line"></i>
+          </button>
+        </div>
+      )}
     </div>
   );
 };
+
 export default PostCard;
