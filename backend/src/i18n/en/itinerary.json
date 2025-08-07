@@ -2,12 +2,5 @@
   "not_found": "Itinerary with ID {id} not found.",
   "forbidden_update": "You do not have permission to update this itinerary.",
   "forbidden_delete": "You do not have permission to delete this itinerary.",
-  "deleted_success": "Itinerary with ID {id} has been deleted successfully.",
-  "title_required": "Itinerary title is required.",
-  "start_date_required": "Start date is required.",
-  "start_date_invalid": "Invalid start date format.",
-  "end_date_required": "End date is required.",
-  "end_date_invalid": "Invalid end date format.",
-  "budget_invalid": "Budget must be a number.",
-  "visibility_invalid": "Invalid visibility type."
+  "deleted_success": "Itinerary with ID {id} has been deleted successfully."
 }
