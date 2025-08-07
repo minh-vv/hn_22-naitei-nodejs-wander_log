@@ -1,3 +1,4 @@
 {
-  "user_not_found": "User not found."
+  "user_not_found": "User not found.",
+  "account_inactive": "Account has been deactivated."
 }

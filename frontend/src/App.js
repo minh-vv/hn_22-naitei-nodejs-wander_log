@@ -15,6 +15,7 @@ import ItineraryList from "./pages/Itinerary/ItineraryList/ItineraryList";
 import ItineraryDetail from "./pages/Itinerary/ItineraryDetail/ItineraryDetail";
 import CreatePost from "./pages/Post/CreatePost/CreatePost";
 import NewsFeed from "./pages/Post/NewsFeed/NewsFeed";
+import AuthSuccess from "./pages/Auth/AuthSuccess/AuthSuccess";
 
 const ProtectedRoute = ({ children }) => {
   const token = localStorage.getItem("userToken");

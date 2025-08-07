@@ -18,6 +18,9 @@ import { I18nModule } from 'nestjs-i18n';
 import { FilesModule } from './files/files.module';
 import { ServeStaticModule } from '@nestjs/serve-static';
 import { join } from 'path';
+import { UsersService } from './users/users.service';
+import { UsersController } from './users/users.controller';
+import { UsersModule } from './users/users.module';
 
 @Module({
   imports: [
@@ -38,8 +41,9 @@ import { join } from 'path';
       serveRoot: '/uploads',
     }),
     ActivitiesModule,
+    UsersModule,
   ],
-  controllers: [AppController, PostsController],
-  providers: [AppService, PostsService],
+  controllers: [AppController, PostsController, UsersController],
+  providers: [AppService, PostsService, UsersService],
 })
 export class AppModule {}
