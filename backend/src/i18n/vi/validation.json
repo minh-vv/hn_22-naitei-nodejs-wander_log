@@ -4,6 +4,10 @@
   "password_required": "Mật khẩu không được để trống",
   "password_min_length": "Mật khẩu phải có ít nhất {min} ký tự",
   "name_required": "Tên không được để trống",
+  "name_max_length": "Tên không được vượt quá {max} ký tự",
+  "bio_max_length": "Tiểu sử không được vượt quá {max} ký tự",
+  "avatar_invalid_url": "URL avatar không hợp lệ",
+  "cover_photo_invalid_url": "URL ảnh bìa không hợp lệ",
   "token_required": "Token không được để trống",
   "token_invalid": "Token không hợp lệ"
 }
