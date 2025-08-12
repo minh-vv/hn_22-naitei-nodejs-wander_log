@@ -1,4 +1,10 @@
-import { Injectable, UnauthorizedException, ConflictException, NotFoundException, BadRequestException } from '@nestjs/common';
+import {
+  Injectable,
+  UnauthorizedException,
+  ConflictException,
+  NotFoundException,
+  BadRequestException,
+} from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { SignUpDto } from './dto/signup.dto';
 import { SignInDto } from './dto/signin.dto';
@@ -12,30 +18,29 @@ import { MailsService } from 'src/mails/mails.service';
 
 @Injectable()
 export class AuthService {
-
   constructor(
-    private prisma: PrismaService, 
+    private prisma: PrismaService,
     private jwtService: JwtService,
     private readonly i18n: I18nService,
-    private readonly mailsService: MailsService
+    private readonly mailsService: MailsService,
   ) {}
 
   async signUp(signUpDto: SignUpDto) {
     const { email, password, name } = signUpDto;
-        
+
     const userExists = await this.prisma.user.findUnique({
       where: { email },
     });
 
     if (userExists) {
       throw new ConflictException(
-        this.i18n.t('auth.email_exists', { lang: I18nContext.current()?.lang })
+        this.i18n.t('auth.email_exists', { lang: I18nContext.current()?.lang }),
       );
     }
 
     const passwordHash = await hash(password, 10);
     const user = await this.prisma.user.create({
-        data: { email, passwordHash, name },
+      data: { email, passwordHash, name },
     });
 
     const payload = { sub: user.id, email: user.email };
@@ -46,9 +51,10 @@ export class AuthService {
         id: user.id,
         email: user.email,
         name: user.name,
-        role: user.role
+        role: user.role,
+        avatar: user.avatar,
       },
-      token
+      token,
     };
   }
 
@@ -61,20 +67,26 @@ export class AuthService {
 
     if (!user || !user.passwordHash) {
       throw new UnauthorizedException(
-        this.i18n.t('auth.invalid_credentials', { lang: I18nContext.current()?.lang })
+        this.i18n.t('auth.invalid_credentials', {
+          lang: I18nContext.current()?.lang,
+        }),
       );
     }
 
     const passwordValid = await compare(password, user.passwordHash);
     if (!passwordValid) {
       throw new UnauthorizedException(
-        this.i18n.t('auth.invalid_credentials', { lang: I18nContext.current()?.lang })
+        this.i18n.t('auth.invalid_credentials', {
+          lang: I18nContext.current()?.lang,
+        }),
       );
     }
 
     if (!user.isActive) {
       throw new UnauthorizedException(
-        this.i18n.t('auth.account_disabled', { lang: I18nContext.current()?.lang })
+        this.i18n.t('auth.account_disabled', {
+          lang: I18nContext.current()?.lang,
+        }),
       );
     }
 
@@ -86,9 +98,10 @@ export class AuthService {
         id: user.id,
         email: user.email,
         name: user.name,
-        role: user.role
+        role: user.role,
+        avatar: user.avatar,
       },
-      token
+      token,
     };
   }
 
@@ -101,7 +114,9 @@ export class AuthService {
 
     if (!user) {
       throw new NotFoundException(
-        this.i18n.t('auth.user_not_found', { lang: I18nContext.current()?.lang })
+        this.i18n.t('auth.user_not_found', {
+          lang: I18nContext.current()?.lang,
+        }),
       );
     }
 
@@ -119,7 +134,7 @@ export class AuthService {
         expiresAt,
       },
     });
-    
+
     await this.mailsService.forgotPassword({
       to: user.email,
       data: {
@@ -129,13 +144,15 @@ export class AuthService {
     });
 
     return {
-      message: this.i18n.t('auth.reset_password_email_sent', { lang: I18nContext.current()?.lang })
+      message: this.i18n.t('auth.reset_password_email_sent', {
+        lang: I18nContext.current()?.lang,
+      }),
     };
   }
 
   async resetPassword(resetPasswordDto: ResetPasswordDto) {
     const { token, newPassword } = resetPasswordDto;
-    
+
     const passwordReset = await this.prisma.passwordReset.findUnique({
       where: { token },
       include: { user: true },
@@ -143,7 +160,9 @@ export class AuthService {
 
     if (!passwordReset) {
       throw new BadRequestException(
-        this.i18n.t('auth.invalid_reset_token', { lang: I18nContext.current()?.lang })
+        this.i18n.t('auth.invalid_reset_token', {
+          lang: I18nContext.current()?.lang,
+        }),
       );
     }
 
@@ -152,12 +171,14 @@ export class AuthService {
         where: { id: passwordReset.id },
       });
       throw new BadRequestException(
-        this.i18n.t('auth.reset_token_expired', { lang: I18nContext.current()?.lang })
+        this.i18n.t('auth.reset_token_expired', {
+          lang: I18nContext.current()?.lang,
+        }),
       );
     }
 
     const passwordHash = await hash(newPassword, 10);
-    
+
     await this.prisma.user.update({
       where: { id: passwordReset.userId },
       data: { passwordHash },
@@ -168,7 +189,9 @@ export class AuthService {
     });
 
     return {
-      message: this.i18n.t('auth.password_reset_success', { lang: I18nContext.current()?.lang })
+      message: this.i18n.t('auth.password_reset_success', {
+        lang: I18nContext.current()?.lang,
+      }),
     };
   }
   async validateOAuthUser(oauthUser: {
@@ -178,14 +201,10 @@ export class AuthService {
     avatar?: string;
     authProvider: string;
   }) {
-    
     let user = await this.prisma.user.findFirst({
       where: {
-        OR: [
-          { googleId: oauthUser.googleId },
-          { email: oauthUser.email }
-        ]
-      }
+        OR: [{ googleId: oauthUser.googleId }, { email: oauthUser.email }],
+      },
     });
 
     if (user) {
@@ -196,7 +215,7 @@ export class AuthService {
             googleId: oauthUser.googleId,
             authProvider: 'GOOGLE',
             avatar: oauthUser.avatar || user.avatar,
-          }
+          },
         });
       }
     } else {
@@ -207,7 +226,7 @@ export class AuthService {
           name: oauthUser.name,
           avatar: oauthUser.avatar,
           authProvider: 'GOOGLE',
-        }
+        },
       });
     }
 

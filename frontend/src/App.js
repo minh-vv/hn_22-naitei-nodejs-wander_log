@@ -13,9 +13,9 @@ import ChangePassword from "./pages/Auth/ChangePassword/ChangePassword";
 import ItineraryForm from "./pages/Itinerary/ItineraryForm/ItineraryForm";
 import ItineraryList from "./pages/Itinerary/ItineraryList/ItineraryList";
 import ItineraryDetail from "./pages/Itinerary/ItineraryDetail/ItineraryDetail";
-import CreatePost from "./pages/Post/CreatePost/CreatePost";
 import NewsFeed from "./pages/Post/NewsFeed/NewsFeed";
 import AuthSuccess from "./pages/Auth/AuthSuccess/AuthSuccess";
+import Home from "./pages/Home/Home";
 
 const ProtectedRoute = ({ children }) => {
   const token = localStorage.getItem("userToken");
@@ -42,14 +42,14 @@ function App() {
             </ProtectedRoute>
           }
         />
-        <Route path="/" element={<Navigate to="/signin" replace />} />
+        <Route path="/" element={<Navigate to="/home" replace />} />
         <Route path="*" element={<div>404 - Page Not Found</div>} />
         <Route path="/itineraries" element={<ItineraryList />} />
         <Route path="/itineraries/new" element={<ItineraryForm />} />
         <Route path="/itineraries/edit/:id" element={<ItineraryForm />} />
         <Route path="/itineraries/:id" element={<ItineraryDetail />} />
-        <Route path="/posts/new" element={<CreatePost />} />
         <Route path="/posts/feed" element={<NewsFeed />} />
+        <Route path="/home" element={<Home />} />
       </Routes>
     </Router>
   );
