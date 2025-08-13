@@ -5,6 +5,8 @@ import PostCard from "../PostCard/PostCard";
 import { useNavigate } from "react-router-dom";
 
 import postService from "../../../services/post";
+import { useAuth } from "../../../context/AuthContext";
+import Header from "../../../component/Header/Header";
 
 function EditPostForm({ post, onCancel, onSubmit }) {
   const [content, setContent] = useState(post.content);
@@ -36,7 +38,7 @@ export default function FeedPage() {
   const [editingPostId, setEditingPostId] = useState(null);
   const navigate = useNavigate();
 
-  const token = localStorage.getItem("userToken");
+  const { token } = useAuth();
 
   useEffect(() => {
     if (!token) {
@@ -56,7 +58,7 @@ export default function FeedPage() {
     };
 
     fetchPosts();
-  }, []);
+  }, [token, navigate]);
 
   const handleDeletePost = async (postId) => {
     if (!window.confirm("Are you sure you want to delete this post?")) {
@@ -135,6 +137,7 @@ export default function FeedPage() {
 
   return (
     <div className={styles.feedPageContainer}>
+      <Header />
       <div className={styles.contentWrapper}>
         <CreatePost
           onPostCreated={(newPost) => setPosts((prev) => [newPost, ...prev])}

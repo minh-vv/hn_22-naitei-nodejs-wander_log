@@ -1,0 +1,135 @@
+.container {
+  min-height: 100vh;
+  background-color: #f9fafb;
+}
+.hero {
+  background: linear-gradient(rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.4)),
+    url("../../assets/images/halong.jpg") center/cover no-repeat;
+  height: 500px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.heroContent {
+  color: white;
+  text-align: center;
+  max-width: 800px;
+}
+.heroContent h1 {
+  font-size: 2.5rem;
+  margin-bottom: 1rem;
+}
+.heroContent p {
+  font-size: 1.2rem;
+  opacity: 0.9;
+  margin-bottom: 2rem;
+}
+.heroButtons {
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+}
+.primaryBtn {
+  background: #2563eb;
+  color: white;
+  padding: 0.75rem 1.5rem;
+  border: none;
+  border-radius: 8px;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+.primaryBtn:hover {
+  background: #1e4fd3;
+}
+.outlineBtn {
+  background: transparent;
+  color: white;
+  padding: 0.75rem 1.5rem;
+  border: 2px solid white;
+  border-radius: 8px;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.outlineBtn:hover {
+  background: white;
+  color: #2563eb;
+}
+.section {
+  max-width: 1200px;
+  margin: auto;
+  padding: 4rem 1rem;
+  text-align: center;
+}
+.tripGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 2rem;
+  margin-top: 2rem;
+}
+.tripCard {
+  background: white;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+  transition: transform 0.2s;
+}
+.tripCard:hover {
+  transform: translateY(-5px);
+}
+.tripImage {
+  width: 100%;
+  height: 180px;
+  object-fit: cover;
+}
+.tripInfo {
+  padding: 1rem;
+}
+.tripMeta {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 1rem;
+}
+.author {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+.author img {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+}
+.stats {
+  font-size: 0.9rem;
+  color: #666;
+}
+.destinationGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: 1rem;
+  margin-top: 2rem;
+}
+.destinationCard {
+  background: #f3f4f6;
+  padding: 1rem;
+  border-radius: 8px;
+  transition: background 0.2s;
+}
+.destinationCard:hover {
+  background: #e0f2fe;
+}
+.cta {
+  background: #2563eb;
+  color: white;
+  text-align: center;
+  padding: 3rem 1rem;
+}
+.cta h2 {
+  margin-bottom: 1rem;
+}
+.cta p {
+  opacity: 0.9;
+  margin-bottom: 2rem;
+}

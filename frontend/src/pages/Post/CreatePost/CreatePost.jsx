@@ -4,6 +4,7 @@ import styles from "./CreatePost.module.css";
 import avatarDefault from "../../../assets/images/default_avatar.png";
 import itineraryService from "../../../services/itinerary";
 import postService from "../../../services/post";
+import { useAuth } from "../../../context/AuthContext";
 
 const CreatePost = ({ onPostCreated }) => {
   const [postContent, setPostContent] = useState("");
@@ -14,7 +15,7 @@ const CreatePost = ({ onPostCreated }) => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
-  const token = localStorage.getItem("userToken");
+  const { user, token } = useAuth();
 
   const navigate = useNavigate();
   const fileInputRef = useRef(null);
@@ -100,7 +101,11 @@ const CreatePost = ({ onPostCreated }) => {
   return (
     <div className={styles.createPostContainer}>
       <div className={styles.contentWrapper}>
-        <img src={avatarDefault} alt="Your avatar" className={styles.avatar} />
+        <img
+          src={user?.avatar || avatarDefault}
+          alt="Your avatar"
+          className={styles.avatar}
+        />
         <div className={styles.inputWrapper}>
           <textarea
             value={postContent}
