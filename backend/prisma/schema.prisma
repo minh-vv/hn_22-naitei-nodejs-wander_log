@@ -42,6 +42,9 @@ model User {
   passwordResets PasswordReset[]
   itineraries    Itinerary[]
   posts       Post[]
+
+  followedBy Follow[]               @relation("FollowerUsers")
+  following  Follow[]               @relation("FollowingUsers")
   @@map("users")
 }
 
@@ -112,5 +115,16 @@ model Media {
 
   @@index([postId])
   @@map("media")
+}
+
+model Follow {
+  followerId      String
+  followingId     String
+
+  follower        User  @relation("FollowingUsers", fields: [followerId], references: [id])
+  following       User  @relation("FollowerUsers", fields: [followingId], references: [id])
+
+  @@id([followerId, followingId])
+  @@map("follow")
 }
 
