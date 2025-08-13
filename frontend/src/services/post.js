@@ -15,6 +15,21 @@ const postService = {
     return response.json();
   },
 
+  getNewFeed: async (token) => {
+    const response = await fetch(`${API_BASE_URL}/feed`, {
+      method: "GET",
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "application/json",
+      },
+    });
+    if (!response.ok) {
+      const error = await response.json();
+      throw new Error(error.message || "Failed to fetch posts");
+    }
+    return response.json();
+  },
+
   delete: async (token, id) => {
     const response = await fetch(`${API_BASE_URL}/${id}`, {
       method: "DELETE",

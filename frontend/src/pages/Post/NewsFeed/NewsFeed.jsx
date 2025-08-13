@@ -47,7 +47,7 @@ export default function FeedPage() {
     }
     const fetchPosts = async () => {
       try {
-        const data = await postService.getPosts(token);
+        const data = await postService.getNewFeed(token);
         setPosts(data);
       } catch (err) {
         console.error("Failed to fetch posts:", err);
