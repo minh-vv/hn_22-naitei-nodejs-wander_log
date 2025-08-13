@@ -46,6 +46,12 @@ export class PostsService {
       },
       include: {
         media: true,
+        user: {
+          select: {
+            name: true,
+            avatar: true,
+          },
+        },
       },
     });
   }

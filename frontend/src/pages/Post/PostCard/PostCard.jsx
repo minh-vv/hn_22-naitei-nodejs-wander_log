@@ -3,6 +3,7 @@ import styles from "./PostCard.module.css";
 import { Link } from "react-router-dom";
 import avatarDefault from "../../../assets/images/default_avatar.png";
 import TimeAgo from "../../../component/TimeAgo";
+import postService from "../../../services/post";
 
 const PostCard = ({
   post,
@@ -11,15 +12,21 @@ const PostCard = ({
   isEditing,
   onCancelEdit,
   onSubmitEdit,
+  token,
 }) => {
   const [isLiked, setIsLiked] = useState(post.isLiked);
-  const [showComments, setShowComments] = useState(false);
-  const [commentText, setCommentText] = useState("");
-  const [likesCount, setLikesCount] = useState(post.likes);
+  const [likesCount, setLikesCount] = useState(post.likeCount);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [editedContent, setEditedContent] = useState(post.content);
   const [isLightboxOpen, setIsLightboxOpen] = useState(false);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
+  const [isLiking, setIsLiking] = useState(false);
+
+  const [showComments, setShowComments] = useState(false);
+  const [comments, setComments] = useState([]);
+  const [loadingComments, setLoadingComments] = useState(false);
+  const [commentText, setCommentText] = useState("");
+  const [commentCount, setCommentCount] = useState(post.commentsCount || 0);
 
   const menuRef = useRef(null);
 
@@ -31,38 +38,57 @@ const PostCard = ({
       }
     }
     document.addEventListener("mousedown", handleClickOutside);
-    return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
-    };
+    return () => document.removeEventListener("mousedown", handleClickOutside);
   }, [isMenuOpen]);
 
   useEffect(() => {
-    if (isEditing) {
-      setEditedContent(post.content);
-    }
+    if (isEditing) setEditedContent(post.content);
   }, [isEditing, post.content]);
 
   useEffect(() => {
-    const handleKeyDown = (e) => {
-      if (e.key === "Escape") {
-        handleCloseLightbox();
-      }
-      if (e.key === "ArrowRight") {
-        handleNextImage();
-      }
-      if (e.key === "ArrowLeft") {
-        handlePrevImage();
-      }
-    };
-
-    if (isLightboxOpen) {
-      document.addEventListener("keydown", handleKeyDown);
+    if (showComments) {
+      fetchComments();
     }
+  }, [showComments]);
 
-    return () => {
-      document.removeEventListener("keydown", handleKeyDown);
-    };
-  }, [isLightboxOpen, currentImageIndex]);
+  const fetchComments = async () => {
+    try {
+      setLoadingComments(true);
+      const res = await postService.getComment(post.id);
+      setComments(res.comments || []);
+      setCommentCount(res.comments?.length || 0);
+    } catch (error) {
+      console.error("Error fetching comments:", error);
+    } finally {
+      setLoadingComments(false);
+    }
+  };
+
+  const handleComment = async () => {
+    if (!commentText.trim()) return;
+    try {
+      await postService.createComment(post.id, token, { body: commentText });
+      setCommentText("");
+      const updated = await postService.getComment(post.id);
+      setComments(updated.comments || []);
+      setCommentCount(updated.comments?.length || 0);
+    } catch (error) {
+      console.error("Error creating comment:", error);
+    }
+  };
+
+  const handleDeleteComment = async (commentId) => {
+    if (!window.confirm("Are you sure you want to delete this comment?"))
+      return;
+    try {
+      await postService.deleteComment(token, post.id, commentId);
+      const updated = comments.filter((c) => c.id !== commentId);
+      setComments(updated);
+      setCommentCount(updated.length);
+    } catch (error) {
+      console.error("Error deleting comment:", error);
+    }
+  };
 
   const handleEditClick = () => {
     onEdit(post);
@@ -76,14 +102,30 @@ const PostCard = ({
     setIsMenuOpen(false);
   };
 
-  const handleLike = () => {
-    setIsLiked(!isLiked);
-    setLikesCount(isLiked ? likesCount - 1 : likesCount + 1);
-  };
+  const handleLike = async () => {
+    if (isLiking) return;
+    setIsLiking(true);
+    const prevIsLiked = isLiked;
+    const prevLikesCount = likesCount;
 
-  const handleComment = () => {
-    if (commentText.trim()) {
-      setCommentText("");
+    const newIsLiked = !isLiked;
+    setIsLiked(newIsLiked);
+    setLikesCount((count) => count + (newIsLiked ? 1 : -1));
+
+    try {
+      const res = await postService.liked(post.id, token);
+      if (typeof res?.updatedPost?.likeCount === "number") {
+        setLikesCount(res.updatedPost.likeCount);
+      }
+      if (typeof res?.action === "string") {
+        setIsLiked(res.action === "like");
+      }
+    } catch (error) {
+      console.error("Error liking post:", error);
+      setIsLiked(prevIsLiked);
+      setLikesCount(prevLikesCount);
+    } finally {
+      setIsLiking(false);
     }
   };
 
@@ -100,9 +142,7 @@ const PostCard = ({
     setIsLightboxOpen(true);
   };
 
-  const handleCloseLightbox = () => {
-    setIsLightboxOpen(false);
-  };
+  const handleCloseLightbox = () => setIsLightboxOpen(false);
 
   const handleNextImage = () => {
     setCurrentImageIndex((prevIndex) => (prevIndex + 1) % post.media.length);
@@ -117,10 +157,7 @@ const PostCard = ({
   const stopPropagation = (e) => e.stopPropagation();
 
   const renderImages = () => {
-    if (!post.media || post.media.length === 0) {
-      return null;
-    }
-
+    if (!post.media || post.media.length === 0) return null;
     if (post.media.length === 1) {
       return (
         <img
@@ -131,7 +168,6 @@ const PostCard = ({
         />
       );
     }
-
     if (post.media.length === 2) {
       return (
         <div className={styles.imageGridTwo}>
@@ -147,7 +183,6 @@ const PostCard = ({
         </div>
       );
     }
-
     return (
       <div className={styles.imageGridTwo}>
         <img
@@ -282,10 +317,9 @@ const PostCard = ({
               onClick={() => setShowComments(!showComments)}
               className={styles.statsButton}
             >
-              {post.comments} comments
+              {commentCount} comments
             </button>
           </div>
-          <span>{post.shares} shares</span>
         </div>
       </div>
 
@@ -308,12 +342,6 @@ const PostCard = ({
               <i className="ri-chat-1-line"></i>
             </div>
             <span>Comment</span>
-          </button>
-          <button className={styles.actionButton}>
-            <div className={styles.iconWrapper}>
-              <i className="ri-share-line"></i>
-            </div>
-            <span>Share</span>
           </button>
         </div>
       </div>
@@ -348,29 +376,35 @@ const PostCard = ({
           </div>
 
           <div className={styles.commentsList}>
-            {post.comments &&
-              post.comments.map((comment) => (
+            {loadingComments ? (
+              <p>Loading comments...</p>
+            ) : comments.length > 0 ? (
+              comments.map((comment) => (
                 <div key={comment.id} className={styles.commentItem}>
                   <img
-                    src={comment.author.avatar}
-                    alt={comment.author.name}
+                    src={comment.user?.avatar || avatarDefault}
+                    alt={comment.user?.name || "User"}
                     className={styles.commentAvatar}
                   />
                   <div className={styles.commentContent}>
                     <div className={styles.commentBubble}>
                       <p className={styles.commenterName}>
-                        {comment.author.name}
+                        {comment.user?.name}
                       </p>
-                      <p className={styles.commentText}>{comment.text}</p>
+                      <p className={styles.commentText}>{comment.body}</p>
                     </div>
                     <div className={styles.commentActions}>
-                      <span>{comment.createdAt}</span>
-                      <button>Like</button>
-                      <button>Reply</button>
+                      <TimeAgo timestamp={comment.createdAt} />
+                      <button onClick={() => handleDeleteComment(comment.id)}>
+                        Delete
+                      </button>
                     </div>
                   </div>
                 </div>
-              ))}
+              ))
+            ) : (
+              <p>No comments yet.</p>
+            )}
           </div>
         </div>
       )}

@@ -45,6 +45,9 @@ model User {
 
   followedBy Follow[]               @relation("FollowerUsers")
   following  Follow[]               @relation("FollowingUsers")
+  favorites       Favorite[]
+  comments        Comment[]
+
   @@map("users")
 }
 
@@ -100,6 +103,12 @@ model Post {
   itineraryId String    @map("itinerary_id")
   itinerary   Itinerary @relation(fields: [itineraryId], references: [id], onDelete: Cascade)
 
+  favoritedBy Favorite[]
+  likeCount Int @default(0)
+
+  comments Comment[]
+  commentsCount Int @default(0)
+
   @@index([userId])
   @@index([itineraryId])
   @@map("posts")
@@ -126,5 +135,33 @@ model Follow {
 
   @@id([followerId, followingId])
   @@map("follow")
+
+model Favorite {
+  userId    String
+  postId    String
+  favoritedAt DateTime @default(now())
+
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  post      Post     @relation(fields: [postId], references: [id], onDelete: Cascade)
+
+  @@id([userId, postId])
+  @@map("favorite")
+}
+
+model Comment {
+  id        String      @id @default(cuid())
+  body      String   
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  postId    String
+  post      Post  @relation(fields: [postId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([postId])
+  @@map("comment")
 }
 

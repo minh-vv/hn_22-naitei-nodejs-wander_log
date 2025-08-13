@@ -1,11 +1,10 @@
 const API_BASE_URL = "http://localhost:3000/posts";
 
 const postService = {
-  getPosts: async (token) => {
+  getPosts: async () => {
     const response = await fetch(API_BASE_URL, {
       method: "GET",
       headers: {
-        Authorization: `Bearer ${token}`,
         "Content-Type": "application/json",
       },
     });
@@ -58,7 +57,7 @@ const postService = {
     });
     if (!response.ok) {
       const error = await response.json();
-      throw new Error(error.message || "Failed to create itinerary");
+      throw new Error(error.message || "Failed to create post");
     }
     return response.json();
   },
@@ -84,6 +83,72 @@ const postService = {
     }
 
     return uploadedUrls;
+  },
+
+  liked: async (id, token) => {
+    const response = await fetch(`${API_BASE_URL}/${id}/like`, {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "application/json",
+      },
+    });
+    if (!response.ok) {
+      const error = await response.json();
+      throw new Error(error.message || "Failed to like post");
+    }
+    return response.json();
+  },
+
+  getComment: async (id) => {
+    const response = await fetch(`${API_BASE_URL}/${id}/comment`, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+    if (!response.ok) {
+      const error = await response.json();
+      throw new Error(
+        error.message || "Failed to fetch comment of post with id ${id}"
+      );
+    }
+    return response.json();
+  },
+
+  createComment: async (id, token, commentData) => {
+    const response = await fetch(`${API_BASE_URL}/${id}/comment`, {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(commentData),
+    });
+    if (!response.ok) {
+      const error = await response.json();
+      throw new Error(
+        error.message || "Failed to create comment for post with id ${id}"
+      );
+    }
+    return response.json();
+  },
+
+  deleteComment: async (token, id, commentId) => {
+    const response = await fetch(`${API_BASE_URL}/${id}/comment/${commentId}`, {
+      method: "DELETE",
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "application/json",
+      },
+    });
+    if (!response.ok) {
+      const error = await response.json();
+      throw new Error(
+        error.message || "Failed to delete comment of post with id ${id}"
+      );
+    }
+    return response.json();
   },
 };
 
