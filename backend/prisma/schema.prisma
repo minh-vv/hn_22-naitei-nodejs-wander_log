@@ -39,9 +39,11 @@ model User {
   createdAt       DateTime          @default(now()) @map("created_at")
   updatedAt       DateTime          @updatedAt
 
-  passwordResets PasswordReset[]
-  itineraries    Itinerary[]
-  posts       Post[]
+  passwordResets  PasswordReset[]
+  itineraries     Itinerary[]
+  posts           Post[]
+  favorites       Favorite[]
+  comments        Comment[]
   @@map("users")
 }
 
@@ -97,6 +99,12 @@ model Post {
   itineraryId String    @map("itinerary_id")
   itinerary   Itinerary @relation(fields: [itineraryId], references: [id], onDelete: Cascade)
 
+  favoritedBy Favorite[]
+  likeCount Int @default(0)
+
+  comments Comment[]
+  commentsCount Int @default(0)
+
   @@index([userId])
   @@index([itineraryId])
   @@map("posts")
@@ -112,5 +120,34 @@ model Media {
 
   @@index([postId])
   @@map("media")
+}
+
+model Favorite {
+  userId    String
+  postId    String
+  favoritedAt DateTime @default(now())
+
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  post      Post     @relation(fields: [postId], references: [id], onDelete: Cascade)
+
+  @@id([userId, postId])
+  @@map("favorite")
+}
+
+model Comment {
+  id        String      @id @default(cuid())
+  body      String   
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  postId    String
+  post      Post  @relation(fields: [postId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([postId])
+  @@map("comment")
 }
 

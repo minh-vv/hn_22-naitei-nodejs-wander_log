@@ -121,6 +121,7 @@ export default function FeedPage() {
               onEdit={() => handleEditPost(post.id)}
               onCancelEdit={() => setEditingPostId(null)}
               onSubmitEdit={handleUpdatePost}
+              token={token}
             />
           ))}
         </div>

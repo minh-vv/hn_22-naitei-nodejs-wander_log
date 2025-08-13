@@ -21,6 +21,7 @@ import { join } from 'path';
 import { UsersService } from './users/users.service';
 import { UsersController } from './users/users.controller';
 import { UsersModule } from './users/users.module';
+import { InteractModule } from './interact/interact.module';
 
 @Module({
   imports: [
@@ -42,6 +43,7 @@ import { UsersModule } from './users/users.module';
     }),
     ActivitiesModule,
     UsersModule,
+    InteractModule,
   ],
   controllers: [AppController, PostsController, UsersController],
   providers: [AppService, PostsService, UsersService],
