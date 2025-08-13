@@ -22,8 +22,8 @@ export class ItineraryController {
   }
 
   @Get(':id')
-  async findOne(@Param('id') id: string) {
-    return this.itineraryService.findOne(id);
+  async findOne(@Param('id') id: string, @GetUser() user: User) {
+    return this.itineraryService.findOne(id, user.id);
   }
 
   @Put(':id')

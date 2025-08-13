@@ -23,12 +23,16 @@ export class ItineraryService {
     return this.prisma.itinerary.findMany({
       where: { userId },
       orderBy: { createdAt: 'desc' },
+      include: {
+        user: true, 
+      },
     });
   }
-  async findOne(id: string) {
+  async findOne(id: string, userId: string) {
     const itinerary = await this.prisma.itinerary.findUnique({
       where: { id },
       include: {
+        user: true,
         activities: {
           orderBy: {
             startTime: 'asc', 
@@ -41,6 +45,10 @@ export class ItineraryService {
       throw new NotFoundException(
         this.i18n.t('itinerary.not_found', { args: { id: id } }),
       );
+    }
+
+    if (itinerary.userId !== userId && itinerary.visibility === 'PRIVATE') {
+        throw new ForbiddenException(this.i18n.t('itinerary.forbidden_access'));
     }
 
     return itinerary;
