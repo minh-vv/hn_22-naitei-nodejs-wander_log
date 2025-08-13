@@ -1,5 +1,6 @@
 {
   "not_found": "Itinerary with ID {id} not found.",
+  "forbidden_access": "You do not have permission to access this itinerary.",
   "forbidden_update": "You do not have permission to update this itinerary.",
   "forbidden_delete": "You do not have permission to delete this itinerary.",
   "deleted_success": "Itinerary with ID {id} has been deleted successfully."

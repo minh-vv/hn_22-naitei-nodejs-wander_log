@@ -1,5 +1,6 @@
 {
   "not_found": "Không tìm thấy lịch trình với ID {id}.",
+  "forbidden_access": "Bạn không có quyền truy cập lịch trình này.",
   "forbidden_update": "Bạn không có quyền cập nhật lịch trình này.",
   "forbidden_delete": "Bạn không có quyền xóa lịch trình này.",
   "deleted_success": "Đã xóa lịch trình có ID {id} thành công."

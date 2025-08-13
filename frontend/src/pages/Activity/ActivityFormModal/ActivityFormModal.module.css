@@ -1,0 +1,160 @@
+.modalOverlay {
+  position: fixed;
+  inset: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+  z-index: 50;
+  overflow-y: auto;
+}
+
+.modalContainer {
+  background-color: #fff;
+  border-radius: 0.75rem;
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+  padding: 2rem;
+  max-width: 32rem;
+  width: 100%;
+}
+
+.modalTitle {
+  font-size: 1.5rem;
+  line-height: 2rem;
+  font-weight: 700;
+  color: #1a202c;
+  margin-bottom: 1.5rem;
+  text-align: center;
+}
+
+.formGroup {
+  margin-bottom: 1rem;
+}
+
+.label {
+  display: block;
+  color: #4a5568;
+  font-size: 0.875rem;
+  font-weight: 700;
+  margin-bottom: 0.5rem;
+}
+
+.input {
+  box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+  appearance: none;
+  border: 1px solid #cbd5e0;
+  border-radius: 0.5rem;
+  width: 100%;
+  padding: 0.625rem 0.75rem;
+  color: #2d3748;
+  line-height: 1.5;
+  outline: none;
+  transition: all 0.2s ease-in-out;
+}
+
+.input:focus {
+  box-shadow: 0 0 0 3px rgba(66, 153, 225, 0.5);
+  border-color: #4299e1;
+}
+
+.textarea {
+  height: 6rem;
+  resize: vertical;
+}
+
+.select {
+  padding-right: 2.5rem; 
+  background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3e%3cpath fill='none' stroke='%23333' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='m2 5 6 6 6-6'/%3e%3c/svg%3e");
+  background-repeat: no-repeat;
+  background-position: right 0.75rem center;
+  background-size: 0.75rem 0.75rem;
+}
+
+.dateError {
+  color: #e53e3e;
+  font-size: 0.75rem;
+  margin-top: 0.25rem;
+  font-style: italic;
+}
+
+.formError {
+  color: #e53e3e;
+  font-size: 0.75rem;
+  font-style: italic;
+  margin-bottom: 1rem;
+  text-align: center;
+}
+
+.buttonGroup {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.75rem;
+  margin-top: 1.5rem;
+}
+
+.cancelButton, .submitButton {
+  padding: 0.625rem 1.25rem;
+  border-radius: 0.5rem;
+  transition: all 0.2s ease-in-out;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.cancelButton {
+  background-color: #e2e8f0;
+  color: #2d3748;
+}
+
+.cancelButton:hover {
+  background-color: #cbd5e0;
+}
+
+.cancelButton:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.submitButton {
+  background-color: #2563eb;
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.submitButton:hover {
+  background-color: #1d4ed8;
+}
+
+.submitButton:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.spinner {
+  animation: spin 1s linear infinite;
+  height: 1.25rem;
+  width: 1.25rem;
+  color: #fff;
+  margin-right: 0.5rem;
+}
+
+.spinnerPath {
+  opacity: 0.25;
+  stroke: currentColor;
+}
+
+.spinnerSegment {
+  opacity: 0.75;
+  fill: currentColor;
+}
+
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}

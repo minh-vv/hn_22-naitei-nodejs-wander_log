@@ -135,6 +135,7 @@ model Follow {
 
   @@id([followerId, followingId])
   @@map("follow")
+}
 
 model Favorite {
   userId    String
