@@ -166,3 +166,13 @@ model Comment {
   @@map("comment")
 }
 
+model AdminLog {
+  id        String   @id @default(cuid())
+  adminId   String   @map("admin_id")
+  action    String   @db.Text
+  targetId  String   @map("target_id")
+  targetType String   @map("target_type")
+  createdAt DateTime @default(now()) @map("created_at")
+
+  @@map("admin_logs")
+}

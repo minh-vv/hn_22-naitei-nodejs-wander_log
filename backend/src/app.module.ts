@@ -22,7 +22,7 @@ import { UsersService } from './users/users.service';
 import { UsersController } from './users/users.controller';
 import { UsersModule } from './users/users.module';
 import { InteractModule } from './interact/interact.module';
-
+import { AdminModule } from './admin/admin.module';
 @Module({
   imports: [
     ConfigModule.forRoot({
@@ -44,6 +44,7 @@ import { InteractModule } from './interact/interact.module';
     ActivitiesModule,
     UsersModule,
     InteractModule,
+    AdminModule,
   ],
   controllers: [AppController, PostsController, UsersController],
   providers: [AppService, PostsService, UsersService],

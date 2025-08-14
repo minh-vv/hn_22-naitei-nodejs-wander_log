@@ -1,0 +1,67 @@
+import { Injectable, NotFoundException } from '@nestjs/common';
+import { PrismaService } from 'src/prisma/prisma.service';
+import { I18nService } from 'nestjs-i18n';
+import { MailsService } from 'src/mails/mails.service';
+
+@Injectable()
+export class AdminService {
+  constructor(
+    private prisma: PrismaService,
+    private mailsService: MailsService,
+    private readonly i18n: I18nService,
+  ) {}
+
+  async findAllUsers() {
+    return this.prisma.user.findMany({
+      select: {
+        id: true,
+        email: true,
+        name: true,
+        role: true,
+        isActive: true,
+        createdAt: true,
+      },
+    });
+  }
+
+  async updateUserStatus(adminId: string, userId: string, isActive: boolean, reason: string) {
+    const user = await this.prisma.user.findUnique({
+      where: { id: userId },
+    });
+    
+    if (!user) {
+      throw new NotFoundException(this.i18n.t('admin.user_not_found'));
+    }
+
+    const updatedUser = await this.prisma.user.update({
+      where: { id: userId },
+      data: { isActive },
+      select: {
+        id: true,
+        email: true,
+        name: true,
+        isActive: true,
+      },
+    });
+
+    await this.prisma.adminLog.create({
+      data: {
+        adminId: adminId, 
+        action: `Cập nhật trạng thái người dùng thành: ${isActive ? 'kích hoạt' : 'vô hiệu hóa'}`,
+        targetId: userId,
+        targetType: 'User',
+      },
+    });
+
+    await this.mailsService.sendUserStatusUpdate({
+      to: user.email,
+      data: {
+        user_name: user.name || user.email, 
+        new_status: isActive ? 'activated' : 'deactivated',
+        reason: reason,
+      },
+    });
+
+    return updatedUser;
+  }
+}

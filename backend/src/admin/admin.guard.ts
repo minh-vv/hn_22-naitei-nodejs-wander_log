@@ -1,5 +1,5 @@
 import { Injectable, CanActivate, ExecutionContext, ForbiddenException } from '@nestjs/common';
-import { I18nContext, I18nService } from 'nestjs-i18n';
+import { I18nService } from 'nestjs-i18n';
 
 @Injectable()
 export class AdminGuard implements CanActivate {
@@ -11,9 +11,7 @@ export class AdminGuard implements CanActivate {
 
     if (!user || user.role !== 'ADMIN') {
       throw new ForbiddenException(
-        this.i18n.t('auth.forbidden_access', { 
-          lang: I18nContext.current()?.lang 
-        })
+        this.i18n.t('auth.forbidden_access')
       );
     }
 
