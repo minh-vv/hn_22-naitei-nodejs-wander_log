@@ -22,6 +22,7 @@ import { UsersService } from './users/users.service';
 import { UsersController } from './users/users.controller';
 import { UsersModule } from './users/users.module';
 import { InteractModule } from './interact/interact.module';
+import { BookmarksModule } from './bookmarks/bookmarks.module';
 
 @Module({
   imports: [
@@ -44,6 +45,7 @@ import { InteractModule } from './interact/interact.module';
     ActivitiesModule,
     UsersModule,
     InteractModule,
+    BookmarksModule,
   ],
   controllers: [AppController, PostsController, UsersController],
   providers: [AppService, PostsService, UsersService],
