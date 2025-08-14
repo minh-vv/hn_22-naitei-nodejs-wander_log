@@ -86,6 +86,58 @@ export class PostsService {
     return posts;
   }
 
+  async getNewsFeed(userId: string) {
+    const followedUsers = await this.prisma.follow.findMany({
+      where: {
+        followerId: userId,
+      },
+      select: {
+        followingId: true,
+      },
+    });
+
+    const followedUserIds = followedUsers.map((follow) => follow.followingId);
+    const userIdsForFeed = [...followedUserIds, userId];
+
+    const posts = await this.prisma.post.findMany({
+      where: {
+        userId: {
+          in: userIdsForFeed,
+        },
+        itinerary: {
+          visibility: Visibility.PUBLIC,
+        },
+      },
+      orderBy: {
+        createdAt: 'desc',
+      },
+      include: {
+        user: {
+          select: {
+            id: true,
+            name: true,
+            avatar: true,
+          },
+        },
+        itinerary: {
+          select: {
+            id: true,
+            title: true,
+            budget: true,
+          },
+        },
+        media: {
+          select: {
+            id: true,
+            url: true,
+          },
+        },
+      },
+    });
+
+    return posts;
+  }
+
   async update(postId: string, userId: string, updatePostDto: UpdatePostDto) {
     await this.findPostAndCheckOwnership(postId, userId);
 

@@ -36,6 +36,12 @@ export class PostsController {
   }
 
   @UseGuards(JwtAuthGuard)
+  @Get('feed')
+  async getNewFeed(@GetUser() user: User) {
+    return this.postsService.getNewsFeed(user.id);
+  }
+
+  @UseGuards(JwtAuthGuard)
   @Put(':id')
   async update(
     @GetUser() user: User,
