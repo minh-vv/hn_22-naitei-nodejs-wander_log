@@ -1,44 +1,47 @@
-import React, { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
-import authService from '../../../services/auth';
-import styles from './Signup.module.css';
-import backgroundImage from '../../../assets/images/background.jpg';
-function Signup(){
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [confirmPassword, setConfirmPassword] = useState('');
-  const [username, setUsername] = useState(''); 
-  const [name, setName] = useState('');       
-  const [error, setError] = useState('');
+import React, { useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import authService from "../../../services/auth";
+import styles from "./Signup.module.css";
+import backgroundImage from "../../../assets/images/background.jpg";
+function Signup() {
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const [name, setName] = useState("");
+  const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setError('');
+    setError("");
     if (password !== confirmPassword) {
-      setError('Passwords do not match.');
+      setError("Passwords do not match.");
       return;
     }
     setLoading(true);
     try {
-      await authService.signup(email, password, username, name);
-      alert('Sign up successful! Please log in.');
-      navigate('/signin');
+      await authService.signup(email, password, name);
+      alert("Sign up successful! Please log in.");
+      navigate("/signin");
     } catch (err) {
-      const errorMessage = typeof err === 'object' && err.message 
-        ? err.message 
-        : typeof err === 'string' 
-        ? err 
-        : 'Sign up failed. Please try again.';
+      const errorMessage =
+        typeof err === "object" && err.message
+          ? err.message
+          : typeof err === "string"
+          ? err
+          : "Sign up failed. Please try again.";
       setError(errorMessage);
     } finally {
       setLoading(false);
     }
   };
 
-  return(
-    <div className={styles.wrapper} style={{ backgroundImage: `url(${backgroundImage})` }}>
+  return (
+    <div
+      className={styles.wrapper}
+      style={{ backgroundImage: `url(${backgroundImage})` }}
+    >
       <div className={styles.container}>
         <h2 className={styles.title}>Create Account</h2>
         <form onSubmit={handleSubmit} className={styles.form}>
@@ -56,17 +59,6 @@ function Signup(){
           </div>
           <div className={styles.formGroup}>
             <label htmlFor="username">Username:</label>
-            <input
-              type="text"
-              id="username"
-              value={username}
-              onChange={(e) => setUsername(e.target.value)}
-              required
-              className={styles.input}
-            />
-          </div>
-          <div className={styles.formGroup}>
-            <label htmlFor="name">Display Name:</label> 
             <input
               type="text"
               id="name"
@@ -99,7 +91,7 @@ function Signup(){
             />
           </div>
           <button type="submit" className={styles.button} disabled={loading}>
-            {loading ? 'Signing Up...' : 'Sign Up'}
+            {loading ? "Signing Up..." : "Sign Up"}
           </button>
         </form>
         <p className={styles.linkText}>

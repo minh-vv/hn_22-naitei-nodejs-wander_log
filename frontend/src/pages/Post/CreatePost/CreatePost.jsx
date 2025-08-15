@@ -63,7 +63,7 @@ const CreatePost = ({ onPostCreated }) => {
         mediaUrls,
       };
 
-      const createdPost = await postService.create(postData, token);
+      const createdPost = await postService.create(postData);
       if (onPostCreated) {
         onPostCreated(createdPost);
       }
@@ -80,7 +80,7 @@ const CreatePost = ({ onPostCreated }) => {
         navigate("/signin");
         return;
       }
-      const data = await itineraryService.getAllItineraries(token);
+      const data = await itineraryService.getAllItineraries();
       setItineraries(data);
     } catch (err) {
       setError("Unable to load itinerary list.");

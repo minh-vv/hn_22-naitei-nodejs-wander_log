@@ -18,7 +18,7 @@ import AuthSuccess from "./pages/Auth/AuthSuccess/AuthSuccess";
 import Home from "./pages/Home/Home";
 
 const ProtectedRoute = ({ children }) => {
-  const token = localStorage.getItem("userToken");
+  const token = sessionStorage.getItem("userToken");
   if (!token) {
     return <Navigate to="/signin" replace />;
   }
