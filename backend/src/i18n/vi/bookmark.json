@@ -1,0 +1,6 @@
+{
+  "invalid_type": "Loại bookmark {type} không hợp lệ.",
+  "item_not_found": "Không tìm thấy {type} với ID {id}.",
+  "not_found": "Không tìm thấy bookmark với ID {id}",
+  "delete_forbidden": "Bạn không có quyền xóa bookmark này"
+}

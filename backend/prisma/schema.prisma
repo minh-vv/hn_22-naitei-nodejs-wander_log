@@ -22,6 +22,11 @@ enum Visibility {
   PRIVATE
 }
 
+enum BookmarkType {
+  ITINERARY
+  POST     
+}
+
 model User {
   id              String            @id @default(cuid())
   email           String            @unique
@@ -39,16 +44,31 @@ model User {
   createdAt       DateTime          @default(now()) @map("created_at")
   updatedAt       DateTime          @updatedAt
 
-  passwordResets PasswordReset[]
-  itineraries    Itinerary[]
-  posts       Post[]
+  passwordResets  PasswordReset[]
+  itineraries     Itinerary[]
+  posts           Post[]
 
-  followedBy Follow[]               @relation("FollowerUsers")
-  following  Follow[]               @relation("FollowingUsers")
+  followedBy      Follow[]               @relation("FollowerUsers")
+  following       Follow[]               @relation("FollowingUsers")
   favorites       Favorite[]
   comments        Comment[]
+  bookmarks       Bookmark[]
 
   @@map("users")
+}
+
+model Bookmark {
+  id        String          @id @default(cuid())
+  createdAt DateTime     @default(now())
+  
+  type      BookmarkType 
+  itemId    String         
+
+  userId    String
+  user      User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, type, itemId])
+  @@map("bookmark")
 }
 
 model PasswordReset {
