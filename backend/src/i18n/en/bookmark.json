@@ -1,0 +1,6 @@
+{
+  "invalid_type": "Bookmark type {type} is invalid.",
+  "item_not_found": "Could not find {type} with ID {id}.",
+  "not_found": "Bookmark with ID {id} not found",
+  "delete_forbidden": "You do not have permission to delete this bookmark"
+}
