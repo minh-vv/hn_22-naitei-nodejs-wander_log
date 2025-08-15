@@ -43,7 +43,7 @@ export class AuthService {
       data: { email, passwordHash, name },
     });
 
-    const payload = { sub: user.id, email: user.email };
+    const payload = { sub: user.id, email: user.email, role: user.role };
     const token = this.jwtService.sign(payload);
 
     return {
@@ -90,7 +90,7 @@ export class AuthService {
       );
     }
 
-    const payload = { sub: user.id, email: user.email };
+    const payload = { sub: user.id, email: user.email, role: user.role };
     const token = this.jwtService.sign(payload);
 
     return {
@@ -226,11 +226,12 @@ export class AuthService {
           name: oauthUser.name,
           avatar: oauthUser.avatar,
           authProvider: 'GOOGLE',
+          role: 'USER',
         },
       });
     }
 
-    const payload = { sub: user.id, email: user.email };
+    const payload = { sub: user.id, email: user.email, role: user.role };
     const token = this.jwtService.sign(payload);
 
     return {
