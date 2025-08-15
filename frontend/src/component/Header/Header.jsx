@@ -69,8 +69,13 @@ export default function Header() {
                       <a href="/notifications" className={styles.dropdownItem}>
                         Thông báo
                       </a>
-                      <hr className={styles.dropdownSeparator} />
-                      <button className={styles.logoutButton}>Đăng xuất</button>
+                      <button
+                        type="button"
+                        className={styles.logoutButton}
+                        onClick={logout}
+                      >
+                        Đăng xuất
+                      </button>
                     </div>
                   )}
                 </div>
