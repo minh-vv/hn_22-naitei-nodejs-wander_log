@@ -2,6 +2,7 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { I18nService } from 'nestjs-i18n';
 import { MailsService } from 'src/mails/mails.service';
+import { addDays, addMonths, addYears, subDays, startOfWeek, subWeeks, startOfMonth, subMonths, startOfYear, subYears } from 'date-fns';
 
 @Injectable()
 export class AdminService {
@@ -109,5 +110,62 @@ export class AdminService {
     });
 
     return { message: this.i18n.t('admin.user_deleted_successfully') };
+  }
+
+  async findAllItineraries() {
+    return this.prisma.itinerary.findMany({
+      include: {
+        user: {
+          select: {
+            id: true,
+            name: true,
+            email: true,
+          },
+        },
+      },
+      orderBy: {
+        createdAt: 'desc',
+      },
+    });
+  }
+
+  async getDashboardStats() {
+    const today = new Date();
+    
+    const totalItineraries = await this.prisma.itinerary.count();
+    
+    const thisWeekStart = startOfWeek(today, { weekStartsOn: 1 }); 
+    const thisWeekItineraries = await this.prisma.itinerary.count({
+      where: {
+        createdAt: {
+          gte: thisWeekStart,
+        },
+      },
+    });
+
+    const thisMonthStart = startOfMonth(today);
+    const thisMonthItineraries = await this.prisma.itinerary.count({
+      where: {
+        createdAt: {
+          gte: thisMonthStart,
+        },
+      },
+    });
+
+    const thisYearStart = startOfYear(today);
+    const thisYearItineraries = await this.prisma.itinerary.count({
+      where: {
+        createdAt: {
+          gte: thisYearStart,
+        },
+      },
+    });
+
+    return {
+      totalItineraries,
+      thisWeekItineraries,
+      thisMonthItineraries,
+      thisYearItineraries,
+    };
   }
 }

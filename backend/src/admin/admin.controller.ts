@@ -46,4 +46,14 @@ export class AdminController {
     const admin = req.user as JwtPayload;
     return this.adminService.deleteUser(admin.id, userId);
   }
+
+  @Get('itineraries')
+  async getAllItineraries() {
+    return this.adminService.findAllItineraries();
+  }
+
+  @Get('dashboard')
+  async getDashboardStats() {
+    return this.adminService.getDashboardStats();
+  }
 }
