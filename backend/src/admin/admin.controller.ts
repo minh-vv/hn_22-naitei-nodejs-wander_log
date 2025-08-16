@@ -5,7 +5,8 @@ import {
   Param, 
   Put,
   Body,
-  Req  
+  Req,
+  Delete
 } from '@nestjs/common';
 import { AdminService } from './admin.service';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
@@ -33,5 +34,16 @@ export class AdminController {
     const admin = req.user as JwtPayload; 
     const adminId = admin.id;
     return this.adminService.updateUserStatus(adminId, userId, isActive, reason);
+  }
+
+  @Get('users/:userId')
+  async getUserById(@Param('userId') userId: string) {
+    return this.adminService.findUserById(userId);
+  }
+
+  @Delete('users/:userId')
+  async deleteUser(@Param('userId') userId: string, @Req() req: Request) {
+    const admin = req.user as JwtPayload;
+    return this.adminService.deleteUser(admin.id, userId);
   }
 }

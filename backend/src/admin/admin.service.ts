@@ -64,4 +64,50 @@ export class AdminService {
 
     return updatedUser;
   }
+
+  async findUserById(userId: string) {
+    const user = await this.prisma.user.findUnique({
+      where: { id: userId },
+      select: {
+        id: true,
+        email: true,
+        name: true,
+        role: true,
+        isActive: true,
+        createdAt: true,
+      },
+    });
+
+    if (!user) {
+      throw new NotFoundException(this.i18n.t('admin.user_not_found'));
+    }
+
+    return user;
+  }
+
+  async deleteUser(adminId: string, userId: string) {
+    const user = await this.prisma.user.findUnique({
+      where: { id: userId },
+      select: { id: true, email: true },
+    });
+
+    if (!user) {
+      throw new NotFoundException(this.i18n.t('admin.user_not_found'));
+    }
+
+    await this.prisma.user.delete({
+      where: { id: userId },
+    });
+
+    await this.prisma.adminLog.create({
+      data: {
+        adminId: adminId,
+        action: 'Xóa tài khoản người dùng',
+        targetId: userId,
+        targetType: 'User',
+      },
+    });
+
+    return { message: this.i18n.t('admin.user_deleted_successfully') };
+  }
 }
