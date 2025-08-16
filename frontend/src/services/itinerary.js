@@ -12,6 +12,19 @@ const itineraryService = {
     }
   },
 
+  getFeatureItineraries: async () => {
+    try {
+      const response = await apiClient.get("/itineraries/feature", {
+        skipAuth: true,
+      });
+      return response.data;
+    } catch (error) {
+      throw new Error(
+        error.response?.data?.message || "Failed to fetch itineraries"
+      );
+    }
+  },
+
   getItineraryById: async (id) => {
     try {
       const response = await apiClient.get(`/itineraries/${id}`);

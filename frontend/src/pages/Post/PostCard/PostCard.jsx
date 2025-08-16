@@ -53,7 +53,7 @@ const PostCard = ({
   const fetchComments = async () => {
     try {
       setLoadingComments(true);
-      const res = await postService.getComment(post.id);
+      const res = await postService.getComments(post.id);
       setComments(res.comments || []);
       setCommentCount(res.comments?.length || 0);
     } catch (error) {
@@ -68,7 +68,7 @@ const PostCard = ({
     try {
       await postService.createComment(post.id, { body: commentText });
       setCommentText("");
-      const updated = await postService.getComment(post.id);
+      const updated = await postService.getComments(post.id);
       setComments(updated.comments || []);
       setCommentCount(updated.comments?.length || 0);
     } catch (error) {
@@ -85,6 +85,7 @@ const PostCard = ({
       setComments(updated);
       setCommentCount(updated.length);
     } catch (error) {
+      alert(error);
       console.error("Error deleting comment:", error);
     }
   };
@@ -107,12 +108,8 @@ const PostCard = ({
     const prevIsLiked = isLiked;
     const prevLikesCount = likesCount;
 
-    const newIsLiked = !isLiked;
-    setIsLiked(newIsLiked);
-    setLikesCount((count) => count + (newIsLiked ? 1 : -1));
-
     try {
-      const res = await postService.liked(post.id);
+      const res = await postService.likePost(post.id);
       if (typeof res?.updatedPost?.likeCount === "number") {
         setLikesCount(res.updatedPost.likeCount);
       }

@@ -63,7 +63,7 @@ const CreatePost = ({ onPostCreated }) => {
         mediaUrls,
       };
 
-      const createdPost = await postService.create(postData);
+      const createdPost = await postService.createPost(postData);
       if (onPostCreated) {
         onPostCreated(createdPost);
       }

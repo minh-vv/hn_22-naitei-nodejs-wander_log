@@ -389,16 +389,18 @@
 }
 .commentBubble {
   background-color: white;
-  padding: 0.5rem 0.75rem;
+  padding: 0rem 0.75rem;
   border-radius: 1.125rem;
 }
 .commenterName {
   font-weight: 600;
   font-size: 0.875rem;
+  margin-top: 0.4rem;
 }
 .commentText {
   font-size: 0.875rem;
   color: #374151;
+  margin-top: 0;
 }
 .commentActions {
   display: flex;
