@@ -1,0 +1,154 @@
+.itineraryGrid {
+  display: flex;
+  overflow-x: auto;
+  gap: 20px;
+  padding-bottom: 1rem;
+  scroll-snap-type: x mandatory;
+  -webkit-overflow-scrolling: touch;
+}
+
+.itineraryGrid::-webkit-scrollbar {
+  display: none;
+}
+
+.itineraryCard {
+  flex: 0 0 240px;
+  scroll-snap-align: start;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  background-color: white;
+  border: 1px solid #e2e8f0;
+  border-radius: 10px;
+  padding: 20px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+  transition: box-shadow 0.3s ease, transform 0.2s ease;
+  cursor: pointer;
+  min-height: 180px;
+}
+
+.itineraryCard:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 10px 15px rgba(0, 0, 0, 0.1);
+}
+
+.cardContent {
+  flex-grow: 1;
+}
+
+.cardTitle {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: #333;
+  margin-bottom: 10px;
+}
+
+.cardInfo {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: 10px;
+}
+
+.cardItem {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.9rem;
+  color: #6b7280;
+}
+
+.itemIcon {
+  color: #28a745;
+}
+
+.cardBudget {
+  font-weight: 600;
+  color: #28a745;
+}
+
+.cardFooter {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 12px;
+}
+
+.userInfo {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.userAvatar {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.likeIcon {
+  color: #ef4444;
+  font-size: 1.2rem;
+  margin-top: 0.2rem;
+}
+
+.stats {
+  display: flex;
+  gap: 5px;
+  font-size: 14px;
+  color: #777;
+  align-items: center;
+}
+
+.cardActions {
+  display: flex;
+  gap: 10px;
+  margin-top: 20px;
+  justify-content: flex-end;
+}
+
+.iconButton {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background-color 0.2s ease;
+  border: none;
+  cursor: pointer;
+}
+
+.editButton {
+  background-color: #fffbe6;
+  color: #f59e0b;
+}
+
+.editButton:hover {
+  background-color: #fef3c7;
+}
+
+.deleteButton {
+  background-color: #fef2f2;
+  color: #ef4444;
+}
+
+.deleteButton:hover {
+  background-color: #fee2e2;
+}
+
+.loading,
+.error,
+.emptyMessage {
+  text-align: center;
+  width: 100%;
+  font-size: 1rem;
+  color: #6b7280;
+  padding: 20px 0;
+}
+
+.error {
+  color: #dc3545;
+  font-weight: 500;
+}

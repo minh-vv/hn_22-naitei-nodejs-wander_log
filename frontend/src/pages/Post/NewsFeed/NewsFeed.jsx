@@ -66,7 +66,7 @@ export default function FeedPage() {
     }
 
     try {
-      await postService.delete(postId);
+      await postService.deletePost(postId);
       setPosts((currentPosts) =>
         currentPosts.filter((post) => post.id !== postId)
       );
@@ -83,7 +83,7 @@ export default function FeedPage() {
 
   const handleUpdatePost = async (updatedPost) => {
     try {
-      const updated = await postService.update(updatedPost.id, {
+      const updated = await postService.updatePost(updatedPost.id, {
         content: updatedPost.content,
       });
 

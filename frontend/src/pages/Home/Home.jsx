@@ -2,6 +2,7 @@ import React from "react";
 import { useNavigate } from "react-router-dom";
 import Header from "../../component/Header/Header";
 import styles from "./Home.module.css";
+import ItineraryFeature from "../Itinerary/ItineraryFeature/ItineraryFeature";
 
 export default function Home() {
   const navigate = useNavigate();
@@ -36,7 +37,9 @@ export default function Home() {
       <section className={styles.section}>
         <h2>Lịch trình nổi bật</h2>
         <p>Những hành trình được yêu thích nhất từ cộng đồng</p>
-        <div className={styles.tripGrid}></div>
+        <div className={styles.tripGrid}>
+          <ItineraryFeature />
+        </div>
       </section>
       <section className={styles.section}>
         <h2>Điểm đến thịnh hành</h2>

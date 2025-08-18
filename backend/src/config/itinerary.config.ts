@@ -1,0 +1,1 @@
+export const ITINERARY_FEATURED_LIMIT = 10;

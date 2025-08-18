@@ -52,6 +52,13 @@ export class PostsService {
             avatar: true,
           },
         },
+        itinerary: {
+          select: {
+            id: true,
+            title: true,
+            budget: true,
+          },
+        },
       },
     });
   }
@@ -132,10 +139,19 @@ export class PostsService {
             url: true,
           },
         },
+        favoritedBy: {
+          where: { userId },
+          select: { userId: true },
+        },
       },
     });
 
-    return posts;
+    const formattedPosts = posts.map((post) => ({
+      ...post,
+      isLiked: post.favoritedBy.length > 0,
+    }));
+
+    return formattedPosts;
   }
 
   async update(postId: string, userId: string, updatePostDto: UpdatePostDto) {
