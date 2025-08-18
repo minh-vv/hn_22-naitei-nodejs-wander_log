@@ -56,4 +56,15 @@ export class AdminController {
   async getDashboardStats() {
     return this.adminService.getDashboardStats();
   }
+
+  @Get('itineraries/:itineraryId')
+  async getItineraryById(@Param('itineraryId') itineraryId: string) {
+    return this.adminService.findItineraryById(itineraryId);
+  }
+
+  @Delete('itineraries/:itineraryId')
+  async deleteItinerary(@Param('itineraryId') itineraryId: string, @Req() req: Request) {
+    const admin = req.user as JwtPayload;
+    return this.adminService.deleteItinerary(admin.id, itineraryId);
+  }
 }

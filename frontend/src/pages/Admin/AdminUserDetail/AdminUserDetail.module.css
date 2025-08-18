@@ -1,0 +1,132 @@
+:root {
+    --pink-light: #FFC0CB;
+    --pink-medium: #FF8F9B;
+    --pink-dark: #FF69B4;
+    --text-color: #555;
+    --background-color: #FFF0F5;
+}
+
+body {
+    background-color: var(--background-color);
+    font-family: 'Arial', sans-serif;
+}
+
+.container {
+    padding: 2rem;
+    max-width: 900px;
+    margin: 0 auto;
+    text-align: center;
+}
+
+.header {
+    margin-bottom: 2rem;
+    position: relative;
+    text-align: center;
+}
+
+.title {
+    font-size: 2.5rem;
+    color: var(--pink-dark);
+    font-weight: bold;
+    margin-top: 0;
+}
+
+.backButton {
+    position: absolute;
+    top: 1rem;
+    left: 1rem;
+    font-size: 1rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: var(--pink-medium);
+    text-decoration: none;
+    transition: color 0.3s ease;
+}
+
+.backButton:hover {
+    color: var(--pink-dark);
+}
+
+.detailCard {
+    background-color: #fff;
+    border-radius: 15px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    padding: 2rem;
+    margin-bottom: 2rem;
+    text-align: left;
+    color: var(--text-color);
+}
+
+.detailCard p {
+    margin: 0.8rem 0;
+    line-height: 1.5;
+}
+
+.detailCard p strong {
+    color: var(--pink-medium);
+}
+
+.loading {
+    font-size: 1.5rem;
+    color: var(--pink-dark);
+    text-align: center;
+    padding-top: 5rem;
+}
+
+.section {
+    margin-top: 2rem;
+    text-align: left;
+}
+
+.sectionTitle {
+    color: var(--pink-dark);
+    font-size: 1.8rem;
+    border-bottom: 2px solid var(--pink-light);
+    padding-bottom: 0.5rem;
+}
+
+.itineraryList {
+    list-style-type: none;
+    padding: 0;
+}
+
+.itineraryItem {
+    background-color: #fff;
+    border-radius: 10px;
+    padding: 1rem;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+    margin-bottom: 1rem;
+    color: var(--text-color);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.itineraryInfo {
+    display: flex;
+    align-items: baseline;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+}
+
+.itineraryItem strong {
+    color: var(--pink-medium);
+}
+
+.viewButton {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+    padding: 0.5rem 1rem;
+    background-color: var(--pink-light);
+    color: white;
+    font-weight: bold;
+    text-decoration: none;
+    border-radius: 20px;
+    transition: background-color 0.3s ease;
+}
+
+.viewButton:hover {
+    background-color: var(--pink-dark);
+}

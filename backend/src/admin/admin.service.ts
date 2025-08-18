@@ -76,6 +76,18 @@ export class AdminService {
         role: true,
         isActive: true,
         createdAt: true,
+        itineraries: {
+          select: {
+            id: true,
+            title: true,
+            destination: true,
+            startDate: true,
+            visibility: true,
+          },
+          orderBy: {
+            createdAt: 'desc',
+          },
+        },
       },
     });
 
@@ -167,5 +179,61 @@ export class AdminService {
       thisMonthItineraries,
       thisYearItineraries,
     };
+  }
+  async findItineraryById(itineraryId: string) {
+    const itinerary = await this.prisma.itinerary.findUnique({
+      where: { id: itineraryId },
+      include: {
+        user: {
+          select: { id: true, name: true, email: true },
+        },
+        posts: {
+          select: { id: true, content: true },
+        },
+        activities: {
+          select: { id: true, name: true, location: true },
+        },
+      },
+    });
+
+    if (!itinerary) {
+      throw new NotFoundException(this.i18n.t('admin.itinerary_not_found'));
+    }
+
+    return itinerary;
+  }
+
+  async deleteItinerary(adminId: string, itineraryId: string) {
+    const itinerary = await this.prisma.itinerary.findUnique({
+      where: { id: itineraryId },
+      include: { user: { select: { id: true, email: true, name: true } } },
+    });
+
+    if (!itinerary) {
+      throw new NotFoundException(this.i18n.t('admin.itinerary_not_found'));
+    }
+
+    await this.prisma.itinerary.delete({
+      where: { id: itineraryId },
+    });
+
+    await this.prisma.adminLog.create({
+      data: {
+        adminId: adminId,
+        action: 'Xóa lịch trình',
+        targetId: itineraryId,
+        targetType: 'Itinerary',
+      },
+    });
+
+    await this.mailsService.sendItineraryDeletionNotification({
+      to: itinerary.user.email,
+      data: {
+        user_name: itinerary.user.name || itinerary.user.email,
+        itinerary_title: itinerary.title,
+      },
+    });
+
+    return { message: this.i18n.t('admin.itinerary_deleted_successfully') };
   }
 }

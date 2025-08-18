@@ -16,6 +16,12 @@ import ItineraryDetail from "./pages/Itinerary/ItineraryDetail/ItineraryDetail";
 import NewsFeed from "./pages/Post/NewsFeed/NewsFeed";
 import AuthSuccess from "./pages/Auth/AuthSuccess/AuthSuccess";
 import Home from "./pages/Home/Home";
+import AdminDashboard from "./pages/Admin/AdminDashboard/AdminDashboard";
+import AdminUsers from "./pages/Admin/AdminUsers/AdminUsers";
+import AdminItineraries from "./pages/Admin/AdminItineraries/AdminItineraries";
+import AdminItineraryDetail from './pages/Admin/AdminItineraryDetail/AdminItineraryDetail'; 
+import AdminUserDetail from "./pages/Admin/AdminUserDetail/AdminUserDetail";
+
 
 const ProtectedRoute = ({ children }) => {
   const token = sessionStorage.getItem("userToken");
@@ -50,6 +56,46 @@ function App() {
         <Route path="/itineraries/:id" element={<ItineraryDetail />} />
         <Route path="/posts/feed" element={<NewsFeed />} />
         <Route path="/home" element={<Home />} />
+        <Route
+            path="/admin/dashboard"
+            element={
+              <AdminProtectedRoute>
+                <AdminDashboard />
+              </AdminProtectedRoute>
+            }
+          />
+          <Route
+            path="/admin/users"
+            element={
+              <AdminProtectedRoute>
+                <AdminUsers />
+              </AdminProtectedRoute>
+            }
+          />
+          <Route
+            path="/admin/users/:userId"
+            element={
+              <AdminProtectedRoute>
+                <AdminUserDetail />
+              </AdminProtectedRoute>
+            }
+          />
+          <Route
+            path="/admin/itineraries"
+            element={
+              <AdminProtectedRoute>
+                <AdminItineraries />
+              </AdminProtectedRoute>
+            }
+          />
+          <Route
+          path="/admin/itineraries/:itineraryId" 
+          element={
+            <AdminProtectedRoute>
+              <AdminItineraryDetail />
+            </AdminProtectedRoute>
+          }
+        />
       </Routes>
     </Router>
   );

@@ -2,5 +2,6 @@
   "account_activated_subject": "Your WanderLog account has been activated",
   "account_deactivated_subject": "Your WanderLog account has been deactivated",
   "status_activated_text": "activated",
-  "status_deactivated_text": "deactivated"
+  "status_deactivated_text": "deactivated",
+  "itinerary_deleted_subject": "Your Itinerary Has Been Deleted"
 }

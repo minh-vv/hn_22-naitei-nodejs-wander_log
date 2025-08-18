@@ -76,4 +76,32 @@ export class MailsService {
       },
     });
   }
+
+  async sendItineraryDeletionNotification(mailData: {
+    to: string;
+    data: {
+      user_name: string;
+      itinerary_title: string;
+    };
+  }): Promise<void> {
+    const subject = this.i18n.t('mail.itinerary_deleted_subject');
+
+    await this.mailerService.sendMail({
+      to: mailData.to,
+      subject: subject,
+      templatePath: path.join(
+        this.configService.get<string>('mailer.workingDirectory', {
+          infer: true,
+        }) || process.cwd(),
+        'src',
+        'mails',
+        'templates',
+        'itinerary-deleted.hbs', 
+      ),
+      context: {
+        username: mailData.data.user_name,
+        itinerary_title: mailData.data.itinerary_title,
+      },
+    });
+  }
 }
