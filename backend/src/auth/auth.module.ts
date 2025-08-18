@@ -12,10 +12,10 @@ import { MailsModule } from 'src/mails/mails.module';
   imports: [
     PrismaModule,
     MailsModule,
-    PassportModule, 
+    PassportModule,
     JwtModule.register({
-      secret: process.env.JWT_SECRET, 
-      signOptions: { expiresIn: '7d' }, 
+      secret: process.env.JWT_SECRET,
+      signOptions: { expiresIn: '8h' },
     }),
   ],
   controllers: [AuthController],

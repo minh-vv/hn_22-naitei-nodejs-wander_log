@@ -1,46 +1,48 @@
-import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import authService from '../../../services/auth';
-import styles from './ChangePassword.module.css';
-import backgroundImage from '../../../assets/images/background.jpg';
+import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import authService from "../../../services/auth";
+import styles from "./ChangePassword.module.css";
+import backgroundImage from "../../../assets/images/background.jpg";
 
 function ChangePassword() {
-  const [currentPassword, setCurrentPassword] = useState('');
-  const [newPassword, setNewPassword] = useState('');
-  const [confirmNewPassword, setConfirmNewPassword] = useState('');
-  const [message, setMessage] = useState('');
-  const [error, setError] = useState('');
+  const [currentPassword, setCurrentPassword] = useState("");
+  const [newPassword, setNewPassword] = useState("");
+  const [confirmNewPassword, setConfirmNewPassword] = useState("");
+  const [message, setMessage] = useState("");
+  const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setMessage('');
-    setError('');
+    setMessage("");
+    setError("");
     if (newPassword !== confirmNewPassword) {
-      setError('New passwords do not match.');
+      setError("New passwords do not match.");
       return;
     }
     setLoading(true);
     try {
-      const token = localStorage.getItem('userToken');
+      const token = sessionStorage.getItem("userToken");
       if (!token) {
-        setError('You need to be logged in to change your password.');
+        setError("You need to be logged in to change your password.");
         setLoading(false);
-        navigate('/signin');
+        navigate("/signin");
         return;
       }
 
-      await authService.changePassword(currentPassword, newPassword, token);
-      setMessage('Your password has been changed successfully!');
-      setCurrentPassword('');
-      setNewPassword('');
-      setConfirmNewPassword('');
+      await authService.changePassword(currentPassword, newPassword);
+      setMessage("Your password has been changed successfully!");
+      setCurrentPassword("");
+      setNewPassword("");
+      setConfirmNewPassword("");
     } catch (err) {
       // Handle both object and string errors
-      const errorMessage = typeof err === 'object' 
-        ? err.message || err.error || JSON.stringify(err)
-        : err || 'Failed to change password. Please check your current password.';
+      const errorMessage =
+        typeof err === "object"
+          ? err.message || err.error || JSON.stringify(err)
+          : err ||
+            "Failed to change password. Please check your current password.";
       setError(errorMessage);
     } finally {
       setLoading(false);
@@ -48,7 +50,10 @@ function ChangePassword() {
   };
 
   return (
-    <div className={styles.wrapper} style={{ backgroundImage: `url(${backgroundImage})` }}>
+    <div
+      className={styles.wrapper}
+      style={{ backgroundImage: `url(${backgroundImage})` }}
+    >
       <div className={styles.container}>
         <h2 className={styles.title}>Change Password</h2>
         <form onSubmit={handleSubmit} className={styles.form}>
@@ -88,7 +93,7 @@ function ChangePassword() {
             />
           </div>
           <button type="submit" className={styles.button} disabled={loading}>
-            {loading ? 'Changing...' : 'Change Password'}
+            {loading ? "Changing..." : "Change Password"}
           </button>
         </form>
       </div>

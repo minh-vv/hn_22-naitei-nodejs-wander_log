@@ -12,7 +12,6 @@ const PostCard = ({
   isEditing,
   onCancelEdit,
   onSubmitEdit,
-  token,
 }) => {
   const [isLiked, setIsLiked] = useState(post.isLiked);
   const [likesCount, setLikesCount] = useState(post.likeCount);
@@ -67,7 +66,7 @@ const PostCard = ({
   const handleComment = async () => {
     if (!commentText.trim()) return;
     try {
-      await postService.createComment(post.id, token, { body: commentText });
+      await postService.createComment(post.id, { body: commentText });
       setCommentText("");
       const updated = await postService.getComment(post.id);
       setComments(updated.comments || []);
@@ -81,7 +80,7 @@ const PostCard = ({
     if (!window.confirm("Are you sure you want to delete this comment?"))
       return;
     try {
-      await postService.deleteComment(token, post.id, commentId);
+      await postService.deleteComment(post.id, commentId);
       const updated = comments.filter((c) => c.id !== commentId);
       setComments(updated);
       setCommentCount(updated.length);
@@ -113,7 +112,7 @@ const PostCard = ({
     setLikesCount((count) => count + (newIsLiked ? 1 : -1));
 
     try {
-      const res = await postService.liked(post.id, token);
+      const res = await postService.liked(post.id);
       if (typeof res?.updatedPost?.likeCount === "number") {
         setLikesCount(res.updatedPost.likeCount);
       }

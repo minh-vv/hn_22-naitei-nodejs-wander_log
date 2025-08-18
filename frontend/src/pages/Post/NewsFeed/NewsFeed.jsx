@@ -47,7 +47,7 @@ export default function FeedPage() {
     }
     const fetchPosts = async () => {
       try {
-        const data = await postService.getNewFeed(token);
+        const data = await postService.getNewsFeed();
         setPosts(data);
       } catch (err) {
         console.error("Failed to fetch posts:", err);
@@ -66,7 +66,7 @@ export default function FeedPage() {
     }
 
     try {
-      await postService.delete(token, postId);
+      await postService.delete(postId);
       setPosts((currentPosts) =>
         currentPosts.filter((post) => post.id !== postId)
       );
@@ -83,7 +83,7 @@ export default function FeedPage() {
 
   const handleUpdatePost = async (updatedPost) => {
     try {
-      const updated = await postService.update(token, updatedPost.id, {
+      const updated = await postService.update(updatedPost.id, {
         content: updatedPost.content,
       });
 
@@ -123,7 +123,6 @@ export default function FeedPage() {
               onEdit={() => handleEditPost(post.id)}
               onCancelEdit={() => setEditingPostId(null)}
               onSubmitEdit={handleUpdatePost}
-              token={token}
             />
           ))}
         </div>

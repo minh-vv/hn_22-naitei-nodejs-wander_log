@@ -1,169 +1,124 @@
-const API_BASE_URL = "http://localhost:3000/posts";
+import apiClient from "./apiClient";
 
 const postService = {
-  getPosts: async () => {
-    const response = await fetch(API_BASE_URL, {
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-      },
-    });
-    if (!response.ok) {
-      const error = await response.json();
-      throw new Error(error.message || "Failed to fetch posts");
+  getAllPosts: async () => {
+    try {
+      const res = await apiClient.get("/posts", { skipAuth: true });
+      return res.data;
+    } catch (error) {
+      throw new Error(error.response?.data?.message || "Failed to fetch posts");
     }
-    return response.json();
   },
 
-  getNewFeed: async (token) => {
-    const response = await fetch(`${API_BASE_URL}/feed`, {
-      method: "GET",
-      headers: {
-        Authorization: `Bearer ${token}`,
-        "Content-Type": "application/json",
-      },
-    });
-    if (!response.ok) {
-      const error = await response.json();
-      throw new Error(error.message || "Failed to fetch posts");
+  getNewsFeed: async () => {
+    try {
+      const res = await apiClient.get("/posts/feed");
+      return res.data;
+    } catch (error) {
+      throw new Error(
+        error.response?.data?.message || "Failed to fetch news feed"
+      );
     }
-    return response.json();
   },
 
-  delete: async (token, id) => {
-    const response = await fetch(`${API_BASE_URL}/${id}`, {
-      method: "DELETE",
-      headers: {
-        Authorization: `Bearer ${token}`,
-        "Content-Type": "application/json",
-      },
-    });
-    if (!response.ok) {
-      const error = await response.json();
-      throw new Error(error.message || "Failed to delete post with id ${id}");
+  deletePost: async (id) => {
+    try {
+      const res = await apiClient.delete(`/posts/${id}`);
+      return res.data;
+    } catch (error) {
+      throw new Error(
+        error.response?.data?.message || `Failed to delete post with ID ${id}`
+      );
     }
-    return response.json();
   },
 
-  update: async (token, id, updateData) => {
-    const response = await fetch(`${API_BASE_URL}/${id}`, {
-      method: "PUT",
-      headers: {
-        Authorization: `Bearer ${token}`,
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(updateData),
-    });
-    if (!response.ok) {
-      const error = await response.json();
-      throw new Error(error.message || "Failed to update post with id ${id}");
+  updatePost: async (id, updateData) => {
+    try {
+      const res = await apiClient.put(`/posts/${id}`, updateData);
+      return res.data;
+    } catch (error) {
+      throw new Error(
+        error.response?.data?.message || `Failed to update post with ID ${id}`
+      );
     }
-    return response.json();
   },
 
-  create: async (postData, token) => {
-    const response = await fetch(API_BASE_URL, {
-      method: "POST",
-      headers: {
-        Authorization: `Bearer ${token}`,
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(postData),
-    });
-    if (!response.ok) {
-      const error = await response.json();
-      throw new Error(error.message || "Failed to create post");
+  createPost: async (postData) => {
+    try {
+      const res = await apiClient.post("/posts", postData);
+      return res.data;
+    } catch (error) {
+      throw new Error(error.response?.data?.message || "Failed to create post");
     }
-    return response.json();
   },
 
   uploadMediaFiles: async (files) => {
-    const uploadedUrls = [];
-
-    for (const file of files) {
-      const formData = new FormData();
-      formData.append("file", file);
-
-      const response = await fetch("http://localhost:3000/files/upload", {
-        method: "POST",
-        body: formData,
-      });
-
-      if (!response.ok) {
-        throw new Error("Upload failed");
+    try {
+      const uploadedUrls = [];
+      for (const file of files) {
+        const formData = new FormData();
+        formData.append("file", file);
+        const res = await apiClient.post("/files/upload", formData, {
+          headers: { "Content-Type": "multipart/form-data" },
+          skipAuth: true,
+        });
+        uploadedUrls.push(...res.data.mediaUrls);
       }
-
-      const result = await response.json();
-      uploadedUrls.push(...result.mediaUrls);
-    }
-
-    return uploadedUrls;
-  },
-
-  liked: async (id, token) => {
-    const response = await fetch(`${API_BASE_URL}/${id}/like`, {
-      method: "POST",
-      headers: {
-        Authorization: `Bearer ${token}`,
-        "Content-Type": "application/json",
-      },
-    });
-    if (!response.ok) {
-      const error = await response.json();
-      throw new Error(error.message || "Failed to like post");
-    }
-    return response.json();
-  },
-
-  getComment: async (id) => {
-    const response = await fetch(`${API_BASE_URL}/${id}/comment`, {
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-      },
-    });
-    if (!response.ok) {
-      const error = await response.json();
+      return uploadedUrls;
+    } catch (error) {
       throw new Error(
-        error.message || "Failed to fetch comment of post with id ${id}"
+        error.response?.data?.message || "Failed to upload media files"
       );
     }
-    return response.json();
   },
 
-  createComment: async (id, token, commentData) => {
-    const response = await fetch(`${API_BASE_URL}/${id}/comment`, {
-      method: "POST",
-      headers: {
-        Authorization: `Bearer ${token}`,
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(commentData),
-    });
-    if (!response.ok) {
-      const error = await response.json();
+  likePost: async (id) => {
+    try {
+      const res = await apiClient.post(`/posts/${id}/like`);
+      return res.data;
+    } catch (error) {
       throw new Error(
-        error.message || "Failed to create comment for post with id ${id}"
+        error.response?.data?.message || `Failed to like post with ID ${id}`
       );
     }
-    return response.json();
   },
 
-  deleteComment: async (token, id, commentId) => {
-    const response = await fetch(`${API_BASE_URL}/${id}/comment/${commentId}`, {
-      method: "DELETE",
-      headers: {
-        Authorization: `Bearer ${token}`,
-        "Content-Type": "application/json",
-      },
-    });
-    if (!response.ok) {
-      const error = await response.json();
+  getComments: async (id) => {
+    try {
+      const res = await apiClient.get(`/posts/${id}/comment`, {
+        skipAuth: true,
+      });
+      return res.data;
+    } catch (error) {
       throw new Error(
-        error.message || "Failed to delete comment of post with id ${id}"
+        error.response?.data?.message ||
+          `Failed to fetch comments for post ID ${id}`
       );
     }
-    return response.json();
+  },
+
+  createComment: async (id, commentData) => {
+    try {
+      const res = await apiClient.post(`/posts/${id}/comment`, commentData);
+      return res.data;
+    } catch (error) {
+      throw new Error(
+        error.response?.data?.message ||
+          `Failed to create comment for post ID ${id}`
+      );
+    }
+  },
+
+  deleteComment: async (id, commentId) => {
+    try {
+      const res = await apiClient.delete(`/posts/${id}/comment/${commentId}`);
+      return res.data;
+    } catch (error) {
+      throw new Error(
+        error.response?.data?.message ||
+          `Failed to delete comment ${commentId} for post ID ${id}`
+      );
+    }
   },
 };
 

@@ -150,36 +150,24 @@
   z-index: 50;
 }
 
-.dropdownItem {
-  display: block;
-  width: 100%;
-  padding: 0.5rem 1rem;
-  color: var(--text-color);
-  text-decoration: none;
-  transition: background-color 0.2s;
-}
-
-.dropdownItem:hover {
-  background-color: var(--hover-bg-color);
-}
-
-.dropdownSeparator {
-  border-color: var(--border-color);
-  margin: 0.5rem 0;
-}
-
+.dropdownItem,
 .logoutButton {
   display: block;
+  box-sizing: border-box;
   width: 100%;
-  text-align: left;
   padding: 0.5rem 1rem;
   color: var(--text-color);
   background: none;
   border: none;
+  text-align: left;
   cursor: pointer;
+  text-decoration: none;
+  font: inherit; /* đảm bảo dùng cùng font với <a> */
   transition: background-color 0.2s;
+  white-space: nowrap;
 }
 
+.dropdownItem:hover,
 .logoutButton:hover {
   background-color: var(--hover-bg-color);
 }
