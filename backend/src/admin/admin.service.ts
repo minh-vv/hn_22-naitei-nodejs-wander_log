@@ -2,6 +2,7 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { I18nService } from 'nestjs-i18n';
 import { MailsService } from 'src/mails/mails.service';
+import { addDays, addMonths, addYears, subDays, startOfWeek, subWeeks, startOfMonth, subMonths, startOfYear, subYears } from 'date-fns';
 
 @Injectable()
 export class AdminService {
@@ -63,5 +64,108 @@ export class AdminService {
     });
 
     return updatedUser;
+  }
+
+  async findUserById(userId: string) {
+    const user = await this.prisma.user.findUnique({
+      where: { id: userId },
+      select: {
+        id: true,
+        email: true,
+        name: true,
+        role: true,
+        isActive: true,
+        createdAt: true,
+      },
+    });
+
+    if (!user) {
+      throw new NotFoundException(this.i18n.t('admin.user_not_found'));
+    }
+
+    return user;
+  }
+
+  async deleteUser(adminId: string, userId: string) {
+    const user = await this.prisma.user.findUnique({
+      where: { id: userId },
+      select: { id: true, email: true },
+    });
+
+    if (!user) {
+      throw new NotFoundException(this.i18n.t('admin.user_not_found'));
+    }
+
+    await this.prisma.user.delete({
+      where: { id: userId },
+    });
+
+    await this.prisma.adminLog.create({
+      data: {
+        adminId: adminId,
+        action: 'Xóa tài khoản người dùng',
+        targetId: userId,
+        targetType: 'User',
+      },
+    });
+
+    return { message: this.i18n.t('admin.user_deleted_successfully') };
+  }
+
+  async findAllItineraries() {
+    return this.prisma.itinerary.findMany({
+      include: {
+        user: {
+          select: {
+            id: true,
+            name: true,
+            email: true,
+          },
+        },
+      },
+      orderBy: {
+        createdAt: 'desc',
+      },
+    });
+  }
+
+  async getDashboardStats() {
+    const today = new Date();
+    
+    const totalItineraries = await this.prisma.itinerary.count();
+    
+    const thisWeekStart = startOfWeek(today, { weekStartsOn: 1 }); 
+    const thisWeekItineraries = await this.prisma.itinerary.count({
+      where: {
+        createdAt: {
+          gte: thisWeekStart,
+        },
+      },
+    });
+
+    const thisMonthStart = startOfMonth(today);
+    const thisMonthItineraries = await this.prisma.itinerary.count({
+      where: {
+        createdAt: {
+          gte: thisMonthStart,
+        },
+      },
+    });
+
+    const thisYearStart = startOfYear(today);
+    const thisYearItineraries = await this.prisma.itinerary.count({
+      where: {
+        createdAt: {
+          gte: thisYearStart,
+        },
+      },
+    });
+
+    return {
+      totalItineraries,
+      thisWeekItineraries,
+      thisMonthItineraries,
+      thisYearItineraries,
+    };
   }
 }

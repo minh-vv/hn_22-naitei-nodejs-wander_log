@@ -150,8 +150,8 @@ model Follow {
   followerId      String
   followingId     String
 
-  follower        User  @relation("FollowingUsers", fields: [followerId], references: [id])
-  following       User  @relation("FollowerUsers", fields: [followingId], references: [id])
+  follower    User  @relation("FollowingUsers", fields: [followerId], references: [id], onDelete: Cascade)
+  following   User  @relation("FollowerUsers", fields: [followingId], references: [id], onDelete: Cascade)
 
   @@id([followerId, followingId])
   @@map("follow")
