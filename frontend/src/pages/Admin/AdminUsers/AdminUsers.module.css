@@ -1,0 +1,177 @@
+:root {
+    --pink-light: #FFC0CB;
+    --pink-medium: #FF8F9B;
+    --pink-dark: #FF69B4;
+    --text-color: #555;
+    --background-color: #FFF0F5;
+    --red-alert: #F44336;
+    --green-success: #4CAF50;
+}
+
+.container {
+    padding: 2rem;
+    max-width: 1200px;
+    margin: 0 auto;
+    text-align: center;
+}
+
+.header {
+    margin-bottom: 2rem;
+}
+
+.title {
+    font-size: 2.5rem;
+    color: var(--pink-dark);
+    font-weight: bold;
+}
+
+.subtitle {
+    font-size: 1.2rem;
+    color: var(--pink-medium);
+}
+
+.tableContainer {
+    background-color: #fff;
+    border-radius: 15px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    padding: 1.5rem;
+    overflow-x: auto;
+}
+
+.userTable {
+    width: 100%;
+    border-collapse: collapse;
+    min-width: 600px;
+}
+
+.userTable th,
+.userTable td {
+    text-align: left;
+    padding: 1rem;
+    border-bottom: 1px solid #ddd;
+}
+
+.userTable th {
+    background-color: var(--pink-light);
+    color: white;
+    text-transform: uppercase;
+    font-size: 0.9rem;
+}
+
+.userTable tr:last-child td {
+    border-bottom: none;
+}
+
+.activeStatus {
+    color: var(--green-success);
+    font-weight: bold;
+}
+
+.inactiveStatus {
+    color: var(--red-alert);
+    font-weight: bold;
+}
+
+.actions {
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+}
+
+.actionButton {
+    display: flex;
+    align-items: center;
+    gap: 0.3rem;
+    padding: 0.5rem 1rem;
+    border-radius: 20px;
+    border: none;
+    color: white;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.deactivate {
+    background-color: var(--red-alert);
+}
+
+.activate {
+    background-color: var(--green-success);
+}
+
+.delete {
+    background-color: #555;
+}
+
+.actionButton:hover {
+    filter: brightness(1.2);
+}
+
+.actionButton:disabled {
+    background-color: #ccc;
+    cursor: not-allowed;
+}
+
+.loading {
+    font-size: 1.5rem;
+    color: var(--pink-dark);
+    text-align: center;
+    padding-top: 5rem;
+}
+
+.modalOverlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: var(--modal-bg);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+
+.modal {
+    background-color: #fff;
+    padding: 2rem;
+    border-radius: 10px;
+    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.2);
+    width: 90%;
+    max-width: 500px;
+    text-align: left;
+}
+
+.modal h3 {
+    text-align: center;
+    color: var(--pink-dark);
+    margin-top: 0;
+}
+
+.modal .formGroup {
+    margin-bottom: 1rem;
+}
+
+.modal label {
+    display: block;
+    margin-bottom: 0.5rem;
+    font-weight: bold;
+    color: var(--text-color);
+}
+
+.modal textarea {
+    width: 100%;
+    padding: 0.5rem;
+    border-radius: 5px;
+    border: 1px solid #ddd;
+}
+
+.modalActions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 1rem;
+    margin-top: 1.5rem;
+}
+
+.actionButton.cancel {
+    background-color: #bbb;
+}

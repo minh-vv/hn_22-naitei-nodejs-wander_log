@@ -16,6 +16,9 @@ import ItineraryDetail from "./pages/Itinerary/ItineraryDetail/ItineraryDetail";
 import NewsFeed from "./pages/Post/NewsFeed/NewsFeed";
 import AuthSuccess from "./pages/Auth/AuthSuccess/AuthSuccess";
 import Home from "./pages/Home/Home";
+import AdminDashboard from "./pages/Admin/AdminDashboard/AdminDashboard";
+import AdminUsers from "./pages/Admin/AdminUsers/AdminUsers";
+import AdminItineraries from "./pages/Admin/AdminItineraries/AdminItineraries";
 
 const ProtectedRoute = ({ children }) => {
   const token = sessionStorage.getItem("userToken");
@@ -23,6 +26,14 @@ const ProtectedRoute = ({ children }) => {
     return <Navigate to="/signin" replace />;
   }
   return children;
+};
+
+const AdminProtectedRoute = ({ children }) => {
+  const user = JSON.parse(sessionStorage.getItem("user"));
+  if (user && user.role === "ADMIN") {
+    return children;
+  }
+  return <Navigate to="/signin" replace />;
 };
 
 function App() {
@@ -50,6 +61,30 @@ function App() {
         <Route path="/itineraries/:id" element={<ItineraryDetail />} />
         <Route path="/posts/feed" element={<NewsFeed />} />
         <Route path="/home" element={<Home />} />
+        <Route
+            path="/admin/dashboard"
+            element={
+              <AdminProtectedRoute>
+                <AdminDashboard />
+              </AdminProtectedRoute>
+            }
+          />
+          <Route
+            path="/admin/users"
+            element={
+              <AdminProtectedRoute>
+                <AdminUsers />
+              </AdminProtectedRoute>
+            }
+          />
+          <Route
+            path="/admin/itineraries"
+            element={
+              <AdminProtectedRoute>
+                <AdminItineraries />
+              </AdminProtectedRoute>
+            }
+          />
       </Routes>
     </Router>
   );

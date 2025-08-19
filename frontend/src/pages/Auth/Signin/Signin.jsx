@@ -28,8 +28,12 @@ function Signin() {
     try {
       const data = await authService.signin(email, password);
       login(data.user, data.token);
-      alert("Sign in successful!");
+      if (data.user.role === "ADMIN") {
+        navigate("/admin/dashboard");
+      } else {
       navigate("/home");
+      }
+      alert("Sign in successful!");
     } catch (err) {
       const errorMessage =
         typeof err === "object" && err.message
