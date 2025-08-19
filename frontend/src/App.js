@@ -31,6 +31,14 @@ const ProtectedRoute = ({ children }) => {
   return children;
 };
 
+const AdminProtectedRoute = ({ children }) => {
+  const user = JSON.parse(sessionStorage.getItem("user"));
+  if (user && user.role === "ADMIN") {
+    return children;
+  }
+  return <Navigate to="/signin" replace />;
+};
+
 function App() {
   return (
     <Router>

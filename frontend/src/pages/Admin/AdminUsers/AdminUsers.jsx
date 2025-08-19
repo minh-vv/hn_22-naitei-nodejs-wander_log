@@ -87,7 +87,6 @@ const AdminUsers = () => {
                 <h1 className={styles.title}>Manage Users</h1>
                 <p className={styles.subtitle}>Admin Panel</p>
             </header>
-        
             <div className={styles.tableContainer}>
                 <table className={styles.userTable}>
                     <thead>
