@@ -67,3 +67,39 @@
     text-align: center;
     padding-top: 5rem;
 }
+
+.actions {
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+}
+
+.actionButton {
+    display: flex;
+    align-items: center;
+    gap: 0.3rem;
+    padding: 0.5rem 1rem;
+    border-radius: 20px;
+    border: none;
+    color: white;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    text-decoration: none; 
+}
+
+.view {
+    background-color: var(--green-success); 
+}
+
+.delete {
+    background-color: var(--red-alert);
+}
+
+.actionButton:hover {
+    filter: brightness(1.2);
+}
+
+.actionButton:disabled {
+    background-color: #ccc;
+    cursor: not-allowed;
+}

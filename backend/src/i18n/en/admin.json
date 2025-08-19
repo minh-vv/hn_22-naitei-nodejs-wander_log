@@ -1,4 +1,6 @@
 {
   "user_deleted_successfully": "User deleted successfully.",
-  "user_not_found": "Not found this user."
+  "user_not_found": "Not found this user.",
+  "itinerary_not_found": "Itinerary not found.",
+  "itinerary_deleted_successfully": "Itinerary deleted successfully."
 }

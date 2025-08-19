@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import styles from './AdminUsers.module.css';
-import { FaEdit, FaTrash, FaCheckCircle, FaTimesCircle } from 'react-icons/fa';
+import { Link } from 'react-router-dom';
+import { FaEdit, FaTrash, FaCheckCircle, FaTimesCircle, FaEye, FaArrowLeft } from 'react-icons/fa';
 import { fetchUsers, updateUserStatus, deleteUser } from '../../../services/admin';
 
 const AdminUsers = () => {
@@ -80,10 +81,12 @@ const AdminUsers = () => {
     return (
         <div className={styles.container}>
             <header className={styles.header}>
+                <Link to="/admin/dashboard" className={styles.backButton}>
+                    <FaArrowLeft /> Back to Dashboard
+                </Link>
                 <h1 className={styles.title}>Manage Users</h1>
                 <p className={styles.subtitle}>Admin Panel</p>
             </header>
-            
             <div className={styles.tableContainer}>
                 <table className={styles.userTable}>
                     <thead>
@@ -111,6 +114,9 @@ const AdminUsers = () => {
                                 </td>
                                 <td>{new Date(user.createdAt).toLocaleDateString()}</td>
                                 <td className={styles.actions}>
+                                    <Link to={`/admin/users/${user.id}`} className={`${styles.actionButton} ${styles.view}`}>
+                                        <FaEye /> View
+                                    </Link>
                                     {user.isActive ? (
                                         <button 
                                             className={`${styles.actionButton} ${styles.deactivate}`} 

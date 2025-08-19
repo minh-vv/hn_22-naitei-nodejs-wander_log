@@ -88,6 +88,7 @@
     color: white;
     cursor: pointer;
     transition: background-color 0.3s ease;
+    text-decoration: none;
 }
 
 .deactivate {
@@ -174,4 +175,8 @@
 
 .actionButton.cancel {
     background-color: #bbb;
+}
+
+.actionButton.view {
+    background-color: var(--green-success);
 }

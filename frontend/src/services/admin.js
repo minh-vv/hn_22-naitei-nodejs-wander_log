@@ -20,6 +20,17 @@ export const fetchUsers = async () => {
     }
 };
 
+export const fetchUserById = async (userId) => {
+    try {
+        const response = await apiClient.get(`/admin/users/${userId}`);
+        return response.data;
+    } catch (error) {
+        console.error("Failed to fetch user details:", error);
+        throw error;
+    }
+};
+
+
 export const updateUserStatus = async (userId, isActive, reason) => {
     try {
         const response = await apiClient.put(`/admin/users/${userId}/status`, { isActive, reason });
@@ -46,6 +57,26 @@ export const fetchItineraries = async () => {
         return response.data;
     } catch (error) {
         console.error("Failed to fetch itineraries:", error);
+        throw error;
+    }
+};
+
+export const fetchItineraryById = async (itineraryId) => {
+    try {
+        const response = await apiClient.get(`/admin/itineraries/${itineraryId}`);
+        return response.data;
+    } catch (error) {
+        console.error("Failed to fetch itinerary details:", error);
+        throw error;
+    }
+};
+
+export const deleteItinerary = async (itineraryId) => {
+    try {
+        const response = await apiClient.delete(`/admin/itineraries/${itineraryId}`);
+        return response.data;
+    } catch (error) {
+        console.error("Failed to delete itinerary:", error);
         throw error;
     }
 };

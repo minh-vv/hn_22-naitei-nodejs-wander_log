@@ -1,10 +1,13 @@
 import React, { useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
 import styles from './AdminItineraries.module.css';
-import { fetchItineraries } from '../../../services/admin';
+import { FaEye, FaTrash, FaArrowLeft } from 'react-icons/fa';
+import { fetchItineraries, deleteItinerary } from '../../../services/admin';
 
 const AdminItineraries = () => {
     const [itineraries, setItineraries] = useState([]);
     const [loading, setLoading] = useState(true);
+    const [deletingId, setDeletingId] = useState(null);
 
     useEffect(() => {
         getItineraries();
@@ -21,6 +24,21 @@ const AdminItineraries = () => {
         }
     };
 
+    const handleDeleteItinerary = async (itineraryId) => {
+        if (!window.confirm("Are you sure you want to delete this itinerary? This action is irreversible.")) {
+            return;
+        }
+        setDeletingId(itineraryId);
+        try {
+            await deleteItinerary(itineraryId);
+            getItineraries();
+        } catch (error) {
+            console.error("Failed to delete itinerary", error);
+        } finally {
+            setDeletingId(null);
+        }
+    };
+
     if (loading) {
         return <div className={styles.loading}>Loading itineraries...</div>;
     }
@@ -28,6 +46,9 @@ const AdminItineraries = () => {
     return (
         <div className={styles.container}>
             <header className={styles.header}>
+                <Link to="/admin/dashboard" className={styles.backButton}>
+                    <FaArrowLeft /> Back to Dashboard
+                </Link>
                 <h1 className={styles.title}>Manage Itineraries</h1>
                 <p className={styles.subtitle}>Admin Panel</p>
             </header>
@@ -42,6 +63,7 @@ const AdminItineraries = () => {
                             <th>Destination</th>
                             <th>Start Date</th>
                             <th>Visibility</th>
+                            <th>Actions</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -53,6 +75,18 @@ const AdminItineraries = () => {
                                 <td>{itinerary.destination}</td>
                                 <td>{new Date(itinerary.startDate).toLocaleDateString()}</td>
                                 <td>{itinerary.visibility}</td>
+                                <td className={styles.actions}>
+                                    <Link to={`/admin/itineraries/${itinerary.id}`} className={`${styles.actionButton} ${styles.view}`}>
+                                        <FaEye /> View
+                                    </Link>
+                                    <button 
+                                        className={`${styles.actionButton} ${styles.delete}`} 
+                                        onClick={() => handleDeleteItinerary(itinerary.id)}
+                                        disabled={deletingId === itinerary.id}
+                                    >
+                                        <FaTrash /> Delete
+                                    </button>
+                                </td>
                             </tr>
                         ))}
                     </tbody>

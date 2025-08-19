@@ -19,6 +19,8 @@ import Home from "./pages/Home/Home";
 import AdminDashboard from "./pages/Admin/AdminDashboard/AdminDashboard";
 import AdminUsers from "./pages/Admin/AdminUsers/AdminUsers";
 import AdminItineraries from "./pages/Admin/AdminItineraries/AdminItineraries";
+import AdminItineraryDetail from './pages/Admin/AdminItineraryDetail/AdminItineraryDetail'; 
+import AdminUserDetail from "./pages/Admin/AdminUserDetail/AdminUserDetail";
 import Profile from "./pages/Profile/Profile";
 
 const ProtectedRoute = ({ children }) => {
@@ -128,10 +130,42 @@ function App() {
         
         {/* Admin routes */}
         <Route
-          path="/admin/dashboard"
+            path="/admin/dashboard"
+            element={
+              <AdminProtectedRoute>
+                <AdminDashboard />
+              </AdminProtectedRoute>
+            }
+          />
+          <Route
+            path="/admin/users"
+            element={
+              <AdminProtectedRoute>
+                <AdminUsers />
+              </AdminProtectedRoute>
+            }
+          />
+          <Route
+            path="/admin/users/:userId"
+            element={
+              <AdminProtectedRoute>
+                <AdminUserDetail />
+              </AdminProtectedRoute>
+            }
+          />
+          <Route
+            path="/admin/itineraries"
+            element={
+              <AdminProtectedRoute>
+                <AdminItineraries />
+              </AdminProtectedRoute>
+            }
+          />
+          <Route
+          path="/admin/itineraries/:itineraryId" 
           element={
             <AdminProtectedRoute>
-              <AdminDashboard />
+              <AdminItineraryDetail />
             </AdminProtectedRoute>
           }
         />
