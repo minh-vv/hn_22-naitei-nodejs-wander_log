@@ -21,7 +21,7 @@ import AdminUsers from "./pages/Admin/AdminUsers/AdminUsers";
 import AdminItineraries from "./pages/Admin/AdminItineraries/AdminItineraries";
 import AdminItineraryDetail from './pages/Admin/AdminItineraryDetail/AdminItineraryDetail'; 
 import AdminUserDetail from "./pages/Admin/AdminUserDetail/AdminUserDetail";
-
+import Profile from "./pages/Profile/Profile";
 
 const ProtectedRoute = ({ children }) => {
   const token = sessionStorage.getItem("userToken");
@@ -56,14 +56,79 @@ function App() {
             </ProtectedRoute>
           }
         />
+        
+        {/* Trang chính được bảo vệ */}
+        <Route 
+          path="/home" 
+          element={
+            <ProtectedRoute>
+              <Home />
+            </ProtectedRoute>
+          } 
+        />
+
+        {/* Profile routes */}
+        <Route 
+          path="/profile" 
+          element={
+            <ProtectedRoute>
+              <Profile />
+            </ProtectedRoute>
+          } 
+        />
+        <Route 
+          path="/profile/:userId" 
+          element={
+            <ProtectedRoute>
+              <Profile />
+            </ProtectedRoute>
+          } 
+        />
+        
         <Route path="/" element={<Navigate to="/home" replace />} />
-        <Route path="*" element={<div>404 - Page Not Found</div>} />
-        <Route path="/itineraries" element={<ItineraryList />} />
-        <Route path="/itineraries/new" element={<ItineraryForm />} />
-        <Route path="/itineraries/edit/:id" element={<ItineraryForm />} />
-        <Route path="/itineraries/:id" element={<ItineraryDetail />} />
-        <Route path="/posts/feed" element={<NewsFeed />} />
-        <Route path="/home" element={<Home />} />
+        
+        <Route 
+          path="/itineraries" 
+          element={
+            <ProtectedRoute>
+              <ItineraryList />
+            </ProtectedRoute>
+          } 
+        />
+        <Route 
+          path="/itineraries/new" 
+          element={
+            <ProtectedRoute>
+              <ItineraryForm />
+            </ProtectedRoute>
+          } 
+        />
+        <Route 
+          path="/itineraries/edit/:id" 
+          element={
+            <ProtectedRoute>
+              <ItineraryForm />
+            </ProtectedRoute>
+          } 
+        />
+        <Route 
+          path="/itineraries/:id" 
+          element={
+            <ProtectedRoute>
+              <ItineraryDetail />
+            </ProtectedRoute>
+          } 
+        />
+        <Route 
+          path="/posts/feed" 
+          element={
+            <ProtectedRoute>
+              <NewsFeed />
+            </ProtectedRoute>
+          } 
+        />
+        
+        {/* Admin routes */}
         <Route
             path="/admin/dashboard"
             element={
@@ -104,6 +169,24 @@ function App() {
             </AdminProtectedRoute>
           }
         />
+        <Route
+          path="/admin/users"
+          element={
+            <AdminProtectedRoute>
+              <AdminUsers />
+            </AdminProtectedRoute>
+          }
+        />
+        <Route
+          path="/admin/itineraries"
+          element={
+            <AdminProtectedRoute>
+              <AdminItineraries />
+            </AdminProtectedRoute>
+          }
+        />
+        
+        <Route path="*" element={<div>404 - Page Not Found</div>} />
       </Routes>
     </Router>
   );

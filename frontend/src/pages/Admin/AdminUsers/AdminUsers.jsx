@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import styles from './AdminUsers.module.css';
 import { Link } from 'react-router-dom';
-import { FaEdit, FaTrash, FaCheckCircle, FaTimesCircle, FaEye, FaArrowLeft} from 'react-icons/fa';
+import { FaEdit, FaTrash, FaCheckCircle, FaTimesCircle, FaEye, FaArrowLeft } from 'react-icons/fa';
 import { fetchUsers, updateUserStatus, deleteUser } from '../../../services/admin';
 
 const AdminUsers = () => {

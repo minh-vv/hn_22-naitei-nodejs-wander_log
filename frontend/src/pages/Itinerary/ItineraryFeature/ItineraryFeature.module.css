@@ -12,6 +12,7 @@
 }
 
 .itineraryCard {
+  position: relative;
   flex: 0 0 240px;
   scroll-snap-align: start;
   display: flex;
@@ -151,4 +152,26 @@
 .error {
   color: #dc3545;
   font-weight: 500;
+}
+
+.bookmarkButton {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  font-size: 20px;
+}
+
+.bookmarkButton i {
+  font-size: 22px;
+}
+
+.iconWrapper {
+  width: 1.25rem;
+  height: 1.25rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }

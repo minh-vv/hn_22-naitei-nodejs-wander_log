@@ -5,6 +5,7 @@ import { Calendar, DollarSign, Globe, Lock } from "lucide-react";
 import moment from "moment";
 import styles from "./ItineraryFeature.module.css";
 import avatarDefault from "../../../assets/images/default_avatar.png";
+import bookmarkService from "../../../services/bookmark";
 
 const ItineraryFeature = () => {
   const [itineraries, setItineraries] = useState([]);
@@ -25,6 +26,63 @@ const ItineraryFeature = () => {
     };
     fetchItineraries();
   }, []);
+
+  const [bookmarks, setBookmarks] = useState({});
+
+  useEffect(() => {
+    const fetchBookmarks = async () => {
+      try {
+        const statusPromises = itineraries.map(async (itinerary) => {
+          const res = await bookmarkService.check("ITINERARY", itinerary.id);
+          return {
+            id: itinerary.id,
+            isBookmarked: res.isBookmarked,
+            bookmarkId: res.bookmarkId || null,
+          };
+        });
+
+        const results = await Promise.all(statusPromises);
+        const bookmarkMap = results.reduce((acc, cur) => {
+          acc[cur.id] = {
+            isBookmarked: cur.isBookmarked,
+            bookmarkId: cur.bookmarkId,
+          };
+          return acc;
+        }, {});
+        setBookmarks(bookmarkMap);
+      } catch (err) {
+        console.error("Error fetching bookmark status:", err);
+      }
+    };
+
+    if (itineraries.length > 0) {
+      fetchBookmarks();
+    }
+  }, [itineraries]);
+
+  const handleBookmark = async (itineraryId) => {
+    try {
+      const current = bookmarks[itineraryId] || {};
+      if (current.isBookmarked) {
+        await bookmarkService.remove(current.bookmarkId);
+        setBookmarks((prev) => ({
+          ...prev,
+          [itineraryId]: { isBookmarked: false, bookmarkId: null },
+        }));
+      } else {
+        const newBookmark = await bookmarkService.create({
+          type: "ITINERARY",
+          itemId: itineraryId,
+        });
+        setBookmarks((prev) => ({
+          ...prev,
+          [itineraryId]: { isBookmarked: true, bookmarkId: newBookmark.id },
+        }));
+      }
+    } catch (error) {
+      console.error("Error handling bookmark:", error);
+    }
+  };
 
   const formatCurrency = (amount) => {
     if (amount === undefined || amount === null) {
@@ -55,6 +113,24 @@ const ItineraryFeature = () => {
               onClick={() => navigate(`/itineraries/${itinerary.id}`)}
             >
               <h2 className={styles.cardTitle}>{itinerary.title}</h2>
+              <button
+                className={styles.bookmarkButton}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  handleBookmark(itinerary.id);
+                }}
+              >
+                <div className={styles.iconWrapper}>
+                  {bookmarks[itinerary.id]?.isBookmarked ? (
+                    <i
+                      className="ri-bookmark-fill"
+                      style={{ color: "gold" }}
+                    ></i>
+                  ) : (
+                    <i className="ri-bookmark-line"></i>
+                  )}
+                </div>
+              </button>
 
               <div className={styles.cardInfo}>
                 <div className={styles.cardItem}>
