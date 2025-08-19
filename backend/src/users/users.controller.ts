@@ -16,7 +16,6 @@ import { UserProfileDto } from './dto/user-profile.dto';
 import { UserStatsDto } from './dto/user-stats.dto';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { GetUser } from '../auth/get-user.decorator';
-import { User } from '@prisma/client';
 
 @Controller('users')
 export class UsersController {
@@ -26,7 +25,7 @@ export class UsersController {
   @UseGuards(JwtAuthGuard)
   @HttpCode(HttpStatus.OK)
   async getMyProfile(@GetUser() user: any): Promise<UserProfileDto> {
-    return this.usersService.getProfile(user.sub);
+    return this.usersService.getProfile(user.id);
   }
 
   @Get(':userId/profile')
@@ -44,27 +43,40 @@ export class UsersController {
     @GetUser() user: any,
     @Body() updateProfileDto: UpdateProfileDto,
   ): Promise<UserProfileDto> {
-    return this.usersService.updateProfile(user.sub, updateProfileDto);
+    return this.usersService.updateProfile(user.id, updateProfileDto);
   }
 
   @Get('profile/stats')
   @UseGuards(JwtAuthGuard)
   @HttpCode(HttpStatus.OK)
   async getUserStats(@GetUser() user: any): Promise<UserStatsDto> {
-    return this.usersService.getUserStats(user.sub);
+    return this.usersService.getUserStats(user.id);
+  }
+
+  @Get('profile/itineraries')
+  @UseGuards(JwtAuthGuard)
+  @HttpCode(HttpStatus.OK)
+  async getMyItineraries(@GetUser() user: any) {
+    return this.usersService.getUserItineraries(user.id);
+  }
+
+  @Get(':userId/itineraries')
+  @HttpCode(HttpStatus.OK)
+  async getUserItineraries(@Param('userId') userId: string) {
+    return this.usersService.getUserPublicItineraries(userId);
   }
 
   @Post(':id/follow')
   @UseGuards(JwtAuthGuard)
   @HttpCode(HttpStatus.OK)
-  async followUser(@GetUser() user: User, @Param('id') targetUserId: string) {
-    return this.usersService.followUser(user, targetUserId);
+  async followUser(@GetUser() user: any, @Param('id') targetUserId: string) {
+    return this.usersService.followUser(user.id, targetUserId);
   }
 
   @Delete(':id/follow')
   @UseGuards(JwtAuthGuard)
   @HttpCode(HttpStatus.OK)
-  async unfollowUser(@GetUser() user: User, @Param('id') targetUserId: string) {
-    return this.usersService.unfollowUser(user, targetUserId);
+  async unfollowUser(@GetUser() user: any, @Param('id') targetUserId: string) {
+    return this.usersService.unfollowUser(user.id, targetUserId);
   }
 }

@@ -4,4 +4,6 @@ export class UserStatsDto {
   totalActivities: number;
   publicItineraries: number;
   privateItineraries: number;
+  followersCount: number;
+  followingCount: number;
 } 

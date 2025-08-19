@@ -57,6 +57,8 @@ export class UsersService {
       totalActivities,
       publicItineraries,
       privateItineraries,
+      followersCount,
+      followingCount,
     ] = await Promise.all([
       this.prisma.itinerary.count({
         where: { userId },
@@ -73,6 +75,12 @@ export class UsersService {
       this.prisma.itinerary.count({
         where: { userId, visibility: 'PRIVATE' },
       }),
+      this.prisma.follow.count({
+        where: { followingId: userId },
+      }),
+      this.prisma.follow.count({
+        where: { followerId: userId },
+      }),
     ]);
 
     return {
@@ -81,6 +89,8 @@ export class UsersService {
       totalActivities,
       publicItineraries,
       privateItineraries,
+      followersCount,
+      followingCount,
     };
   }
 
@@ -103,18 +113,21 @@ export class UsersService {
     return user;
   }
 
-  async followUser(currentUser: User, targetUserId: string) {
-    const userToFollow = await this.findById(targetUserId);
+  async followUser(currentUserId: string, targetUserId: string) {
+    const [currentUser, userToFollow] = await Promise.all([
+      this.findById(currentUserId),
+      this.findById(targetUserId)
+    ]);
 
-    if (currentUser.id === targetUserId) {
+    if (currentUserId === targetUserId) {
       throw new BadRequestException(this.i18n.t('user.cannot_follow_self'));
     }
 
     const existingFollow = await this.prisma.follow.findUnique({
       where: {
         followerId_followingId: {
-          followerId: currentUser.id,
-          followingId: userToFollow.id,
+          followerId: currentUserId,
+          followingId: targetUserId,
         },
       },
     });
@@ -125,26 +138,26 @@ export class UsersService {
 
     await this.prisma.follow.create({
       data: {
-        followerId: currentUser.id,
-        followingId: userToFollow.id,
+        followerId: currentUserId,
+        followingId: targetUserId,
       },
     });
 
     return this.getProfileResponse(userToFollow, true);
   }
 
-  async unfollowUser(currentUser: User, targetUserId: string) {
+  async unfollowUser(currentUserId: string, targetUserId: string) {
     const userToUnfollow = await this.findById(targetUserId);
 
-    if (currentUser.id === targetUserId) {
+    if (currentUserId === targetUserId) {
       throw new BadRequestException(this.i18n.t('user.cannot_unfollow_self'));
     }
 
     const existingFollow = await this.prisma.follow.findUnique({
       where: {
         followerId_followingId: {
-          followerId: currentUser.id,
-          followingId: userToUnfollow.id,
+          followerId: currentUserId,
+          followingId: targetUserId,
         },
       },
     });
@@ -156,8 +169,8 @@ export class UsersService {
     await this.prisma.follow.delete({
       where: {
         followerId_followingId: {
-          followerId: currentUser.id,
-          followingId: userToUnfollow.id,
+          followerId: currentUserId,
+          followingId: targetUserId,
         },
       },
     });
@@ -199,5 +212,52 @@ export class UsersService {
       createdAt: user.createdAt,
       updatedAt: user.updatedAt,
     };
+  }
+
+  async getUserItineraries(userId: string) {
+    return this.prisma.itinerary.findMany({
+      where: { userId },
+      include: {
+        user: {
+          select: {
+            id: true,
+            name: true,
+            avatar: true,
+          },
+        },
+        _count: {
+          select: {
+            posts: true,
+            activities: true,
+          },
+        },
+      },
+      orderBy: { createdAt: 'desc' },
+    });
+  }
+
+  async getUserPublicItineraries(userId: string) {
+    return this.prisma.itinerary.findMany({
+      where: { 
+        userId,
+        visibility: 'PUBLIC',
+      },
+      include: {
+        user: {
+          select: {
+            id: true,
+            name: true,
+            avatar: true,
+          },
+        },
+        _count: {
+          select: {
+            posts: true,
+            activities: true,
+          },
+        },
+      },
+      orderBy: { createdAt: 'desc' },
+    });
   }
 }
