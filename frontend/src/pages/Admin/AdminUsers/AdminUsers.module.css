@@ -180,3 +180,50 @@
 .actionButton.view {
     background-color: var(--green-success);
 }
+
+.searchContainer {
+    position: relative;
+    max-width: 500px;
+    margin: 0 auto 2rem auto;
+}
+
+.searchInput {
+    width: 100%;
+    padding: 0.8rem 1rem;
+    padding-right: 3rem; 
+    border: 1px solid #ddd;
+    border-radius: 25px;
+    font-size: 1rem;
+    transition: box-shadow 0.3s ease;
+}
+
+.searchInput:focus {
+    outline: none;
+    box-shadow: 0 0 5px var(--pink-light);
+}
+
+.searchIcon {
+    position: absolute;
+    right: 1.5rem;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--pink-medium);
+}
+
+.backButton {
+    position: absolute;
+    top: 1rem;
+    left: 1rem;
+    font-size: 1rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: var(--pink-medium);
+    text-decoration: none;
+    transition: color 0.3s ease;
+}
+
+.backButton:hover {
+    color: var(--pink-dark);
+}
+

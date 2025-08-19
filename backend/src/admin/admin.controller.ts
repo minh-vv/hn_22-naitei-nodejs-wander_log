@@ -6,7 +6,8 @@ import {
   Put,
   Body,
   Req,
-  Delete
+  Delete,
+  Query
 } from '@nestjs/common';
 import { AdminService } from './admin.service';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
@@ -19,9 +20,9 @@ import { JwtPayload } from './jwt-payload.type';
 export class AdminController {
   constructor(private readonly adminService: AdminService) {}
 
-  @Get('users') 
-  async getAllUsers() {
-    return this.adminService.findAllUsers();
+  @Get('users')
+  async getAllUsers(@Query('query') query: string) {
+    return this.adminService.findAllUsers(query);
   }
 
   @Put('users/:userId/status')
@@ -48,8 +49,8 @@ export class AdminController {
   }
 
   @Get('itineraries')
-  async getAllItineraries() {
-    return this.adminService.findAllItineraries();
+  async getAllItineraries(@Query('query') query: string) {
+    return this.adminService.findAllItineraries(query);
   }
 
   @Get('dashboard')
