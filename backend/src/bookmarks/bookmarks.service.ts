@@ -16,6 +16,18 @@ export class BookmarksService {
     private readonly i18n: I18nService,
   ) {}
 
+  async isBookmarked(userId: string, type: BookmarkType, itemId: string) {
+    const bookmark = await this.prisma.bookmark.findFirst({
+      where: { userId, type, itemId },
+    });
+
+    if (bookmark) {
+      return { isBookmarked: true, bookmarkId: bookmark.id };
+    }
+
+    return { isBookmarked: false };
+  }
+
   async create(createBookmarkDto: CreateBookmarkDto, userId: string) {
     const { type, itemId } = createBookmarkDto;
 

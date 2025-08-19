@@ -4,6 +4,7 @@ import { Link } from "react-router-dom";
 import avatarDefault from "../../../assets/images/default_avatar.png";
 import TimeAgo from "../../../component/TimeAgo";
 import postService from "../../../services/post";
+import bookmarkService from "../../../services/bookmark";
 
 const PostCard = ({
   post,
@@ -87,6 +88,43 @@ const PostCard = ({
     } catch (error) {
       alert(error);
       console.error("Error deleting comment:", error);
+    }
+  };
+
+  const [isBookmarked, setIsBookmarked] = useState(false);
+  const [bookmarkId, setBookmarkId] = useState(null);
+
+  useEffect(() => {
+    const fetchBookmarkStatus = async () => {
+      try {
+        const res = await bookmarkService.check("POST", post.id);
+        setIsBookmarked(res.isBookmarked);
+        if (res.bookmarkId) {
+          setBookmarkId(res.bookmarkId);
+        }
+      } catch (error) {
+        console.error("Error checking bookmark status:", error);
+      }
+    };
+    fetchBookmarkStatus();
+  }, [post.id]);
+
+  const handleBookmark = async () => {
+    try {
+      if (isBookmarked) {
+        await bookmarkService.remove(bookmarkId);
+        setIsBookmarked(false);
+        setBookmarkId(null);
+      } else {
+        const newBookmark = await bookmarkService.create({
+          type: "POST",
+          itemId: post.id,
+        });
+        setIsBookmarked(true);
+        setBookmarkId(newBookmark.id);
+      }
+    } catch (error) {
+      console.error("Error handling bookmark:", error);
     }
   };
 
@@ -223,6 +261,15 @@ const PostCard = ({
           </div>
         </div>
         <div ref={menuRef} className={styles.moreButtonContainer}>
+          <button className={styles.bookmarkButton} onClick={handleBookmark}>
+            <div className={styles.iconWrapper}>
+              {isBookmarked ? (
+                <i className="ri-bookmark-fill" style={{ color: "gold" }}></i>
+              ) : (
+                <i className="ri-bookmark-line"></i>
+              )}
+            </div>
+          </button>
           <button
             className={styles.moreButton}
             onClick={() => setIsMenuOpen(!isMenuOpen)}
