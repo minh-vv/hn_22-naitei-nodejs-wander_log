@@ -190,9 +190,29 @@ export class PostsService {
       return tx.post.findUnique({
         where: { id: postId },
         include: {
-          media: true,
           user: {
-            select: { id: true, name: true, avatar: true },
+            select: {
+              id: true,
+              name: true,
+              avatar: true,
+            },
+          },
+          itinerary: {
+            select: {
+              id: true,
+              title: true,
+              budget: true,
+            },
+          },
+          media: {
+            select: {
+              id: true,
+              url: true,
+            },
+          },
+          favoritedBy: {
+            where: { userId },
+            select: { userId: true },
           },
         },
       });

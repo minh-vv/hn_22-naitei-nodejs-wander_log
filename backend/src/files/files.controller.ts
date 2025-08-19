@@ -25,8 +25,15 @@ export class FilesController {
         },
       }),
       fileFilter: (req, file, callback) => {
-        if (!file.originalname.match(/\.(jpg|jpeg|png|gif)$/)) {
-          return callback(new Error('Only image files are allowed!'), false);
+        if (
+          !file.originalname.match(
+            /\.(jpg|jpeg|png|gif|mp4|mov|avi|mkv|wmv|flv|webm)$/i,
+          )
+        ) {
+          return callback(
+            new Error('Only image and video files are allowed!'),
+            false,
+          );
         }
         callback(null, true);
       },

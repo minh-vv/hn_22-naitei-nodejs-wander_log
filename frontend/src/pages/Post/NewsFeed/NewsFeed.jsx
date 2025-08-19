@@ -38,7 +38,7 @@ export default function FeedPage() {
   const [editingPostId, setEditingPostId] = useState(null);
   const navigate = useNavigate();
 
-  const { token } = useAuth();
+  const { token, user } = useAuth();
 
   useEffect(() => {
     if (!token) {
@@ -77,19 +77,27 @@ export default function FeedPage() {
     }
   };
 
-  const handleEditPost = (postId) => {
-    setEditingPostId(postId);
+  const handleEditPost = (post) => {
+    if (post.user.id !== user.id) {
+      alert("You do not have permission to modify this post.");
+      return;
+    }
+
+    setEditingPostId(post.id);
   };
 
   const handleUpdatePost = async (updatedPost) => {
     try {
       const updated = await postService.updatePost(updatedPost.id, {
         content: updatedPost.content,
+        mediaUrlsToAdd: updatedPost.mediaUrlsToAdd,
+        mediaIdsToDelete: updatedPost.mediaIdsToDelete,
       });
 
       setPosts((posts) =>
         posts.map((post) => (post.id === updated.id ? updated : post))
       );
+
       setEditingPostId(null);
       alert("Post updated successfully!");
     } catch (error) {
@@ -120,7 +128,7 @@ export default function FeedPage() {
               post={post}
               isEditing={editingPostId === post.id}
               onDelete={handleDeletePost}
-              onEdit={() => handleEditPost(post.id)}
+              onEdit={() => handleEditPost(post)}
               onCancelEdit={() => setEditingPostId(null)}
               onSubmitEdit={handleUpdatePost}
             />

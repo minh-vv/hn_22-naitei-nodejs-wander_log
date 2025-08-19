@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, useCallback } from "react";
 import styles from "./PostCard.module.css";
 import { Link } from "react-router-dom";
 import avatarDefault from "../../../assets/images/default_avatar.png";
@@ -16,11 +16,16 @@ const PostCard = ({
 }) => {
   const [isLiked, setIsLiked] = useState(post.isLiked);
   const [likesCount, setLikesCount] = useState(post.likeCount);
+  const [isLiking, setIsLiking] = useState(false);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+
   const [editedContent, setEditedContent] = useState(post.content);
+  const [images, setImages] = useState(post.media || []);
+  const [newImages, setNewImages] = useState([]);
+  const [removedImageIds, setRemovedImageIds] = useState([]);
+
   const [isLightboxOpen, setIsLightboxOpen] = useState(false);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
-  const [isLiking, setIsLiking] = useState(false);
 
   const [showComments, setShowComments] = useState(false);
   const [comments, setComments] = useState([]);
@@ -29,6 +34,7 @@ const PostCard = ({
   const [commentCount, setCommentCount] = useState(post.commentsCount || 0);
 
   const menuRef = useRef(null);
+  const fileInputRef = useRef(null);
 
   useEffect(() => {
     if (!isMenuOpen) return;
@@ -163,12 +169,56 @@ const PostCard = ({
     }
   };
 
-  const handleSaveEdit = () => {
+  useEffect(() => {
+    if (isEditing) {
+      setEditedContent(post.content);
+      setImages(post.media || []);
+      setNewImages([]);
+      setRemovedImageIds([]);
+    }
+  }, [isEditing, post]);
+
+  const handleRemoveImage = useCallback((id) => {
+    setImages((prev) => prev.filter((img) => img.id !== id));
+    setRemovedImageIds((prev) => [...prev, id]);
+  }, []);
+
+  const handleRemoveNewImage = useCallback((index) => {
+    setNewImages((prev) => prev.filter((_, i) => i !== index));
+  }, []);
+
+  const handleAddImages = (e) => {
+    const files = Array.from(e.target.files);
+    const mapped = files.map((file) => ({
+      file,
+      preview: URL.createObjectURL(file),
+    }));
+    setNewImages((prev) => [...prev, ...mapped]);
+  };
+
+  const handleSaveEdit = async () => {
     if (editedContent.trim() === "") {
       alert("Content cannot be empty.");
       return;
     }
-    onSubmitEdit({ id: post.id, content: editedContent });
+
+    try {
+      const mediaUrls = (
+        await postService.uploadMediaFiles(newImages.map((img) => img.file))
+      )
+        .map((url) => url.trim().replace(/^"|"$/g, ""))
+        .filter((url) => url);
+
+      onSubmitEdit({
+        id: post.id,
+        content: editedContent,
+        mediaUrlsToAdd: mediaUrls,
+        mediaIdsToDelete: removedImageIds,
+      });
+    } catch (error) {
+      console.error("Error uploading images:", error);
+      alert("Upload images failed!");
+    }
   };
 
   const handleImageClick = (index) => {
@@ -190,50 +240,94 @@ const PostCard = ({
 
   const stopPropagation = (e) => e.stopPropagation();
 
-  const renderImages = () => {
+  const renderMedia = () => {
     if (!post.media || post.media.length === 0) return null;
+
+    // helper check video
+    const isVideo = (url) => /\.(mp4|mov|avi|mkv|wmv|flv|webm)$/i.test(url);
+
     if (post.media.length === 1) {
-      return (
+      const media = post.media[0];
+      return isVideo(media.url) ? (
+        <video
+          src={media.url}
+          controls
+          className={styles.imageSingle}
+          onClick={() => handleImageClick(0)}
+        />
+      ) : (
         <img
-          src={post.media[0].url}
+          src={media.url}
           alt="Post media"
           className={styles.imageSingle}
           onClick={() => handleImageClick(0)}
         />
       );
     }
+
     if (post.media.length === 2) {
       return (
         <div className={styles.imageGridTwo}>
-          {post.media.map((image, index) => (
-            <img
-              key={index}
-              src={image.url}
-              alt={`Post image ${index + 1}`}
-              className={styles.imageGridItem}
-              onClick={() => handleImageClick(index)}
-            />
-          ))}
+          {post.media.map((media, index) =>
+            isVideo(media.url) ? (
+              <video
+                key={index}
+                src={media.url}
+                controls
+                className={styles.imageGridItem}
+                onClick={() => handleImageClick(index)}
+              />
+            ) : (
+              <img
+                key={index}
+                src={media.url}
+                alt={`Post image ${index + 1}`}
+                className={styles.imageGridItem}
+                onClick={() => handleImageClick(index)}
+              />
+            )
+          )}
         </div>
       );
     }
+
+    // nhiều hơn 2
     return (
       <div className={styles.imageGridTwo}>
-        <img
-          src={post.media[0].url}
-          alt="Post image 1"
-          className={styles.imageGridItem}
-          onClick={() => handleImageClick(0)}
-        />
+        {isVideo(post.media[0].url) ? (
+          <video
+            src={post.media[0].url}
+            controls
+            className={styles.imageGridItem}
+            onClick={() => handleImageClick(0)}
+          />
+        ) : (
+          <img
+            src={post.media[0].url}
+            alt="Post image 1"
+            className={styles.imageGridItem}
+            onClick={() => handleImageClick(0)}
+          />
+        )}
+
         <div
           className={styles.imageGridMore}
           onClick={() => handleImageClick(1)}
         >
-          <img
-            src={post.media[1].url}
-            alt="More post images"
-            className={styles.imageGridItem}
-          />
+          {isVideo(post.media[1].url) ? (
+            <video
+              src={post.media[1].url}
+              controls
+              className={styles.imageGridItem}
+              onClick={(e) => e.stopPropagation()}
+            />
+          ) : (
+            <img
+              src={post.media[1].url}
+              alt="More post images"
+              className={styles.imageGridItem}
+            />
+          )}
           <div className={styles.imageOverlay}>
             <span>+{post.media.length - 1}</span>
           </div>
@@ -323,6 +417,84 @@ const PostCard = ({
               rows={4}
               className={styles.editTextarea}
             />
+            <div className={styles.editImages}>
+              {images.map((img) => (
+                <div key={img.id} className={styles.editImageItem}>
+                  {/\.(mp4|mov|avi|mkv|wmv|flv|webm)$/i.test(img.url) ? (
+                    <video
+                      src={img.url}
+                      className={styles.editImagePreview}
+                      muted
+                      loop
+                    />
+                  ) : (
+                    <img
+                      src={img.url}
+                      alt=""
+                      className={styles.editImagePreview}
+                    />
+                  )}
+                  <button
+                    type="button"
+                    onClick={() => handleRemoveImage(img.id)}
+                    className={styles.removeImageButton}
+                  >
+                    <div className={styles.iconWrapper}>
+                      <i className="ri-close-line"></i>
+                    </div>
+                  </button>
+                </div>
+              ))}
+
+              {newImages.map((img, index) => (
+                <div key={`new-${index}`} className={styles.editImageItem}>
+                  {img.file?.type?.startsWith("video/") ? (
+                    <video
+                      src={img.preview}
+                      className={styles.editImagePreview}
+                      muted
+                      loop
+                    />
+                  ) : (
+                    <img
+                      src={img.preview}
+                      alt=""
+                      className={styles.editImagePreview}
+                    />
+                  )}
+                  <button
+                    type="button"
+                    onClick={() => handleRemoveNewImage(index)}
+                    className={styles.removeImageButton}
+                  >
+                    <div className={styles.iconWrapper}>
+                      <i className="ri-close-line"></i>
+                    </div>
+                  </button>
+                </div>
+              ))}
+
+              <button
+                type="button"
+                className={styles.addMediaTile}
+                onClick={() =>
+                  fileInputRef.current && fileInputRef.current.click()
+                }
+              >
+                <div className={styles.addMediaIcon}>+</div>
+                <div className={styles.addMediaText}>Thêm ảnh/video</div>
+              </button>
+            </div>
+
+            <input
+              ref={fileInputRef}
+              type="file"
+              accept="image/*,video/*"
+              multiple
+              onChange={handleAddImages}
+              className={styles.hiddenFileInput}
+            />
+
             <div className={styles.editActions}>
               <button
                 className={`${styles.editButton} ${styles.saveButton}`}
@@ -343,8 +515,8 @@ const PostCard = ({
         )}
       </div>
 
-      {post.media && post.media.length > 0 && (
-        <div className={styles.imagesSection}>{renderImages()}</div>
+      {!isEditing && post.media && post.media.length > 0 && (
+        <div className={styles.imagesSection}>{renderMedia()}</div>
       )}
 
       <div className={styles.statsSection}>
@@ -470,11 +642,22 @@ const PostCard = ({
             <i className="ri-arrow-left-s-line"></i>
           </button>
           <div className={styles.lightboxContent} onClick={stopPropagation}>
-            <img
-              src={post.media[currentImageIndex].url}
-              alt={`View ${currentImageIndex + 1}`}
-              className={styles.lightboxImage}
-            />
+            {/\.(mp4|mov|avi|mkv|wmv|flv|webm)$/i.test(
+              post.media[currentImageIndex].url
+            ) ? (
+              <video
+                src={post.media[currentImageIndex].url}
+                controls
+                className={styles.lightboxVideo}
+                autoPlay
+              />
+            ) : (
+              <img
+                src={post.media[currentImageIndex].url}
+                alt={`View ${currentImageIndex + 1}`}
+                className={styles.lightboxImage}
+              />
+            )}
             <div className={styles.lightboxCounter}>
               {currentImageIndex + 1} / {post.media.length}
             </div>
