@@ -66,6 +66,12 @@ export class UsersController {
     return this.usersService.getUserPublicItineraries(userId);
   }
 
+  @Get(':userId/posts')
+  @HttpCode(HttpStatus.OK)
+  async getUserPost(@Param('userId') userId: string) {
+    return this.usersService.getUserPost(userId);
+  }
+
   @Post(':id/follow')
   @UseGuards(JwtAuthGuard)
   @HttpCode(HttpStatus.OK)

@@ -243,7 +243,6 @@ const PostCard = ({
   const renderMedia = () => {
     if (!post.media || post.media.length === 0) return null;
 
-    // helper check video
     const isVideo = (url) => /\.(mp4|mov|avi|mkv|wmv|flv|webm)$/i.test(url);
 
     if (post.media.length === 1) {
