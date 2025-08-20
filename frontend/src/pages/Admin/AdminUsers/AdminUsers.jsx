@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import styles from './AdminUsers.module.css';
 import { Link } from 'react-router-dom';
-import { FaEdit, FaTrash, FaCheckCircle, FaTimesCircle, FaEye, FaArrowLeft } from 'react-icons/fa';
+import { FaSearch, FaTrash, FaCheckCircle, FaTimesCircle, FaEye, FaArrowLeft } from 'react-icons/fa';
 import { fetchUsers, updateUserStatus, deleteUser } from '../../../services/admin';
 
 const AdminUsers = () => {
@@ -12,21 +12,22 @@ const AdminUsers = () => {
     const [reason, setReason] = useState('');
     const [selectedUser, setSelectedUser] = useState(null);
     const [isActivating, setIsActivating] = useState(false);
-
+    const [searchTerm, setSearchTerm] = useState('');
+    
     useEffect(() => {
+        const getUsers = async () => {
+            try {
+                const data = await fetchUsers(searchTerm);
+                setUsers(data);
+            } catch (error) {
+                console.error("Failed to fetch users", error);
+            } finally {
+                setLoading(false);
+            }
+        };
         getUsers();
-    }, []);
+    }, [searchTerm]);
 
-    const getUsers = async () => {
-        try {
-            const data = await fetchUsers();
-            setUsers(data);
-        } catch (error) {
-            console.error("Failed to fetch users", error);
-        } finally {
-            setLoading(false);
-        }
-    };
 
     const handleOpenModal = (user, isActivatingAction) => {
         setSelectedUser(user);
@@ -87,6 +88,16 @@ const AdminUsers = () => {
                 <h1 className={styles.title}>Manage Users</h1>
                 <p className={styles.subtitle}>Admin Panel</p>
             </header>
+            <div className={styles.searchContainer}>
+                <input
+                    type="text"
+                    placeholder="Search users by name or email..."
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
+                    className={styles.searchInput}
+                />
+                <FaSearch className={styles.searchIcon} />
+            </div>
             <div className={styles.tableContainer}>
                 <table className={styles.userTable}>
                     <thead>

@@ -1,28 +1,29 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import styles from './AdminItineraries.module.css';
-import { FaEye, FaTrash, FaArrowLeft } from 'react-icons/fa';
+import { FaEye, FaTrash, FaArrowLeft, FaSearch } from 'react-icons/fa';
 import { fetchItineraries, deleteItinerary } from '../../../services/admin';
 
 const AdminItineraries = () => {
     const [itineraries, setItineraries] = useState([]);
     const [loading, setLoading] = useState(true);
     const [deletingId, setDeletingId] = useState(null);
-
+    const [searchTerm, setSearchTerm] = useState('');
+    
     useEffect(() => {
+        const getItineraries = async () => {
+            try {
+                const data = await fetchItineraries(searchTerm);
+                setItineraries(data);
+            } catch (error) {
+                console.error("Failed to fetch itineraries", error);
+            } finally {
+                setLoading(false);
+            }
+        };
         getItineraries();
-    }, []);
+    }, [searchTerm]);
 
-    const getItineraries = async () => {
-        try {
-            const data = await fetchItineraries();
-            setItineraries(data);
-        } catch (error) {
-            console.error("Failed to fetch itineraries", error);
-        } finally {
-            setLoading(false);
-        }
-    };
 
     const handleDeleteItinerary = async (itineraryId) => {
         if (!window.confirm("Are you sure you want to delete this itinerary? This action is irreversible.")) {
@@ -52,7 +53,16 @@ const AdminItineraries = () => {
                 <h1 className={styles.title}>Manage Itineraries</h1>
                 <p className={styles.subtitle}>Admin Panel</p>
             </header>
-            
+            <div className={styles.searchContainer}>
+                <input
+                    type="text"
+                    placeholder="Search itineraries by title or destination..."
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
+                    className={styles.searchInput}
+                />
+                <FaSearch className={styles.searchIcon} />
+            </div>
             <div className={styles.tableContainer}>
                 <table className={styles.itineraryTable}>
                     <thead>

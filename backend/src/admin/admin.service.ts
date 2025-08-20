@@ -12,8 +12,16 @@ export class AdminService {
     private readonly i18n: I18nService,
   ) {}
 
-  async findAllUsers() {
+  async findAllUsers(query?: string) {
+    const where = query ? {
+      OR: [
+        { email: { contains: query } },
+        { name: { contains: query } },
+      ],
+    } : {};
+
     return this.prisma.user.findMany({
+      where,
       select: {
         id: true,
         email: true,
@@ -124,8 +132,16 @@ export class AdminService {
     return { message: this.i18n.t('admin.user_deleted_successfully') };
   }
 
-  async findAllItineraries() {
+  async findAllItineraries(query?: string) {
+    const where = query ? {
+      OR: [
+        { title: { contains: query } },
+        { destination: { contains: query } },
+      ],
+    } : {};
+
     return this.prisma.itinerary.findMany({
+      where,
       include: {
         user: {
           select: {

@@ -10,9 +10,11 @@ export const fetchDashboardStats = async () => {
     }
 };
 
-export const fetchUsers = async () => {
+export const fetchUsers = async (query = '') => {
     try {
-        const response = await apiClient.get('/admin/users');
+        const response = await apiClient.get('/admin/users', {
+            params: { query }
+        });
         return response.data;
     } catch (error) {
         console.error("Failed to fetch users:", error);
@@ -51,9 +53,11 @@ export const deleteUser = async (userId) => {
     }
 };
 
-export const fetchItineraries = async () => {
+export const fetchItineraries = async (query = '') => {
     try {
-        const response = await apiClient.get('/admin/itineraries');
+        const response = await apiClient.get('/admin/itineraries', {
+            params: { query }
+        });
         return response.data;
     } catch (error) {
         console.error("Failed to fetch itineraries:", error);
@@ -80,3 +84,5 @@ export const deleteItinerary = async (itineraryId) => {
         throw error;
     }
 };
+
+
