@@ -10,6 +10,7 @@ import usePostActions from "../../hooks/usePostAction.js";
 import coverItinerary from "../../assets/images/coverItinerary.jpg";
 import { Calendar, DollarSign } from "lucide-react";
 import moment from "moment";
+import BookmarkList from "../../component/Profile/BookmarkList.jsx";
 
 function EditProfileForm({ editForm, setEditForm, onCancel, onSubmit }) {
   return (
@@ -342,31 +343,34 @@ export default function Profile() {
         <div className={styles.tabContent}>
           {activeTab === "itineraries" && (
             <div className={styles.itinerariesGrid}>
-              {itineraries.map((it) => (
-                <div key={it.id} className={styles.itineraryCard}>
-                  <img src={coverItinerary} alt="cover" />
-                  <h3>{it.title}</h3>
-                  <p>
-                    {" "}
-                    <i className="ri-map-pin-line"></i>{" "}
-                    {it.destination || "Chưa có địa điểm"}{" "}
-                  </p>
-                  <p>
-                    <Calendar size={16} />{" "}
-                    {moment(it.startDate).format("DD/MM/YYYY")} -{" "}
-                    {moment(it.endDate).format("DD/MM/YYYY")}
-                  </p>
-                  <p>
-                    <DollarSign size={16} /> {formatCurrency(it.budget)}
-                  </p>
-                  <Link
-                    to={`/itineraries/${it.id}`}
-                    className={styles.itineraryButton}
-                  >
-                    Xem chi tiết
-                  </Link>
-                </div>
-              ))}
+              {itineraries.length > 0 ? (
+                itineraries.map((it) => (
+                  <div key={it.id} className={styles.itineraryCard}>
+                    <img src={coverItinerary} alt="cover" />
+                    <h3>{it.title}</h3>
+                    <p>
+                      <i className="ri-map-pin-line"></i>{" "}
+                      {it.destination || "Chưa có địa điểm"}
+                    </p>
+                    <p>
+                      <Calendar size={16} />{" "}
+                      {moment(it.startDate).format("DD/MM/YYYY")} -{" "}
+                      {moment(it.endDate).format("DD/MM/YYYY")}
+                    </p>
+                    <p>
+                      <DollarSign size={16} /> {formatCurrency(it.budget)}
+                    </p>
+                    <Link
+                      to={`/itineraries/${it.id}`}
+                      className={styles.itineraryButton}
+                    >
+                      Xem chi tiết
+                    </Link>
+                  </div>
+                ))
+              ) : (
+                <p>Chưa có lịch trình</p>
+              )}
             </div>
           )}
 
@@ -392,7 +396,7 @@ export default function Profile() {
             </div>
           )}
 
-          {activeTab === "saved" && <p>Nội dung đã lưu sẽ hiển thị ở đây</p>}
+          {activeTab === "saved" && <BookmarkList />}
         </div>
 
         {isEditing && (

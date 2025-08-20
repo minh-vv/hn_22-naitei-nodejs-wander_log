@@ -111,6 +111,10 @@ export class ItineraryService {
       where: { id },
     });
 
+    await this.prisma.bookmark.deleteMany({
+      where: { itemId: id, type: 'ITINERARY' },
+    });
+
     return {
       message: this.i18n.t('itinerary.deleted_success', {
         args: { id },

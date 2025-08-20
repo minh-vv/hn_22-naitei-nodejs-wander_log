@@ -13,6 +13,7 @@ const PostCard = ({
   isEditing,
   onCancelEdit,
   onSubmitEdit,
+  onBookmarkChange,
 }) => {
   const [isLiked, setIsLiked] = useState(post.isLiked);
   const [likesCount, setLikesCount] = useState(post.likeCount);
@@ -46,6 +47,14 @@ const PostCard = ({
     document.addEventListener("mousedown", handleClickOutside);
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, [isMenuOpen]);
+
+  useEffect(() => {
+    setIsLiked(post.isLiked);
+    setLikesCount(post.likeCount);
+    setEditedContent(post.content);
+    setImages(post.media || []);
+    setCommentCount(post.commentsCount || 0);
+  }, [post]);
 
   useEffect(() => {
     if (isEditing) setEditedContent(post.content);
@@ -129,6 +138,7 @@ const PostCard = ({
         setIsBookmarked(true);
         setBookmarkId(newBookmark.id);
       }
+      onBookmarkChange?.();
     } catch (error) {
       console.error("Error handling bookmark:", error);
     }
@@ -390,7 +400,10 @@ const PostCard = ({
 
       {post.itinerary && (
         <div className={styles.tripSection}>
-          <Link to={`/itinerary/${post.id}`} className={styles.tripLink}>
+          <Link
+            to={`/itineraries/${post.itinerary.id}`}
+            className={styles.tripLink}
+          >
             <div className={styles.tripContent}>
               <div className={styles.iconWrapperSmall}>
                 <i className={`ri-route-line ${styles.tripIcon}`}></i>

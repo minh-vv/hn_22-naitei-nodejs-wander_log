@@ -63,14 +63,80 @@ export class BookmarksService {
   }
 
   async findAll(userId: string) {
-    return this.prisma.bookmark.findMany({
-      where: {
-        userId: userId,
-      },
-      orderBy: {
-        createdAt: 'desc',
-      },
+    const bookmarks = await this.prisma.bookmark.findMany({
+      where: { userId },
+      orderBy: { createdAt: 'desc' },
     });
+
+    const enriched = await Promise.all(
+      bookmarks.map(async (bm) => {
+        if (bm.type === 'POST') {
+          const post = await this.prisma.post.findUnique({
+            where: { id: bm.itemId },
+            include: {
+              user: {
+                select: {
+                  id: true,
+                  name: true,
+                  avatar: true,
+                },
+              },
+              itinerary: {
+                select: {
+                  id: true,
+                  title: true,
+                  budget: true,
+                },
+              },
+              media: {
+                select: {
+                  id: true,
+                  url: true,
+                },
+              },
+              favoritedBy: {
+                where: { userId },
+                select: { userId: true },
+              },
+            },
+          });
+
+          const formattedPost = {
+            ...post,
+            isLiked: (post?.favoritedBy?.length ?? 0) > 0,
+          };
+
+          return {
+            id: bm.id,
+            title: post?.itinerary?.title ?? null,
+            post: formattedPost,
+            type: 'post',
+            isLiked: (post?.favoritedBy?.length ?? 0) > 0,
+            createdAt: bm.createdAt.toISOString().split('T')[0],
+          };
+        } else {
+          const itinerary = await this.prisma.itinerary.findUnique({
+            where: { id: bm.itemId },
+            select: {
+              id: true,
+              title: true,
+              destination: true,
+              startDate: true,
+              endDate: true,
+            },
+          });
+
+          return {
+            id: bm.id,
+            title: itinerary?.title,
+            itinerary: itinerary,
+            type: 'itinerary',
+            createdAt: bm.createdAt.toISOString().split('T')[0],
+          };
+        }
+      }),
+    );
+    return enriched;
   }
 
   async remove(id: string, userId: string) {

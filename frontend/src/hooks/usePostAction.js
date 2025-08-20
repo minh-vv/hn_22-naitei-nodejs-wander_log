@@ -13,6 +13,7 @@ export default function usePostActions(initialPosts = []) {
       await postService.deletePost(postId);
       setPosts((prev) => prev.filter((post) => post.id !== postId));
       alert("Post deleted successfully!");
+      window.location.reload();
     } catch (error) {
       console.error("Failed to delete post:", error);
       alert(error.message);
@@ -41,6 +42,7 @@ export default function usePostActions(initialPosts = []) {
 
       setEditingPostId(null);
       alert("Post updated successfully!");
+      window.location.reload();
     } catch (error) {
       console.error("Error updating post:", error);
       alert(error.message || "An error occurred.");
