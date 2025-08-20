@@ -29,11 +29,13 @@ export class UsersController {
   }
 
   @Get(':userId/profile')
+  @UseGuards(JwtAuthGuard)
   @HttpCode(HttpStatus.OK)
   async getUserProfile(
     @Param('userId') userId: string,
+    @GetUser() currentUser: any,
   ): Promise<Omit<UserProfileDto, 'email'>> {
-    return this.usersService.getPublicProfile(userId);
+    return this.usersService.getPublicProfile(userId, currentUser.id);
   }
 
   @Put('profile')
@@ -64,6 +66,12 @@ export class UsersController {
   @HttpCode(HttpStatus.OK)
   async getUserItineraries(@Param('userId') userId: string) {
     return this.usersService.getUserPublicItineraries(userId);
+  }
+
+  @Get(':userId/posts')
+  @HttpCode(HttpStatus.OK)
+  async getUserPost(@Param('userId') userId: string) {
+    return this.usersService.getUserPost(userId);
   }
 
   @Post(':id/follow')

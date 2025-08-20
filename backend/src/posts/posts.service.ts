@@ -229,6 +229,9 @@ export class PostsService {
     await this.findPostAndCheckOwnership(postId, userId);
 
     await this.prisma.post.delete({ where: { id: postId } });
+    await this.prisma.bookmark.deleteMany({
+      where: { itemId: postId, type: 'POST' },
+    });
     return { message: this.i18n.t('post.post_delete_success') };
   }
 

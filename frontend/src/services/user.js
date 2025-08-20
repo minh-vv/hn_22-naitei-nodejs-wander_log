@@ -6,7 +6,9 @@ const userService = {
       const response = await apiClient.get("/users/profile");
       return response.data;
     } catch (error) {
-      throw new Error(error.response?.data?.message || "Failed to fetch profile");
+      throw new Error(
+        error.response?.data?.message || "Failed to fetch profile"
+      );
     }
   },
 
@@ -15,7 +17,9 @@ const userService = {
       const response = await apiClient.get(`/users/${userId}/profile`);
       return response.data;
     } catch (error) {
-      throw new Error(error.response?.data?.message || "Failed to fetch user profile");
+      throw new Error(
+        error.response?.data?.message || "Failed to fetch user profile"
+      );
     }
   },
 
@@ -24,7 +28,9 @@ const userService = {
       const response = await apiClient.put("/users/profile", profileData);
       return response.data;
     } catch (error) {
-      throw new Error(error.response?.data?.message || "Failed to update profile");
+      throw new Error(
+        error.response?.data?.message || "Failed to update profile"
+      );
     }
   },
 
@@ -33,7 +39,9 @@ const userService = {
       const response = await apiClient.get("/users/profile/stats");
       return response.data;
     } catch (error) {
-      throw new Error(error.response?.data?.message || "Failed to fetch user stats");
+      throw new Error(
+        error.response?.data?.message || "Failed to fetch user stats"
+      );
     }
   },
 
@@ -42,7 +50,9 @@ const userService = {
       const response = await apiClient.get("/users/profile/itineraries");
       return response.data;
     } catch (error) {
-      throw new Error(error.response?.data?.message || "Failed to fetch itineraries");
+      throw new Error(
+        error.response?.data?.message || "Failed to fetch itineraries"
+      );
     }
   },
 
@@ -51,7 +61,20 @@ const userService = {
       const response = await apiClient.get(`/users/${userId}/itineraries`);
       return response.data;
     } catch (error) {
-      throw new Error(error.response?.data?.message || "Failed to fetch user itineraries");
+      throw new Error(
+        error.response?.data?.message || "Failed to fetch user itineraries"
+      );
+    }
+  },
+
+  getUserPosts: async (userId) => {
+    try {
+      const response = await apiClient.get(`/users/${userId}/posts`);
+      return response.data;
+    } catch (error) {
+      throw new Error(
+        error.response?.data?.message || "Failed to fetch user posts"
+      );
     }
   },
 
@@ -69,7 +92,9 @@ const userService = {
       const response = await apiClient.delete(`/users/${userId}/follow`);
       return response.data;
     } catch (error) {
-      throw new Error(error.response?.data?.message || "Failed to unfollow user");
+      throw new Error(
+        error.response?.data?.message || "Failed to unfollow user"
+      );
     }
   },
 };

@@ -26,9 +26,21 @@ export class UsersService {
 
   async getPublicProfile(
     userId: string,
-  ): Promise<Omit<UserProfileDto, 'email'>> {
+    currentUserId: string,
+  ): Promise<Omit<UserProfileDto, 'email'> & { isFollowing: boolean }> {
     const user = await this.findById(userId, { mustBeActive: true });
-    return this.mapToPublicProfile(user);
+
+    const follow = await this.prisma.follow.findFirst({
+      where: {
+        followerId: currentUserId,
+        followingId: userId,
+      },
+    });
+
+    return {
+      ...this.mapToPublicProfile(user),
+      isFollowing: !!follow,
+    };
   }
 
   async updateProfile(
@@ -116,7 +128,7 @@ export class UsersService {
   async followUser(currentUserId: string, targetUserId: string) {
     const [currentUser, userToFollow] = await Promise.all([
       this.findById(currentUserId),
-      this.findById(targetUserId)
+      this.findById(targetUserId),
     ]);
 
     if (currentUserId === targetUserId) {
@@ -238,7 +250,7 @@ export class UsersService {
 
   async getUserPublicItineraries(userId: string) {
     return this.prisma.itinerary.findMany({
-      where: { 
+      where: {
         userId,
         visibility: 'PUBLIC',
       },
@@ -259,5 +271,49 @@ export class UsersService {
       },
       orderBy: { createdAt: 'desc' },
     });
+  }
+
+  async getUserPost(userId: string) {
+    const posts = await this.prisma.post.findMany({
+      where: {
+        userId,
+      },
+      orderBy: {
+        createdAt: 'desc',
+      },
+      include: {
+        user: {
+          select: {
+            id: true,
+            name: true,
+            avatar: true,
+          },
+        },
+        itinerary: {
+          select: {
+            id: true,
+            title: true,
+            budget: true,
+          },
+        },
+        media: {
+          select: {
+            id: true,
+            url: true,
+          },
+        },
+        favoritedBy: {
+          where: { userId },
+          select: { userId: true },
+        },
+      },
+    });
+
+    const formattedPosts = posts.map((post) => ({
+      ...post,
+      isLiked: post.favoritedBy.length > 0,
+    }));
+
+    return formattedPosts;
   }
 }

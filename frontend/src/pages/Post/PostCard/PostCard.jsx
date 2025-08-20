@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef, useCallback } from "react";
+import { useNavigate } from "react-router-dom";
 import styles from "./PostCard.module.css";
 import { Link } from "react-router-dom";
 import avatarDefault from "../../../assets/images/default_avatar.png";
@@ -13,6 +14,7 @@ const PostCard = ({
   isEditing,
   onCancelEdit,
   onSubmitEdit,
+  onBookmarkChange,
 }) => {
   const [isLiked, setIsLiked] = useState(post.isLiked);
   const [likesCount, setLikesCount] = useState(post.likeCount);
@@ -32,6 +34,7 @@ const PostCard = ({
   const [loadingComments, setLoadingComments] = useState(false);
   const [commentText, setCommentText] = useState("");
   const [commentCount, setCommentCount] = useState(post.commentsCount || 0);
+  const navigate = useNavigate();
 
   const menuRef = useRef(null);
   const fileInputRef = useRef(null);
@@ -46,6 +49,14 @@ const PostCard = ({
     document.addEventListener("mousedown", handleClickOutside);
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, [isMenuOpen]);
+
+  useEffect(() => {
+    setIsLiked(post.isLiked);
+    setLikesCount(post.likeCount);
+    setEditedContent(post.content);
+    setImages(post.media || []);
+    setCommentCount(post.commentsCount || 0);
+  }, [post]);
 
   useEffect(() => {
     if (isEditing) setEditedContent(post.content);
@@ -129,6 +140,7 @@ const PostCard = ({
         setIsBookmarked(true);
         setBookmarkId(newBookmark.id);
       }
+      onBookmarkChange?.();
     } catch (error) {
       console.error("Error handling bookmark:", error);
     }
@@ -141,7 +153,7 @@ const PostCard = ({
 
   const handleDeleteClick = () => {
     if (window.confirm("Are you sure you want to delete this post?")) {
-      onDelete(post.id);
+      onDelete(post);
     }
     setIsMenuOpen(false);
   };
@@ -243,7 +255,6 @@ const PostCard = ({
   const renderMedia = () => {
     if (!post.media || post.media.length === 0) return null;
 
-    // helper check video
     const isVideo = (url) => /\.(mp4|mov|avi|mkv|wmv|flv|webm)$/i.test(url);
 
     if (post.media.length === 1) {
@@ -341,9 +352,10 @@ const PostCard = ({
       <div className={styles.header}>
         <div className={styles.authorInfo}>
           <img
-            src={post.user.avatar || avatarDefault}
+            src={post?.user?.avatar || avatarDefault}
             alt={post.user.name}
             className={styles.avatar}
+            onClick={() => navigate(`/profile/${post.user.id}`)}
           />
           <div>
             <div className={styles.authorNameWrapper}>
@@ -391,7 +403,10 @@ const PostCard = ({
 
       {post.itinerary && (
         <div className={styles.tripSection}>
-          <Link to={`/itinerary/${post.id}`} className={styles.tripLink}>
+          <Link
+            to={`/itineraries/${post.itinerary.id}`}
+            className={styles.tripLink}
+          >
             <div className={styles.tripContent}>
               <div className={styles.iconWrapperSmall}>
                 <i className={`ri-route-line ${styles.tripIcon}`}></i>
