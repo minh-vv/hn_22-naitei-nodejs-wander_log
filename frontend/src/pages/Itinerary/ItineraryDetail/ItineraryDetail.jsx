@@ -1,5 +1,6 @@
-import React, { useState, useEffect, useMemo } from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
+import { useAuth } from "../../../context/AuthContext";
 
 import itineraryService from "../../../services/itinerary";
 import activityService from "../../../services/activity";
@@ -15,11 +16,10 @@ const ItineraryDetail = () => {
   const [showActivityModal, setShowActivityModal] = useState(false);
   const [editingActivity, setEditingActivity] = useState(null);
 
-  const [deletingItinerary, setDeletingItinerary] = useState(false);
-  const [deletingActivity, setDeletingActivity] = useState(false);
-
   const navigate = useNavigate();
   const { id } = useParams();
+
+  const { user: currentUser } = useAuth();
 
   const fetchItineraryData = async () => {
     setLoading(true);
@@ -43,22 +43,15 @@ const ItineraryDetail = () => {
     fetchItineraryData();
   }, [id, navigate]);
 
+  const isOwner = itinerary && currentUser && itinerary.user.id === currentUser.id;
+
   const handleDeleteItinerary = async () => {
     if (window.confirm("Are you sure you want to delete this itinerary?")) {
-      setDeletingItinerary(true);
       try {
-        const token = sessionStorage.getItem("userToken");
-        if (!token) {
-          setError("You need to sign in to delete the itinerary.");
-          setDeletingItinerary(false);
-          return;
-        }
         await itineraryService.deleteItinerary(id);
         navigate("/itineraries");
       } catch (err) {
         setError("Unable to delete itinerary. Please try again.");
-      } finally {
-        setDeletingItinerary(false);
       }
     }
   };
@@ -74,11 +67,6 @@ const ItineraryDetail = () => {
   };
 
   const handleSaveActivity = async (activityData) => {
-    const token = sessionStorage.getItem("userToken");
-    if (!token) {
-      throw new Error("You need to sign in to add/edit activities.");
-    }
-
     try {
       if (activityData.id) {
         await activityService.updateActivity(activityData.id, activityData);
@@ -93,18 +81,11 @@ const ItineraryDetail = () => {
 
   const handleDeleteActivityClick = async (activityId) => {
     if (window.confirm("Are you sure you want to delete this activity?")) {
-      setDeletingActivity(true);
       try {
-        const token = sessionStorage.getItem("userToken");
-        if (!token) {
-          throw new Error("You need to sign in to delete the activity.");
-        }
         await activityService.deleteActivity(activityId);
         await fetchItineraryData();
       } catch (err) {
         setError(err.message || "Unable to delete activity. Please try again.");
-      } finally {
-        setDeletingActivity(false);
       }
     }
   };
@@ -135,9 +116,7 @@ const ItineraryDetail = () => {
     return grouped;
   };
 
-  const groupedActivities = itinerary
-    ? groupActivitiesByDate(itinerary.activities)
-    : {};
+  const groupedActivities = itinerary ? groupActivitiesByDate(itinerary.activities) : {};
   const sortedDates = Object.keys(groupedActivities).sort();
 
   const formatDate = (dateString, formatType) => {
@@ -281,11 +260,12 @@ const ItineraryDetail = () => {
           </div>
 
           <div className={styles.actionButtons}>
-            <button onClick={() => {}} className={styles.createPostButton}>
-              <i className="ri-add-circle-line"></i>
-              <span>Create Post</span>
-            </button>
-
+            {isOwner && (
+              <button onClick={() => {}} className={styles.createPostButton}>
+                <i className="ri-add-circle-line"></i>
+                <span>Create Post</span>
+              </button>
+            )}
             <button onClick={() => {}} className={`${styles.likeButton} `}>
               <i className="ri-heart-line"></i>
               <span>123</span>
@@ -302,29 +282,31 @@ const ItineraryDetail = () => {
           <p className={styles.description}>{itinerary.description}</p>
         </div>
 
-        <div className={styles.actionButtonsRow}>
-          <button
-            onClick={handleAddActivityClick}
-            className={styles.actionButton}
-          >
-            <i className="ri-add-circle-line"></i>
-            <span>Add Activity</span>
-          </button>
-          <button
-            onClick={() => navigate(`/itineraries/edit/${itinerary.id}`)}
-            className={`${styles.actionButton} ${styles.editActionButton}`}
-          >
-            <i className="ri-edit-line"></i>
-            Edit
-          </button>
-          <button
-            onClick={handleDeleteItinerary}
-            className={`${styles.actionButton} ${styles.deleteActionButton}`}
-          >
-            <i className="ri-delete-bin-line"></i>
-            Delete
-          </button>
-        </div>
+        {isOwner && (
+          <div className={styles.actionButtonsRow}>
+            <button
+              onClick={handleAddActivityClick}
+              className={styles.actionButton}
+            >
+              <i className="ri-add-circle-line"></i>
+              <span>Add Activity</span>
+            </button>
+            <button
+              onClick={() => navigate(`/itineraries/edit/${itinerary.id}`)}
+              className={`${styles.actionButton} ${styles.editActionButton}`}
+            >
+              <i className="ri-edit-line"></i>
+              Edit
+            </button>
+            <button
+              onClick={handleDeleteItinerary}
+              className={`${styles.actionButton} ${styles.deleteActionButton}`}
+            >
+              <i className="ri-delete-bin-line"></i>
+              Delete
+            </button>
+          </div>
+        )}
 
         <div className={styles.itineraryDays}>
           {sortedDates.length === 0 ? (
@@ -359,24 +341,26 @@ const ItineraryDetail = () => {
                           <h4 className={styles.activityName}>
                             {activity.name}
                           </h4>
-                          <div className={styles.activityControls}>
-                            <button
-                              onClick={() => handleEditActivityClick(activity)}
-                              className={styles.editActivityButton}
-                              title="Edit activity"
-                            >
-                              <i className="ri-edit-line"></i>
-                            </button>
-                            <button
-                              onClick={() =>
-                                handleDeleteActivityClick(activity.id)
-                              }
-                              className={styles.deleteActivityButton}
-                              title="Delete activity"
-                            >
-                              <i className="ri-delete-bin-line"></i>
-                            </button>
-                          </div>
+                          {isOwner && (
+                            <div className={styles.activityControls}>
+                              <button
+                                onClick={() => handleEditActivityClick(activity)}
+                                className={styles.editActivityButton}
+                                title="Edit activity"
+                              >
+                                <i className="ri-edit-line"></i>
+                              </button>
+                              <button
+                                onClick={() =>
+                                  handleDeleteActivityClick(activity.id)
+                                }
+                                className={styles.deleteActivityButton}
+                                title="Delete activity"
+                              >
+                                <i className="ri-delete-bin-line"></i>
+                              </button>
+                            </div>
+                          )}
                         </div>
                         <p className={styles.activityDescription}>
                           {activity.description}
@@ -402,7 +386,7 @@ const ItineraryDetail = () => {
         </div>
       </div>
 
-      {itinerary && (
+      {isOwner && itinerary && (
         <ActivityFormModal
           show={showActivityModal}
           onClose={() => setShowActivityModal(false)}

@@ -46,6 +46,6 @@ export class AuthController {
     const { user, token } = req.user;
     
     const clientURL = process.env.APP_CLIENT_URL || 'http://localhost:3001';
-    res.redirect(`${clientURL}/auth/success?token=${token}`);
+    res.redirect(`${clientURL}/auth/success?token=${token}&userId=${user.id}`);
   }
 }

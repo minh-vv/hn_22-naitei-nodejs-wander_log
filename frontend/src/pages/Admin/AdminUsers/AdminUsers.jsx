@@ -28,6 +28,16 @@ const AdminUsers = () => {
         getUsers();
     }, [searchTerm]);
 
+    const getUsers = async () => {
+        try {
+            const data = await fetchUsers();
+            setUsers(data);
+        } catch (error) {
+            console.error("Failed to fetch users", error);
+        } finally {
+            setLoading(false);
+        }
+    };
 
     const handleOpenModal = (user, isActivatingAction) => {
         setSelectedUser(user);
