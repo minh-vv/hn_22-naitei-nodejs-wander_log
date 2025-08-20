@@ -29,11 +29,13 @@ export class UsersController {
   }
 
   @Get(':userId/profile')
+  @UseGuards(JwtAuthGuard)
   @HttpCode(HttpStatus.OK)
   async getUserProfile(
     @Param('userId') userId: string,
+    @GetUser() currentUser: any,
   ): Promise<Omit<UserProfileDto, 'email'>> {
-    return this.usersService.getPublicProfile(userId);
+    return this.usersService.getPublicProfile(userId, currentUser.id);
   }
 
   @Put('profile')

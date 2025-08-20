@@ -73,7 +73,7 @@ const userService = {
       return response.data;
     } catch (error) {
       throw new Error(
-        error.response?.data?.message || "Failed to fetch user itineraries"
+        error.response?.data?.message || "Failed to fetch user posts"
       );
     }
   },

@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef, useCallback } from "react";
+import { useNavigate } from "react-router-dom";
 import styles from "./PostCard.module.css";
 import { Link } from "react-router-dom";
 import avatarDefault from "../../../assets/images/default_avatar.png";
@@ -33,6 +34,7 @@ const PostCard = ({
   const [loadingComments, setLoadingComments] = useState(false);
   const [commentText, setCommentText] = useState("");
   const [commentCount, setCommentCount] = useState(post.commentsCount || 0);
+  const navigate = useNavigate();
 
   const menuRef = useRef(null);
   const fileInputRef = useRef(null);
@@ -151,7 +153,7 @@ const PostCard = ({
 
   const handleDeleteClick = () => {
     if (window.confirm("Are you sure you want to delete this post?")) {
-      onDelete(post.id);
+      onDelete(post);
     }
     setIsMenuOpen(false);
   };
@@ -350,9 +352,10 @@ const PostCard = ({
       <div className={styles.header}>
         <div className={styles.authorInfo}>
           <img
-            src={post.user.avatar || avatarDefault}
+            src={post?.user?.avatar || avatarDefault}
             alt={post.user.name}
             className={styles.avatar}
+            onClick={() => navigate(`/profile/${post.user.id}`)}
           />
           <div>
             <div className={styles.authorNameWrapper}>

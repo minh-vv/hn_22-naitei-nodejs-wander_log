@@ -129,7 +129,6 @@ export default function Profile() {
 
   const isOwnProfile = !userId || userId === currentUser?.id;
 
-  // -------------------- Load dữ liệu --------------------
   useEffect(() => {
     loadProfile();
     loadItineraries();
@@ -327,17 +326,19 @@ export default function Profile() {
         )}
 
         <div className={styles.tabNavigation}>
-          {["itineraries", "posts", "saved"].map((tab) => (
-            <button
-              key={tab}
-              className={activeTab === tab ? styles.active : ""}
-              onClick={() => setActiveTab(tab)}
-            >
-              {tab === "itineraries" && "Lịch trình"}
-              {tab === "posts" && "Bài đăng"}
-              {tab === "saved" && "Đã lưu"}
-            </button>
-          ))}
+          {["itineraries", "posts", ...(isOwnProfile ? ["saved"] : [])].map(
+            (tab) => (
+              <button
+                key={tab}
+                className={activeTab === tab ? styles.active : ""}
+                onClick={() => setActiveTab(tab)}
+              >
+                {tab === "itineraries" && "Lịch trình"}
+                {tab === "posts" && "Bài đăng"}
+                {tab === "saved" && "Đã lưu"}
+              </button>
+            )
+          )}
         </div>
 
         <div className={styles.tabContent}>

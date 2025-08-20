@@ -38,6 +38,20 @@ export default function BookmarkList() {
     fetchBookmarks();
   };
 
+  const handleDeletePostInBookmarks = (postId) => {
+    setBookmarks((prev) => prev.filter((item) => item.post?.id !== postId));
+  };
+
+  const handleUpdatePostInBookmarks = (updatedPost) => {
+    setBookmarks((prev) =>
+      prev.map((item) =>
+        item.post?.id === updatedPost.id
+          ? { ...item, post: { ...item.post, ...updatedPost } }
+          : item
+      )
+    );
+  };
+
   useEffect(() => {
     fetchBookmarks();
   }, []);
@@ -48,7 +62,9 @@ export default function BookmarkList() {
 
   const handleClick = (item) => {
     if (item.type === "post") {
-      setSelectedPost(item.post);
+      if (item.post) {
+        setSelectedPost(item.post);
+      }
     } else {
       navigate(`/itineraries/${item.itinerary.id}`);
     }
@@ -127,10 +143,20 @@ export default function BookmarkList() {
             onBookmarkChange={handleBookmarkChange}
             key={selectedPost.id}
             isEditing={editingPostId === selectedPost.id}
-            onDelete={handleDeletePost}
+            onDelete={async (post) => {
+              await handleDeletePost(post);
+              handleDeletePostInBookmarks(post.id);
+              setSelectedPost(null);
+            }}
+            onSubmitEdit={async (updatedPost) => {
+              const post = await handleUpdatePost(updatedPost);
+              if (post) {
+                handleUpdatePostInBookmarks(post);
+                setSelectedPost((prev) => ({ ...prev, ...post }));
+              }
+            }}
             onEdit={() => handleEditPost(selectedPost)}
             onCancelEdit={() => setEditingPostId(null)}
-            onSubmitEdit={handleUpdatePost}
           />
         </Modal>
       )}

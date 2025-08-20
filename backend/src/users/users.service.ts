@@ -26,9 +26,21 @@ export class UsersService {
 
   async getPublicProfile(
     userId: string,
-  ): Promise<Omit<UserProfileDto, 'email'>> {
+    currentUserId: string,
+  ): Promise<Omit<UserProfileDto, 'email'> & { isFollowing: boolean }> {
     const user = await this.findById(userId, { mustBeActive: true });
-    return this.mapToPublicProfile(user);
+
+    const follow = await this.prisma.follow.findFirst({
+      where: {
+        followerId: currentUserId,
+        followingId: userId,
+      },
+    });
+
+    return {
+      ...this.mapToPublicProfile(user),
+      isFollowing: !!follow,
+    };
   }
 
   async updateProfile(
@@ -262,18 +274,6 @@ export class UsersService {
   }
 
   async getUserPost(userId: string) {
-    const followedUsers = await this.prisma.follow.findMany({
-      where: {
-        followerId: userId,
-      },
-      select: {
-        followingId: true,
-      },
-    });
-
-    const followedUserIds = followedUsers.map((follow) => follow.followingId);
-    const userIdsForFeed = [...followedUserIds, userId];
-
     const posts = await this.prisma.post.findMany({
       where: {
         userId,

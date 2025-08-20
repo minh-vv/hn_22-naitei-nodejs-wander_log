@@ -1,4 +1,4 @@
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import styles from "./CreatePost.module.css";
 import avatarDefault from "../../../assets/images/default_avatar.png";
@@ -13,6 +13,8 @@ const CreatePost = ({ onPostCreated }) => {
   const [selectedItinerary, setSelectedItinerary] = useState(null);
   const [itineraries, setItineraries] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [showItineraryList, setShowItineraryList] = useState(false);
+  const itineraryListRef = useRef(null);
   const [error, setError] = useState(null);
 
   const { user, token } = useAuth();
@@ -82,12 +84,26 @@ const CreatePost = ({ onPostCreated }) => {
       }
       const data = await itineraryService.getAllItineraries();
       setItineraries(data);
+      setShowItineraryList(true);
     } catch (err) {
       setError("Unable to load itinerary list.");
     } finally {
       setLoading(false);
     }
   };
+
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (
+        itineraryListRef.current &&
+        !itineraryListRef.current.contains(event.target)
+      ) {
+        setShowItineraryList(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
 
   const handleCancel = () => {
     setPostContent("");
@@ -147,13 +163,19 @@ const CreatePost = ({ onPostCreated }) => {
         </div>
       )}
 
-      {itineraries.length > 0 && (
-        <div className={styles.itineraryList}>
+      {showItineraryList && itineraries.length > 0 && (
+        <div className={styles.itineraryList} ref={itineraryListRef}>
           {itineraries.map((item) => (
             <div
               key={item.id}
               className={styles.itineraryItem}
               onClick={() => {
+                if (item.visibility === "PRIVATE") {
+                  alert(
+                    "Bạn không thể tạo bài viết với lịch trình chưa công khai"
+                  );
+                  return;
+                }
                 setSelectedItinerary(item);
                 setItineraries([]);
               }}
