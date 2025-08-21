@@ -51,7 +51,7 @@ function Profile() {
       setEditForm({
         name: profileData.name || '',
         email: profileData.email || '',
-        location: 'Hà Nội, Việt Nam', 
+        location: profileData.location || 'Hà Nội, Việt Nam', 
         bio: profileData.bio || ''
       });
     } catch (err) {
@@ -177,7 +177,7 @@ function Profile() {
               
               <div className={styles.userLocation}>
                 <i className="ri-map-pin-line"></i>
-                Hà Nội, Việt Nam
+                {profile.location || 'Chưa có địa chỉ'}
               </div>
               
               {profile.bio && (
@@ -252,7 +252,7 @@ function Profile() {
                 <div key={itinerary.id} className={styles.itineraryCard}>
                   <div className={styles.itineraryImage}>
                     <img 
-                      src="https://via.placeholder.com/300x200" 
+                      src={itinerary.image || "https://via.placeholder.com/300x200?text=No+Image"} 
                       alt={itinerary.title}
                     />
                     <div className={styles.itineraryStatus}>
