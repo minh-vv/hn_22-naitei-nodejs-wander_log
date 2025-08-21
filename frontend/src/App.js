@@ -13,6 +13,7 @@ import ChangePassword from "./pages/Auth/ChangePassword/ChangePassword";
 import ItineraryForm from "./pages/Itinerary/ItineraryForm/ItineraryForm";
 import ItineraryList from "./pages/Itinerary/ItineraryList/ItineraryList";
 import ItineraryDetail from "./pages/Itinerary/ItineraryDetail/ItineraryDetail";
+import CreatePost from "./pages/Post/CreatePost/CreatePost"
 import NewsFeed from "./pages/Post/NewsFeed/NewsFeed";
 import AuthSuccess from "./pages/Auth/AuthSuccess/AuthSuccess";
 import Home from "./pages/Home/Home";
@@ -116,6 +117,14 @@ function App() {
           element={
             <ProtectedRoute>
               <ItineraryDetail />
+            </ProtectedRoute>
+          } 
+        />
+        <Route 
+          path="/itineraries/:itineraryId/posts/new" 
+          element={
+            <ProtectedRoute>
+              <CreatePost />
             </ProtectedRoute>
           } 
         />

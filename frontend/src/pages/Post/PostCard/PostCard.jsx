@@ -152,9 +152,7 @@ const PostCard = ({
   };
 
   const handleDeleteClick = () => {
-    if (window.confirm("Are you sure you want to delete this post?")) {
-      onDelete(post);
-    }
+    onDelete(post);
     setIsMenuOpen(false);
   };
 

@@ -6,11 +6,11 @@ import itineraryService from "../../../services/itinerary";
 import postService from "../../../services/post";
 import { useAuth } from "../../../context/AuthContext";
 
-const CreatePost = ({ onPostCreated }) => {
+const CreatePost = ({ itinerary, onPostCreated, onCancel }) => {
   const [postContent, setPostContent] = useState("");
   const [selectedFiles, setSelectedFiles] = useState([]);
   const [previewUrls, setPreviewUrls] = useState([]);
-  const [selectedItinerary, setSelectedItinerary] = useState(null);
+  const [selectedItinerary, setSelectedItinerary] = useState(itinerary || null); // Khởi tạo với itinerary từ props
   const [itineraries, setItineraries] = useState([]);
   const [loading, setLoading] = useState(false);
   const [showItineraryList, setShowItineraryList] = useState(false);
@@ -18,17 +18,19 @@ const CreatePost = ({ onPostCreated }) => {
   const [error, setError] = useState(null);
 
   const { user, token } = useAuth();
-
   const navigate = useNavigate();
   const fileInputRef = useRef(null);
 
   const isPostButtonEnabled =
     postContent.trim() && selectedFiles.length > 0 && selectedItinerary;
 
+  useEffect(() => {
+    setSelectedItinerary(itinerary || null);
+  }, [itinerary]);
+
   const handleFileSelect = (event) => {
     const files = Array.from(event.target.files);
     setSelectedFiles((prevFiles) => [...prevFiles, ...files]);
-
     const newPreviewUrls = files.map((file) => URL.createObjectURL(file));
     setPreviewUrls((prevUrls) => [...prevUrls, ...newPreviewUrls]);
   };
@@ -69,6 +71,7 @@ const CreatePost = ({ onPostCreated }) => {
       if (onPostCreated) {
         onPostCreated(createdPost);
       }
+      alert("Post created successfully!");
       handleCancel();
     } catch (error) {
       console.error("Error posting:", error.message);
@@ -110,8 +113,9 @@ const CreatePost = ({ onPostCreated }) => {
     setSelectedFiles([]);
     previewUrls.forEach((url) => URL.revokeObjectURL(url));
     setPreviewUrls([]);
-    setSelectedItinerary(null);
+    setSelectedItinerary(itinerary || null); 
     setItineraries([]);
+    if (onCancel) onCancel();
   };
 
   return (
@@ -178,6 +182,7 @@ const CreatePost = ({ onPostCreated }) => {
                 }
                 setSelectedItinerary(item);
                 setItineraries([]);
+                setShowItineraryList(false); 
               }}
             >
               {item.title}
@@ -207,15 +212,17 @@ const CreatePost = ({ onPostCreated }) => {
               <span className={styles.actionButtonLabel}>Photo/Video</span>
             </button>
 
-            <button
-              onClick={handleSelectItinerary}
-              className={styles.actionButton}
-            >
-              <div className={styles.iconWrapper}>
-                <i className={`ri-route-line ${styles.iconBlue}`}></i>
-              </div>
-              <span className={styles.actionButtonLabel}>Itinerary</span>
-            </button>
+            {!itinerary && (
+              <button
+                onClick={handleSelectItinerary}
+                className={styles.actionButton}
+              >
+                <div className={styles.iconWrapper}>
+                  <i className={`ri-route-line ${styles.iconBlue}`}></i>
+                </div>
+                <span className={styles.actionButtonLabel}>Itinerary</span>
+              </button>
+            )}
           </div>
 
           <div className={styles.postControls}>
