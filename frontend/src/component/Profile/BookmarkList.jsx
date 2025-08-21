@@ -144,8 +144,8 @@ export default function BookmarkList() {
             key={selectedPost.id}
             isEditing={editingPostId === selectedPost.id}
             onDelete={async (post) => {
-              await handleDeletePost(post);
-              handleDeletePostInBookmarks(post.id);
+              const isDelete = await handleDeletePost(post);
+              if (isDelete) handleDeletePostInBookmarks(post.id);
               setSelectedPost(null);
             }}
             onSubmitEdit={async (updatedPost) => {
