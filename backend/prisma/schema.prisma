@@ -92,6 +92,7 @@ model Itinerary {
   userId      String     @map("user_id")
   createdAt   DateTime   @default(now()) @map("created_at")
   updatedAt   DateTime   @updatedAt
+  coverImage  String?
   user        User       @relation(fields: [userId], references: [id], onDelete: Cascade)
   posts       Post[]
   activities  Activity[]
@@ -106,6 +107,7 @@ model Activity {
   name         String
   description  String?   @db.Text
   location     String?
+  cost         Decimal?
   itinerary    Itinerary @relation(fields: [itineraryId], references: [id], onDelete: Cascade)
   @@map("activities")
 }

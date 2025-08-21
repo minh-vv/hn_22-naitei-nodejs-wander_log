@@ -1,4 +1,4 @@
-import { IsNotEmpty, IsDateString, IsOptional, IsNumber, IsIn } from 'class-validator';
+import { IsNotEmpty, IsDateString, IsOptional, IsNumber, IsIn, IsString } from 'class-validator';
 import { Visibility } from '@prisma/client';
 
 export class CreateItineraryDto {
@@ -23,4 +23,9 @@ export class CreateItineraryDto {
   @IsOptional()
   @IsIn([Visibility.PUBLIC, Visibility.PRIVATE])
   visibility?: Visibility;
+
+  @IsOptional()
+  @IsString()
+  coverImage?: string;
 }
+

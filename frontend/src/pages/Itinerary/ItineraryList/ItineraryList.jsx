@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import itineraryService from "../../../services/itinerary";
 import {
   Plus,
@@ -93,58 +93,67 @@ const ItineraryList = () => {
               <div
                 key={itinerary.id}
                 className={styles.itineraryCard}
-                onClick={() => navigate(`/itineraries/${itinerary.id}`)}
               >
-                {itinerary.visibility === "PUBLIC" && (
-                  <div className={styles.cardVisibility}>
-                    <Globe size={14} />
-                    <span>Public</span>
+                <Link to={`/itineraries/${itinerary.id}`}>
+                  <div className={styles.cardImageContainer}>
+                    <img 
+                      src={`${process.env.REACT_APP_API_BASE_URL}${itinerary.coverImage}`}
+                      alt={itinerary.title}
+                      className={styles.cardImage}
+                    />
                   </div>
-                )}
-                {itinerary.visibility === "PRIVATE" && (
-                  <div className={`${styles.cardVisibility} ${styles.private}`}>
-                    <Lock size={14} />
-                    <span>Private</span>
-                  </div>
-                )}
-
-                <div className={styles.cardContent}>
-                  <h2 className={styles.cardTitle}>{itinerary.title}</h2>
-                  <div className={styles.cardInfo}>
-                    <div className={styles.cardItem}>
-                      <Calendar size={16} className={styles.itemIcon} />
-                      <span className={styles.cardDates}>
-                        {moment(itinerary.startDate).format("DD/MM/YYYY")} -{" "}
-                        {moment(itinerary.endDate).format("DD/MM/YYYY")}
-                      </span>
-                    </div>
-                    <div className={styles.cardItem}>
-                      <DollarSign size={16} className={styles.itemIcon} />
-                      <span className={styles.cardBudget}>
-                        {formatCurrency(itinerary.budget)}
-                      </span>
+                  <div className={styles.cardContent}>
+                    <h2 className={styles.cardTitle}>{itinerary.title}</h2>
+                    <div className={styles.cardInfo}>
+                      <div className={styles.cardItem}>
+                        <Calendar size={16} className={styles.itemIcon} />
+                        <span className={styles.cardDates}>
+                          {moment(itinerary.startDate).format("DD/MM/YYYY")} -{" "}
+                          {moment(itinerary.endDate).format("DD/MM/YYYY")}
+                        </span>
+                      </div>
+                      <div className={styles.cardItem}>
+                        <DollarSign size={16} className={styles.itemIcon} />
+                        <span className={styles.cardBudget}>
+                          {formatCurrency(itinerary.budget)}
+                        </span>
+                      </div>
                     </div>
                   </div>
-                </div>
+                </Link>
                 <div className={styles.cardActions}>
-                  <button
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      navigate(`/itineraries/edit/${itinerary.id}`);
-                    }}
-                    className={`${styles.iconButton} ${styles.editButton}`}
-                  >
-                    <Edit size={18} />
-                  </button>
-                  <button
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      handleDelete(itinerary.id);
-                    }}
-                    className={`${styles.iconButton} ${styles.deleteButton}`}
-                  >
-                    <Trash2 size={18} />
-                  </button>
+                  {itinerary.visibility === "PUBLIC" && (
+                    <div className={styles.cardVisibility}>
+                      <Globe size={14} />
+                      <span>Public</span>
+                    </div>
+                  )}
+                  {itinerary.visibility === "PRIVATE" && (
+                    <div className={`${styles.cardVisibility} ${styles.private}`}>
+                      <Lock size={14} />
+                      <span>Private</span>
+                    </div>
+                  )}
+                  <div className={styles.actionButtons}>
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        navigate(`/itineraries/edit/${itinerary.id}`);
+                      }}
+                      className={`${styles.iconButton} ${styles.editButton}`}
+                    >
+                      <Edit size={18} />
+                    </button>
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleDelete(itinerary.id);
+                      }}
+                      className={`${styles.iconButton} ${styles.deleteButton}`}
+                    >
+                      <Trash2 size={18} />
+                    </button>
+                  </div>
                 </div>
               </div>
             ))}

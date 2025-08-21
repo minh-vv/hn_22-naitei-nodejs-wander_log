@@ -1,4 +1,4 @@
-import { IsString, IsNotEmpty, IsOptional, IsDateString } from 'class-validator';
+import { IsString, IsNotEmpty, IsOptional, IsDateString, IsNumber } from 'class-validator';
 
 export class CreateActivityDto {
   @IsString()
@@ -24,4 +24,8 @@ export class CreateActivityDto {
   @IsOptional()
   @IsString()
   location?: string;
+
+  @IsOptional()
+  @IsNumber()
+  cost?: number;
 }

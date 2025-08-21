@@ -10,7 +10,7 @@ const CreatePost = ({ itinerary, onPostCreated, onCancel }) => {
   const [postContent, setPostContent] = useState("");
   const [selectedFiles, setSelectedFiles] = useState([]);
   const [previewUrls, setPreviewUrls] = useState([]);
-  const [selectedItinerary, setSelectedItinerary] = useState(itinerary || null); // Khởi tạo với itinerary từ props
+  const [selectedItinerary, setSelectedItinerary] = useState(itinerary || null); 
   const [itineraries, setItineraries] = useState([]);
   const [loading, setLoading] = useState(false);
   const [showItineraryList, setShowItineraryList] = useState(false);

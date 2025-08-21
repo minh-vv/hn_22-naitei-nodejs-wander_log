@@ -24,6 +24,7 @@ import { UsersModule } from './users/users.module';
 import { InteractModule } from './interact/interact.module';
 import { AdminModule } from './admin/admin.module';
 import { BookmarksModule } from './bookmarks/bookmarks.module';
+import { UploadsModule } from './uploads/uploads.module'; 
 
 @Module({
   imports: [
@@ -37,6 +38,7 @@ import { BookmarksModule } from './bookmarks/bookmarks.module';
     MailsModule,
     ItineraryModule,
     PostsModule,
+    UploadsModule,
     I18nModule.forRoot(i18nConfig),
     FilesModule,
     ServeStaticModule.forRoot({

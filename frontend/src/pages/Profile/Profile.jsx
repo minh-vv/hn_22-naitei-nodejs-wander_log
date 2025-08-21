@@ -347,7 +347,14 @@ export default function Profile() {
               {itineraries.length > 0 ? (
                 itineraries.map((it) => (
                   <div key={it.id} className={styles.itineraryCard}>
-                    <img src={coverItinerary} alt="cover" />
+                    <img
+                      src={
+                        it.coverImage
+                          ? `${process.env.REACT_APP_API_BASE_URL}${it.coverImage}`
+                          : coverItinerary
+                      }
+                      alt={it.title}
+                    />
                     <h3>{it.title}</h3>
                     <p>
                       <i className="ri-map-pin-line"></i>{" "}
