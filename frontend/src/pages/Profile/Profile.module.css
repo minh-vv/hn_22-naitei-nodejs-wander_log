@@ -37,7 +37,6 @@
   cursor: pointer;
 }
 
-/* Camera badge overlay */
 .cameraBadge {
   position: absolute;
   right: 0;
@@ -59,7 +58,6 @@
   font-size: 18px;
 }
 
-/* Avatar context menu */
 .avatarMenu {
   position: absolute;
   top: 130px;
@@ -96,7 +94,6 @@
   cursor: not-allowed;
 }
 
-/* Avatar viewer (lightbox) */
 .avatarViewerOverlay {
   position: fixed;
   inset: 0;

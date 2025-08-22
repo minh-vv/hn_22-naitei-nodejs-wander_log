@@ -118,7 +118,6 @@ export default function Profile() {
     bio: "",
   });
 
-  // Avatar view/change states
   const [isAvatarViewerOpen, setIsAvatarViewerOpen] = useState(false);
   const [isAvatarMenuOpen, setIsAvatarMenuOpen] = useState(false);
   const [isUploadingAvatar, setIsUploadingAvatar] = useState(false);
