@@ -46,7 +46,7 @@ const ItineraryForm = () => {
             coverImage: itinerary.coverImage || null,
           });
           if (itinerary.coverImage) {
-            setCoverImagePreview(`http://localhost:3000${itinerary.coverImage}`);
+            setCoverImagePreview(`${process.env.REACT_APP_API_BASE_URL}${itinerary.coverImage}`);
           }
         } catch (err) {
           setError("Failed to load itinerary for editing.");

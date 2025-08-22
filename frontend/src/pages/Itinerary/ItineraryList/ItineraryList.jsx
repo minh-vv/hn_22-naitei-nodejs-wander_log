@@ -70,6 +70,8 @@ const ItineraryList = () => {
     return <div className={styles.loading}>Loading...</div>;
   }
 
+  const placeholderImage = "https://www.thetravelmagazine.net/wp-content/uploads/maxresdefault4.jpg";
+
   return (
     <div className={styles.wrapper}>
       <div className={styles.container}>
@@ -97,7 +99,7 @@ const ItineraryList = () => {
                 <Link to={`/itineraries/${itinerary.id}`}>
                   <div className={styles.cardImageContainer}>
                     <img 
-                      src={`${process.env.REACT_APP_API_BASE_URL}${itinerary.coverImage}`}
+                      src={itinerary.coverImage ? `${process.env.REACT_APP_API_BASE_URL}${itinerary.coverImage}` : placeholderImage}
                       alt={itinerary.title}
                       className={styles.cardImage}
                     />
