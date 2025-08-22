@@ -47,6 +47,13 @@ export class ItineraryService {
             startTime: 'asc',
           },
         },
+        posts: { 
+          include: {
+            user: true,
+            media: true,
+          },
+          orderBy: { createdAt: 'desc' }, 
+        },
       },
     });
 

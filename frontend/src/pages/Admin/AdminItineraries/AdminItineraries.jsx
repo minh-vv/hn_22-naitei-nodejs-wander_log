@@ -9,17 +9,32 @@ const AdminItineraries = () => {
   const [loading, setLoading] = useState(true);
   const [deletingId, setDeletingId] = useState(null);
   const [searchTerm, setSearchTerm] = useState("");
-
+  
   useEffect(() => {
     const getItineraries = async () => {
-      try {
-        const data = await fetchItineraries(searchTerm);
-        setItineraries(data);
-      } catch (error) {
-        console.error("Failed to fetch itineraries", error);
-      } finally {
-        setLoading(false);
-      }
+        try {
+            const data = await fetchItineraries();
+            setItineraries(data);
+        } catch (error) {
+            console.error("Failed to fetch itineraries", error);
+        } finally {
+            setLoading(false);
+        }
+    };
+    
+    const handleDeleteItinerary = async (itineraryId) => {
+        if (!window.confirm("Are you sure you want to delete this itinerary? This action is irreversible.")) {
+            return;
+        }
+        setDeletingId(itineraryId);
+        try {
+            await deleteItinerary(itineraryId);
+            getItineraries();
+        } catch (error) {
+            console.error("Failed to delete itinerary", error);
+        } finally {
+            setDeletingId(null);
+        }
     };
     getItineraries();
   }, [searchTerm]);

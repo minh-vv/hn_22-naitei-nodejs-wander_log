@@ -35,6 +35,10 @@ const AdminUsers = () => {
       } finally {
         setLoading(false);
       }
+    const handleOpenModal = (user, isActivatingAction) => {
+        setSelectedUser(user);
+        setIsActivating(isActivatingAction);
+        setShowModal(true);
     };
     getUsers();
   }, [searchTerm]);
