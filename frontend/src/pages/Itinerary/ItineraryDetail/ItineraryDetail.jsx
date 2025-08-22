@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate, useParams, Link } from "react-router-dom";
 import { useAuth } from "../../../context/AuthContext";
+import { useUser } from "../../../context/UserContext";
 
 import itineraryService from "../../../services/itinerary";
 import activityService from "../../../services/activity";
@@ -31,6 +32,7 @@ const ItineraryDetail = () => {
   const { id } = useParams();
 
   const { user: currentUser } = useAuth();
+  const { currentUser: userContextUser } = useUser();
 
   const fetchItineraryData = async () => {
     setLoading(true);

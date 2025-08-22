@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import { useParams, useNavigate, Link } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
+import { useUser } from "../../context/UserContext";
 import userService from "../../services/user.js";
 import Header from "../../component/Header/Header";
 import PostCard from "../Post/PostCard/PostCard";
@@ -97,6 +98,11 @@ export default function Profile() {
   const { userId } = useParams();
   const navigate = useNavigate();
   const { user: currentUser } = useAuth();
+  const {
+    updateAvatar,
+    isUpdatingAvatar,
+    currentUser: userContextUser,
+  } = useUser();
 
   const [profile, setProfile] = useState(null);
   const [stats, setStats] = useState(null);
@@ -120,7 +126,6 @@ export default function Profile() {
 
   const [isAvatarViewerOpen, setIsAvatarViewerOpen] = useState(false);
   const [isAvatarMenuOpen, setIsAvatarMenuOpen] = useState(false);
-  const [isUploadingAvatar, setIsUploadingAvatar] = useState(false);
   const avatarMenuRef = useRef(null);
   const avatarFileInputRef = useRef(null);
 
@@ -134,7 +139,8 @@ export default function Profile() {
     handleUpdatePost,
   } = usePostActions([]);
 
-  const isOwnProfile = !userId || userId === currentUser?.id;
+  const isOwnProfile =
+    !userId || userId === (userContextUser?.id || currentUser?.id);
 
   useEffect(() => {
     loadProfile();
@@ -241,22 +247,16 @@ export default function Profile() {
     const file = e.target.files?.[0];
     if (!file) return;
     try {
-      setIsUploadingAvatar(true);
       setError("");
-      const urls = await postService.uploadMediaFiles([file]);
-      const avatarUrl = urls?.[0]?.trim()?.replace(/^"|"$/g, "");
-      if (avatarUrl) {
-        const updatedProfile = await userService.updateProfile({
-          avatar: avatarUrl,
-        });
-        setProfile(updatedProfile);
+      const result = await updateAvatar(file);
+      if (result.success) {
+        setProfile((prev) => ({ ...prev, avatar: result.avatarUrl }));
         setSuccess("Đã cập nhật ảnh đại diện!");
         setTimeout(() => setSuccess(""), 3000);
       }
     } catch (err) {
       setError(err.message || "Cập nhật ảnh đại diện thất bại");
     } finally {
-      setIsUploadingAvatar(false);
       if (avatarFileInputRef.current) avatarFileInputRef.current.value = "";
     }
   };
@@ -335,7 +335,7 @@ export default function Profile() {
         <div className={styles.profileHeader}>
           <div className={styles.avatarContainer}>
             <img
-              src={profile.avatar || defaultAvatar}
+              src={profile.avatar || userContextUser?.avatar || defaultAvatar}
               alt="Avatar"
               className={styles.avatar}
               onClick={handleAvatarClick}
@@ -356,10 +356,10 @@ export default function Profile() {
                 <button
                   onClick={handleChooseAvatar}
                   className={styles.avatarMenuItem}
-                  disabled={isUploadingAvatar}
+                  disabled={isUpdatingAvatar}
                 >
                   <i className="ri-upload-2-line"></i>{" "}
-                  {isUploadingAvatar ? "Đang tải..." : "Chọn ảnh đại diện"}
+                  {isUpdatingAvatar ? "Đang tải..." : "Chọn ảnh đại diện"}
                 </button>
               </div>
             )}
@@ -485,7 +485,7 @@ export default function Profile() {
                     key={post.id}
                     post={post}
                     onEdit={() => handleEditPost(post)}
-                    onDelete={() => handleDeletePost(post.id)}
+                    onDelete={() => handleDeletePost(post)}
                     isEditing={editingPostId === post.id}
                     onCancelEdit={() => setEditingPostId(null)}
                     onSubmitEdit={handleUpdatePost}
@@ -523,7 +523,7 @@ export default function Profile() {
               onClick={(e) => e.stopPropagation()}
             >
               <img
-                src={profile.avatar || defaultAvatar}
+                src={profile.avatar || userContextUser?.avatar || defaultAvatar}
                 alt="Avatar full view"
                 className={styles.avatarViewerImage}
               />
