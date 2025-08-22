@@ -24,7 +24,17 @@ const AdminItineraries = () => {
         getItineraries();
     }, [searchTerm]);
 
-
+    const getItineraries = async () => {
+        try {
+            const data = await fetchItineraries();
+            setItineraries(data);
+        } catch (error) {
+            console.error("Failed to fetch itineraries", error);
+        } finally {
+            setLoading(false);
+        }
+    };
+    
     const handleDeleteItinerary = async (itineraryId) => {
         if (!window.confirm("Are you sure you want to delete this itinerary? This action is irreversible.")) {
             return;

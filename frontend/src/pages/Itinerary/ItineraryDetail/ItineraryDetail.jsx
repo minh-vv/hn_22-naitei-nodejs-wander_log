@@ -1,9 +1,14 @@
-import React, { useState, useEffect, useMemo } from "react";
-import { useNavigate, useParams } from "react-router-dom";
+import React, { useState, useEffect } from "react";
+import { useNavigate, useParams, Link } from "react-router-dom";
+import { useAuth } from "../../../context/AuthContext";
 
 import itineraryService from "../../../services/itinerary";
 import activityService from "../../../services/activity";
+import bookmarkService from "../../../services/bookmark";
+import postService from "../../../services/post";
 import ActivityFormModal from "../../Activity/ActivityFormModal/ActivityFormModal";
+import CreatePost from "../../Post/CreatePost/CreatePost";
+import PostCard from "../../Post/PostCard/PostCard";
 
 import styles from "./ItineraryDetail.module.css";
 
@@ -11,15 +16,21 @@ const ItineraryDetail = () => {
   const [itinerary, setItinerary] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [posts, setPosts] = useState([]);
 
   const [showActivityModal, setShowActivityModal] = useState(false);
   const [editingActivity, setEditingActivity] = useState(null);
 
-  const [deletingItinerary, setDeletingItinerary] = useState(false);
-  const [deletingActivity, setDeletingActivity] = useState(false);
+  const [isBookmarked, setIsBookmarked] = useState(false);
+  const [bookmarkId, setBookmarkId] = useState(null);
+  
+  const [showCreatePost, setShowCreatePost] = useState(false);
+  const [editingPostId, setEditingPostId] = useState(null);
 
   const navigate = useNavigate();
   const { id } = useParams();
+
+  const { user: currentUser } = useAuth();
 
   const fetchItineraryData = async () => {
     setLoading(true);
@@ -32,6 +43,7 @@ const ItineraryDetail = () => {
       }
       const data = await itineraryService.getItineraryById(id);
       setItinerary(data);
+      setPosts(data.posts || []);
     } catch (err) {
       setError("Unable to load itinerary details. Please try again.");
     } finally {
@@ -39,26 +51,35 @@ const ItineraryDetail = () => {
     }
   };
 
+  const checkBookmarkStatus = async () => {
+    try {
+      const res = await bookmarkService.check("ITINERARY", id); 
+      setIsBookmarked(res.isBookmarked);
+      setBookmarkId(res.bookmarkId || null);
+    } catch (error) {
+      console.error("Error checking bookmark status:", error);
+    }
+  };
+
   useEffect(() => {
     fetchItineraryData();
   }, [id, navigate]);
 
+  useEffect(() => {
+    if (itinerary) {
+      checkBookmarkStatus();
+    }
+  }, [itinerary]);
+
+  const isOwner = itinerary && currentUser && itinerary.user.id === currentUser.id;
+
   const handleDeleteItinerary = async () => {
     if (window.confirm("Are you sure you want to delete this itinerary?")) {
-      setDeletingItinerary(true);
       try {
-        const token = sessionStorage.getItem("userToken");
-        if (!token) {
-          setError("You need to sign in to delete the itinerary.");
-          setDeletingItinerary(false);
-          return;
-        }
         await itineraryService.deleteItinerary(id);
         navigate("/itineraries");
       } catch (err) {
         setError("Unable to delete itinerary. Please try again.");
-      } finally {
-        setDeletingItinerary(false);
       }
     }
   };
@@ -74,11 +95,6 @@ const ItineraryDetail = () => {
   };
 
   const handleSaveActivity = async (activityData) => {
-    const token = sessionStorage.getItem("userToken");
-    if (!token) {
-      throw new Error("You need to sign in to add/edit activities.");
-    }
-
     try {
       if (activityData.id) {
         await activityService.updateActivity(activityData.id, activityData);
@@ -93,22 +109,70 @@ const ItineraryDetail = () => {
 
   const handleDeleteActivityClick = async (activityId) => {
     if (window.confirm("Are you sure you want to delete this activity?")) {
-      setDeletingActivity(true);
       try {
-        const token = sessionStorage.getItem("userToken");
-        if (!token) {
-          throw new Error("You need to sign in to delete the activity.");
-        }
         await activityService.deleteActivity(activityId);
         await fetchItineraryData();
       } catch (err) {
         setError(err.message || "Unable to delete activity. Please try again.");
-      } finally {
-        setDeletingActivity(false);
       }
     }
   };
 
+  const handleBookmarkClick = async () => {
+    try {
+      if (isBookmarked) {
+        await bookmarkService.remove(bookmarkId);
+        setIsBookmarked(false);
+        setBookmarkId(null);
+      } else {
+        const newBookmark = await bookmarkService.create({ type: "ITINERARY", itemId: id });
+        setIsBookmarked(true);
+        setBookmarkId(newBookmark.id);
+      }
+    } catch (error) {
+      console.error("Error toggling bookmark:", error);
+      alert("Failed to update bookmark.");
+    }
+  };
+
+  const handleCreatePostClick = () => {
+    setShowCreatePost(true);
+  };
+
+  const handlePostCreated = (newPost) => {
+    setShowCreatePost(false);
+    setPosts(prevPosts => [newPost, ...prevPosts]);
+  }
+
+  const handleCancelCreatePost = () => {
+    setShowCreatePost(false);
+  }
+  
+  const handleDeletePost = async (post) => {
+    if (window.confirm("Bạn có chắc chắn muốn xóa bài viết này?")) {
+      try {
+        await postService.deletePost(post.id);
+        setPosts(prevPosts => prevPosts.filter(p => p.id !== post.id));
+      } catch (error) {
+        console.error("Lỗi khi xóa bài viết:", error);
+      }
+    }
+  };
+
+  const handleEditPost = (post) => {
+    setEditingPostId(post.id);
+  };
+  
+  const handleUpdatePost = async (updatedPostData) => {
+    try {
+      const res = await postService.updatePost(updatedPostData.id, updatedPostData);
+      setPosts(prevPosts => prevPosts.map(p => (p.id === res.id ? res : p)));
+      setEditingPostId(null);
+    } catch (error) {
+      console.error("Lỗi khi cập nhật bài viết:", error);
+    }
+  };
+  
   const groupActivitiesByDate = (activities) => {
     if (!activities) return {};
     const grouped = {};
@@ -135,9 +199,7 @@ const ItineraryDetail = () => {
     return grouped;
   };
 
-  const groupedActivities = itinerary
-    ? groupActivitiesByDate(itinerary.activities)
-    : {};
+  const groupedActivities = itinerary ? groupActivitiesByDate(itinerary.activities) : {};
   const sortedDates = Object.keys(groupedActivities).sort();
 
   const formatDate = (dateString, formatType) => {
@@ -252,19 +314,23 @@ const ItineraryDetail = () => {
 
         <div className={styles.authorSection}>
           <div className={styles.authorInfo}>
-            <img
-              src={
-                itinerary.user?.avatar ||
-                "https://readdy.ai/api/search-image?query=Professional%20headshot%20of%20a%20young%20Asian%20female%20traveler%20with%20a%20warm%20confident%20smile%2C%20wearing%20casual%20modern%20clothing%2C%20clean%20studio%20background%20with%20soft%20professional%20lighting&width=50&height=50&seq=author-profile&orientation=squarish"
-              }
-              alt={itinerary.user?.name || "Author"}
-              className={styles.authorAvatar}
-            />
+            <Link to={`/profile/${itinerary.user?.id}`}>
+              <img
+                src={
+                  itinerary.user?.avatar ||
+                  "https://readdy.ai/api/search-image?query=Professional%20headshot%20of%20a%20young%20Asian%20female%20traveler%20with%20a%20warm%20confident%20smile%2C%20wearing%20casual%20modern%20clothing%2C%20clean%20studio%20background%20with%20soft%20professional%20lighting&width=50&height=50&seq=author-profile&orientation=squarish"
+                }
+                alt={itinerary.user?.name || "Author"}
+                className={styles.authorAvatar}
+              />
+            </Link>
             <div>
               <div className={styles.authorNameContainer}>
-                <h3 className={styles.authorName}>
-                  {itinerary.user?.name || "Anonymous"}
-                </h3>
+                <Link to={`/profile/${itinerary.user?.id}`}>
+                  <h3 className={styles.authorName}>
+                    {itinerary.user?.name || "Anonymous"}
+                  </h3>
+                </Link>
                 {itinerary.user?.verified && (
                   <div className={styles.verifiedIcon}>
                     <i className="ri-verified-badge-fill"></i>
@@ -281,51 +347,57 @@ const ItineraryDetail = () => {
           </div>
 
           <div className={styles.actionButtons}>
-            <button onClick={() => {}} className={styles.createPostButton}>
-              <i className="ri-add-circle-line"></i>
-              <span>Create Post</span>
-            </button>
-
-            <button onClick={() => {}} className={`${styles.likeButton} `}>
-              <i className="ri-heart-line"></i>
-              <span>123</span>
-            </button>
-
-            <button onClick={() => {}} className={styles.shareButton}>
-              <i className="ri-share-line"></i>
-              <span>Share</span>
+            {isOwner && (
+              <button onClick={handleCreatePostClick} className={styles.createPostButton}>
+                <i className="ri-add-circle-line"></i>
+                <span>Create Post</span>
+              </button>
+            )}
+            <button onClick={handleBookmarkClick} className={styles.bookmarkButton}>
+              <i className={isBookmarked ? "ri-bookmark-fill" : "ri-bookmark-line"}></i>
+              <span>{isBookmarked ? "Bookmarked" : "Bookmark"}</span>
             </button>
           </div>
         </div>
 
+        {isOwner && showCreatePost && (
+            <CreatePost 
+                itinerary={itinerary} 
+                onPostCreated={handlePostCreated} 
+                onCancel={handleCancelCreatePost}
+            />
+        )}
+        
         <div className={styles.descriptionContainer}>
           <p className={styles.description}>{itinerary.description}</p>
         </div>
 
-        <div className={styles.actionButtonsRow}>
-          <button
-            onClick={handleAddActivityClick}
-            className={styles.actionButton}
-          >
-            <i className="ri-add-circle-line"></i>
-            <span>Add Activity</span>
-          </button>
-          <button
-            onClick={() => navigate(`/itineraries/edit/${itinerary.id}`)}
-            className={`${styles.actionButton} ${styles.editActionButton}`}
-          >
-            <i className="ri-edit-line"></i>
-            Edit
-          </button>
-          <button
-            onClick={handleDeleteItinerary}
-            className={`${styles.actionButton} ${styles.deleteActionButton}`}
-          >
-            <i className="ri-delete-bin-line"></i>
-            Delete
-          </button>
-        </div>
-
+        {isOwner && (
+          <div className={styles.actionButtonsRow}>
+            <button
+              onClick={handleAddActivityClick}
+              className={styles.actionButton}
+            >
+              <i className="ri-add-circle-line"></i>
+              <span>Add Activity</span>
+            </button>
+            <button
+              onClick={() => navigate(`/itineraries/edit/${itinerary.id}`)}
+              className={`${styles.actionButton} ${styles.editActionButton}`}
+            >
+              <i className="ri-edit-line"></i>
+              Edit
+            </button>
+            <button
+              onClick={handleDeleteItinerary}
+              className={`${styles.actionButton} ${styles.deleteActionButton}`}
+            >
+              <i className="ri-delete-bin-line"></i>
+              Delete
+            </button>
+          </div>
+        )}
+        
         <div className={styles.itineraryDays}>
           {sortedDates.length === 0 ? (
             <div className={styles.emptyActivities}>
@@ -359,24 +431,26 @@ const ItineraryDetail = () => {
                           <h4 className={styles.activityName}>
                             {activity.name}
                           </h4>
-                          <div className={styles.activityControls}>
-                            <button
-                              onClick={() => handleEditActivityClick(activity)}
-                              className={styles.editActivityButton}
-                              title="Edit activity"
-                            >
-                              <i className="ri-edit-line"></i>
-                            </button>
-                            <button
-                              onClick={() =>
-                                handleDeleteActivityClick(activity.id)
-                              }
-                              className={styles.deleteActivityButton}
-                              title="Delete activity"
-                            >
-                              <i className="ri-delete-bin-line"></i>
-                            </button>
-                          </div>
+                          {isOwner && (
+                            <div className={styles.activityControls}>
+                              <button
+                                onClick={() => handleEditActivityClick(activity)}
+                                className={styles.editActivityButton}
+                                title="Edit activity"
+                              >
+                                <i className="ri-edit-line"></i>
+                              </button>
+                              <button
+                                onClick={() =>
+                                  handleDeleteActivityClick(activity.id)
+                                }
+                                className={styles.deleteActivityButton}
+                                title="Delete activity"
+                              >
+                                <i className="ri-delete-bin-line"></i>
+                              </button>
+                            </div>
+                          )}
                         </div>
                         <p className={styles.activityDescription}>
                           {activity.description}
@@ -400,9 +474,28 @@ const ItineraryDetail = () => {
             ))
           )}
         </div>
+
+        <div className={styles.postsSection}>
+            <h2 className={styles.sectionTitle}>Bài viết liên quan</h2>
+            {posts.length > 0 ? (
+                posts.map(post => (
+                    <PostCard
+                      key={post.id} 
+                      post={post}
+                      isEditing={editingPostId === post.id}
+                      onDelete={handleDeletePost}
+                      onEdit={() => handleEditPost(post)}
+                      onCancelEdit={() => setEditingPostId(null)}
+                      onSubmitEdit={handleUpdatePost}
+                    />
+                ))
+            ) : (
+                <p className={styles.noPostsMessage}>Chưa có bài viết nào cho Itinerary này.</p>
+            )}
+        </div>
       </div>
 
-      {itinerary && (
+      {isOwner && itinerary && (
         <ActivityFormModal
           show={showActivityModal}
           onClose={() => setShowActivityModal(false)}
