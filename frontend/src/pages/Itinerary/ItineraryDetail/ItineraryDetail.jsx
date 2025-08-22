@@ -142,19 +142,19 @@ const ItineraryDetail = () => {
   const handlePostCreated = (newPost) => {
     setShowCreatePost(false);
     setPosts(prevPosts => [newPost, ...prevPosts]);
-  }
+  };
 
   const handleCancelCreatePost = () => {
     setShowCreatePost(false);
-  }
+  };
   
   const handleDeletePost = async (post) => {
-    if (window.confirm("Bạn có chắc chắn muốn xóa bài viết này?")) {
+    if (window.confirm("Are you sure you want to delete this post?")) {
       try {
         await postService.deletePost(post.id);
         setPosts(prevPosts => prevPosts.filter(p => p.id !== post.id));
       } catch (error) {
-        console.error("Lỗi khi xóa bài viết:", error);
+        console.error("Error when delete post:", error);
       }
     }
   };
@@ -169,7 +169,7 @@ const ItineraryDetail = () => {
       setPosts(prevPosts => prevPosts.map(p => (p.id === res.id ? res : p)));
       setEditingPostId(null);
     } catch (error) {
-      console.error("Lỗi khi cập nhật bài viết:", error);
+      console.error("Error when update:", error);
     }
   };
   
