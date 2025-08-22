@@ -84,6 +84,7 @@ model PasswordReset {
 model Itinerary {
   id          String     @id @default(cuid())
   title       String
+  slug        String     @unique
   destination String?
   startDate   DateTime   @map("start_date")
   endDate     DateTime   @map("end_date")

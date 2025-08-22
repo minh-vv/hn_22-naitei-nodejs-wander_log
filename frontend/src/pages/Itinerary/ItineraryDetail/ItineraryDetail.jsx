@@ -28,7 +28,7 @@ const ItineraryDetail = () => {
   const [editingPostId, setEditingPostId] = useState(null);
 
   const navigate = useNavigate();
-  const { id } = useParams();
+  const { slug } = useParams();
 
   const { user: currentUser } = useAuth();
 
@@ -41,10 +41,12 @@ const ItineraryDetail = () => {
         navigate("/signin");
         return;
       }
-      const data = await itineraryService.getItineraryById(id);
+      
+      const data = await itineraryService.getItineraryBySlug(slug);
       setItinerary(data);
       setPosts(data.posts || []);
     } catch (err) {
+      console.error(err);
       setError("Unable to load itinerary details. Please try again.");
     } finally {
       setLoading(false);
@@ -52,8 +54,9 @@ const ItineraryDetail = () => {
   };
 
   const checkBookmarkStatus = async () => {
+    if (!itinerary) return;
     try {
-      const res = await bookmarkService.check("ITINERARY", id); 
+      const res = await bookmarkService.check("ITINERARY", itinerary.id); 
       setIsBookmarked(res.isBookmarked);
       setBookmarkId(res.bookmarkId || null);
     } catch (error) {
@@ -63,7 +66,7 @@ const ItineraryDetail = () => {
 
   useEffect(() => {
     fetchItineraryData();
-  }, [id, navigate]);
+  }, [slug, navigate]);
 
   useEffect(() => {
     if (itinerary) {
@@ -76,8 +79,8 @@ const ItineraryDetail = () => {
   const handleDeleteItinerary = async () => {
     if (window.confirm("Are you sure you want to delete this itinerary?")) {
       try {
-        await itineraryService.deleteItinerary(id);
-        navigate("/itineraries");
+        await itineraryService.deleteItinerary(itinerary.id);
+        navigate("/profile");
       } catch (err) {
         setError("Unable to delete itinerary. Please try again.");
       }
@@ -119,13 +122,14 @@ const ItineraryDetail = () => {
   };
 
   const handleBookmarkClick = async () => {
+    if (!itinerary) return;
     try {
       if (isBookmarked) {
         await bookmarkService.remove(bookmarkId);
         setIsBookmarked(false);
         setBookmarkId(null);
       } else {
-        const newBookmark = await bookmarkService.create({ type: "ITINERARY", itemId: id });
+        const newBookmark = await bookmarkService.create({ type: "ITINERARY", itemId: itinerary.id });
         setIsBookmarked(true);
         setBookmarkId(newBookmark.id);
       }
@@ -240,7 +244,7 @@ const ItineraryDetail = () => {
       <div className={styles.wrapper}>
         <div className={styles.error}>{error}</div>
         <button
-          onClick={() => navigate("/itineraries")}
+          onClick={() => navigate("/profile")}
           className={styles.backButtonError}
         >
           Back
@@ -254,7 +258,7 @@ const ItineraryDetail = () => {
       <div className={styles.wrapper}>
         <div className={styles.message}>Itinerary not found.</div>
         <button
-          onClick={() => navigate("/itineraries")}
+          onClick={() => navigate("/profile")}
           className={styles.backButtonError}
         >
           Back
@@ -267,7 +271,7 @@ const ItineraryDetail = () => {
     <div className={styles.mainWrapper}>
       <div className={styles.container}>
         <div className={styles.header}>
-          <button onClick={() => navigate(-1)} className={styles.backLink}>
+          <button onClick={() => navigate("/home")} className={styles.backLink}>
             <i className="ri-arrow-left-line"></i>
           </button>
           <h1 className={styles.headerTitle}>{itinerary.title}</h1>
@@ -476,7 +480,7 @@ const ItineraryDetail = () => {
         </div>
 
         <div className={styles.postsSection}>
-            <h2 className={styles.sectionTitle}>Related Post</h2>
+            <h2 className={styles.sectionTitle}>Related post</h2>
             {posts.length > 0 ? (
                 posts.map(post => (
                     <PostCard
@@ -490,7 +494,7 @@ const ItineraryDetail = () => {
                     />
                 ))
             ) : (
-                <p className={styles.noPostsMessage}>This itinerary have not have any related post.</p>
+                <p className={styles.noPostsMessage}>This Itinerary have not have any related post yet.</p>
             )}
         </div>
       </div>

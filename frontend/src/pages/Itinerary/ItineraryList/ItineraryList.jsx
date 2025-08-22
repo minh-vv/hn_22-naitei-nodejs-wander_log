@@ -96,7 +96,7 @@ const ItineraryList = () => {
                 key={itinerary.id}
                 className={styles.itineraryCard}
               >
-                <Link to={`/itineraries/${itinerary.id}`}>
+                <Link to={`/itineraries/${itinerary.slug}`}>
                   <div className={styles.cardImageContainer}>
                     <img 
                       src={itinerary.coverImage ? `${process.env.REACT_APP_API_BASE_URL}${itinerary.coverImage}` : placeholderImage}
