@@ -1,6 +1,7 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import itineraryService from "../../../services/itinerary";
+import uploadService from "../../../services/upload";
 import { Plus, Edit, ArrowLeft } from "lucide-react";
 import styles from "./ItineraryForm.module.css";
 
@@ -12,6 +13,7 @@ const ItineraryForm = () => {
     endDate: "",
     budget: "",
     visibility: "PRIVATE",
+    coverImage: null,
   });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
@@ -19,6 +21,10 @@ const ItineraryForm = () => {
   const navigate = useNavigate();
   const { id } = useParams();
   const isEditing = !!id;
+
+  const [coverImageFile, setCoverImageFile] = useState(null);
+  const [coverImagePreview, setCoverImagePreview] = useState(null);
+  const fileInputRef = useRef(null);
 
   useEffect(() => {
     if (isEditing) {
@@ -37,7 +43,11 @@ const ItineraryForm = () => {
             endDate: itinerary.endDate.split("T")[0],
             budget: itinerary.budget !== null ? itinerary.budget : "",
             visibility: itinerary.visibility,
+            coverImage: itinerary.coverImage || null,
           });
+          if (itinerary.coverImage) {
+            setCoverImagePreview(`http://localhost:3000${itinerary.coverImage}`);
+          }
         } catch (err) {
           setError("Failed to load itinerary for editing.");
         } finally {
@@ -48,6 +58,19 @@ const ItineraryForm = () => {
     }
   }, [id, isEditing, navigate]);
 
+  useEffect(() => {
+    if (!coverImageFile) {
+      if (!isEditing || !formData.coverImage) {
+        setCoverImagePreview(null);
+      }
+      return;
+    }
+    const objectUrl = URL.createObjectURL(coverImageFile);
+    setCoverImagePreview(objectUrl);
+
+    return () => URL.revokeObjectURL(objectUrl);
+  }, [coverImageFile, isEditing, formData.coverImage]);
+
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
     setFormData((prev) => ({
@@ -56,20 +79,31 @@ const ItineraryForm = () => {
     }));
   };
 
+  const handleFileChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      setCoverImageFile(file);
+    } else {
+      setCoverImageFile(null);
+    }
+  };
+
+  const handleRemoveImage = () => {
+    setCoverImageFile(null);
+    setCoverImagePreview(null);
+    setFormData((prev) => ({ ...prev, coverImage: null }));
+    if (fileInputRef.current) {
+      fileInputRef.current.value = "";
+    }
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
     setError(null);
     setMessage("");
 
-    const dataToSend = {
-      title: formData.title,
-      destination: formData.destination,
-      startDate: new Date(formData.startDate).toISOString(),
-      endDate: new Date(formData.endDate).toISOString(),
-      budget: formData.budget !== "" ? Number(formData.budget) : null,
-      visibility: formData.visibility,
-    };
+    let finalCoverImageUrl = formData.coverImage;
 
     try {
       const token = sessionStorage.getItem("userToken");
@@ -77,14 +111,32 @@ const ItineraryForm = () => {
         navigate("/signin");
         return;
       }
+
+      if (coverImageFile) {
+        finalCoverImageUrl = await uploadService.uploadItineraryCover(coverImageFile);
+      } else if (isEditing && !formData.coverImage) {
+        finalCoverImageUrl = null;
+      }
+
+      const dataToSend = {
+        title: formData.title,
+        destination: formData.destination,
+        startDate: new Date(formData.startDate).toISOString(),
+        endDate: new Date(formData.endDate).toISOString(),
+        budget: formData.budget !== "" ? Number(formData.budget) : null,
+        visibility: formData.visibility,
+        coverImage: finalCoverImageUrl,
+      };
+
       if (isEditing) {
         await itineraryService.updateItinerary(id, dataToSend);
         setMessage("Itinerary updated successfully!");
+        setTimeout(() => navigate(`/itineraries/${id}`), 2000);
       } else {
-        await itineraryService.createItinerary(dataToSend);
+        const newItinerary = await itineraryService.createItinerary(dataToSend);
         setMessage("Itinerary created successfully!");
+        setTimeout(() => navigate(`/itineraries/${newItinerary.id}`), 2000);
       }
-      setTimeout(() => navigate("/itineraries"), 2000);
     } catch (err) {
       setError(`Error: ${err.message || "Failed to save itinerary."}`);
     } finally {
@@ -107,7 +159,7 @@ const ItineraryForm = () => {
       <div className={styles.container}>
         <div className={styles.header}>
           <button
-            onClick={() => navigate("/itineraries")}
+            onClick={() => navigate("/home")} 
             className={styles.backButton}
           >
             <ArrowLeft size={24} />
@@ -189,6 +241,32 @@ const ItineraryForm = () => {
               className={styles.checkbox}
             />
             <label htmlFor="visibility">Make Public</label>
+          </div>
+          <div className={styles.formGroup}>
+            <label htmlFor="coverImageUpload">Cover Photo:</label>
+            <input
+              type="file"
+              id="coverImageUpload"
+              ref={fileInputRef}
+              onChange={handleFileChange}
+              accept="image/*"
+              style={{ display: "none" }}
+            />
+            <button
+              type="button"
+              onClick={() => fileInputRef.current.click()}
+              className={styles.uploadButton}
+            >
+              {coverImagePreview ? "Change Photo" : "Choose Photo"}
+            </button>
+            {coverImagePreview && (
+              <div className={styles.imagePreviewContainer}>
+                <img src={coverImagePreview} alt="Cover Preview" className={styles.imagePreview} />
+                <button type="button" onClick={handleRemoveImage} className={styles.removeImageButton}>
+                  &times;
+                </button>
+              </div>
+            )}
           </div>
 
           <button type="submit" className={styles.button} disabled={loading}>

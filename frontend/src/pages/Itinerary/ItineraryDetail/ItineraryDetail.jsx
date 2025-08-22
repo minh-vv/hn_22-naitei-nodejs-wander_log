@@ -142,19 +142,19 @@ const ItineraryDetail = () => {
   const handlePostCreated = (newPost) => {
     setShowCreatePost(false);
     setPosts(prevPosts => [newPost, ...prevPosts]);
-  }
+  };
 
   const handleCancelCreatePost = () => {
     setShowCreatePost(false);
-  }
+  };
   
   const handleDeletePost = async (post) => {
-    if (window.confirm("Bạn có chắc chắn muốn xóa bài viết này?")) {
+    if (window.confirm("Are you sure you want to delete this post?")) {
       try {
         await postService.deletePost(post.id);
         setPosts(prevPosts => prevPosts.filter(p => p.id !== post.id));
       } catch (error) {
-        console.error("Lỗi khi xóa bài viết:", error);
+        console.error("Error when delete post:", error);
       }
     }
   };
@@ -169,7 +169,7 @@ const ItineraryDetail = () => {
       setPosts(prevPosts => prevPosts.map(p => (p.id === res.id ? res : p)));
       setEditingPostId(null);
     } catch (error) {
-      console.error("Lỗi khi cập nhật bài viết:", error);
+      console.error("Error when update:", error);
     }
   };
   
@@ -277,7 +277,7 @@ const ItineraryDetail = () => {
           <div className={styles.heroImageContainer}>
             <img
               src={
-                itinerary.coverImage ||
+                itinerary.coverImage ? `${process.env.REACT_APP_API_BASE_URL}${itinerary.coverImage}` :
                 "https://images.unsplash.com/photo-1501785888041-af3ef285b470?q=80&w=2670&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
               }
               alt={itinerary.title}
@@ -476,7 +476,7 @@ const ItineraryDetail = () => {
         </div>
 
         <div className={styles.postsSection}>
-            <h2 className={styles.sectionTitle}>Bài viết liên quan</h2>
+            <h2 className={styles.sectionTitle}>Related Post</h2>
             {posts.length > 0 ? (
                 posts.map(post => (
                     <PostCard
@@ -490,7 +490,7 @@ const ItineraryDetail = () => {
                     />
                 ))
             ) : (
-                <p className={styles.noPostsMessage}>Chưa có bài viết nào cho Itinerary này.</p>
+                <p className={styles.noPostsMessage}>This itinerary have not have any related post.</p>
             )}
         </div>
       </div>

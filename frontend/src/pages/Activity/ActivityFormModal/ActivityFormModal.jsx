@@ -33,16 +33,15 @@ const ActivityFormModal = ({
   const [startTime, setStartTime] = useState(activityData?.startTime || '');
   const [location, setLocation] = useState(activityData?.location || '');
   const [description, setDescription] = useState(activityData?.description || '');
+  const [cost, setCost] = useState(activityData?.cost || '');
   const [saving, setSaving] = useState(false);
   const [formError, setFormError] = useState(null);
 
   const dateOptions = useMemo(() => {
     if (!itineraryStartDate || !itineraryEndDate) return [];
-
     const options = [];
     const currentDate = new Date(itineraryStartDate);
     const endDate = new Date(itineraryEndDate);
-
     while (currentDate <= endDate) {
       const isoDate = toISODate(currentDate);
       const displayDate = formatDateForDisplay(currentDate);
@@ -59,12 +58,14 @@ const ActivityFormModal = ({
       setStartTime(activityData.startTime || '');
       setLocation(activityData.location || '');
       setDescription(activityData.description || '');
+      setCost(activityData.cost || '');
     } else {
       setName('');
       setDate('');
       setStartTime('');
       setLocation('');
       setDescription('');
+      setCost('');
     }
     setFormError(null);
   }, [activityData, show]);
@@ -95,6 +96,7 @@ const ActivityFormModal = ({
         startTime,
         location,
         description,
+        cost: cost !== '' ? Number(cost) : null,
       });
       onClose();
     } catch (err) {
@@ -179,6 +181,18 @@ const ActivityFormModal = ({
               value={description}
               onChange={(e) => setDescription(e.target.value)}
             ></textarea>
+          </div>
+          <div className={styles.formGroup}>
+            <label htmlFor="cost" className={styles.label}>Cost:</label>
+            <input
+              type="number"
+              id="cost"
+              name="cost"
+              value={cost}
+              onChange={(e) => setCost(e.target.value)}
+              className={styles.input}
+              placeholder="Chi phí (không bắt buộc)"
+            />
           </div>
           {formError && (
             <p className={styles.formError}>{formError}</p>
