@@ -77,6 +77,14 @@ const itineraryService = {
       );
     }
   },
+
+  increaseItineraryViews: async (slug) => {
+    try {
+      await apiClient.patch(`/itineraries/${slug}/view`);
+    } catch (error) {
+      console.error("Failed to increase itinerary views:", error);
+    }
+  },
 };
 
 export default itineraryService;

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { useNavigate, useParams, Link } from "react-router-dom";
 import { useAuth } from "../../../context/AuthContext";
 
@@ -9,6 +9,8 @@ import postService from "../../../services/post";
 import ActivityFormModal from "../../Activity/ActivityFormModal/ActivityFormModal";
 import CreatePost from "../../Post/CreatePost/CreatePost";
 import PostCard from "../../Post/PostCard/PostCard";
+import ratingsService from "../../../services/ratings";
+import StarRating from "../../../component/StarRating/StarRating";
 
 import styles from "./ItineraryDetail.module.css";
 
@@ -27,10 +29,16 @@ const ItineraryDetail = () => {
   const [showCreatePost, setShowCreatePost] = useState(false);
   const [editingPostId, setEditingPostId] = useState(null);
 
+  const [averageRating, setAverageRating] = useState(0);
+  const [ratingCount, setRatingCount] = useState(0);
+  const [userRating, setUserRating] = useState(0);
+  
   const navigate = useNavigate();
   const { slug } = useParams();
 
   const { user: currentUser } = useAuth();
+  
+  const hasViewedRef = useRef(false); 
 
   const fetchItineraryData = async () => {
     setLoading(true);
@@ -53,6 +61,54 @@ const ItineraryDetail = () => {
     }
   };
 
+  const fetchRatings = async () => {
+  if (!itinerary) return;
+  
+  try {
+    const ratings = await ratingsService.getAverageRating(itinerary.id);
+    setAverageRating(ratings.averageRating);
+    setRatingCount(ratings.ratingCount);
+  } catch (error) {
+    console.error("Error fetching average rating:", error);
+  }
+};
+
+const fetchUserRating = async () => {
+  if (!itinerary || !currentUser) return;
+
+  try {
+    const userRatingData = await ratingsService.getUserRating(itinerary.id, currentUser.id);
+    if (userRatingData) {
+      setUserRating(userRatingData.value);
+    }
+  } catch (error) {
+    console.error("Error fetching user rating:", error);
+  }
+};
+
+const handleRateItinerary = async (value) => {
+  if (!itinerary || !currentUser) {
+    navigate("/signin");
+    return;
+  }
+
+  if (isOwner) {
+    alert("Bạn không thể tự đánh giá hành trình của mình.");
+    return;
+  }
+
+  try {
+    await ratingsService.rate(itinerary.id, value);
+    setUserRating(value); 
+    fetchRatings(); 
+    
+    alert("Bạn đã đánh giá thành công!"); 
+  } catch (error) { 
+    console.error("Lỗi khi gửi đánh giá:", error);
+    alert("Gửi đánh giá thất bại. Vui lòng thử lại.");
+  }
+};
+
   const checkBookmarkStatus = async () => {
     if (!itinerary) return;
     try {
@@ -64,23 +120,35 @@ const ItineraryDetail = () => {
     }
   };
 
+  const isOwner = itinerary && currentUser && itinerary.user.id === currentUser.id;
+
   useEffect(() => {
     fetchItineraryData();
+
+    if (!hasViewedRef.current) {
+        itineraryService.increaseItineraryViews(slug);
+        hasViewedRef.current = true; 
+    }
   }, [slug, navigate]);
 
   useEffect(() => {
-    if (itinerary) {
-      checkBookmarkStatus();
-    }
-  }, [itinerary]);
+    if (itinerary) {
+      checkBookmarkStatus();
+      fetchRatings(); 
+      if (currentUser && !isOwner) {
+        fetchUserRating();
+      } else {
+        setUserRating(0); 
+      }
+    }
+}, [itinerary, currentUser, isOwner]);
 
-  const isOwner = itinerary && currentUser && itinerary.user.id === currentUser.id;
 
   const handleDeleteItinerary = async () => {
     if (window.confirm("Are you sure you want to delete this itinerary?")) {
       try {
         await itineraryService.deleteItinerary(itinerary.id);
-        navigate("/profile");
+        navigate("/itineraries");
       } catch (err) {
         setError("Unable to delete itinerary. Please try again.");
       }
@@ -244,7 +312,7 @@ const ItineraryDetail = () => {
       <div className={styles.wrapper}>
         <div className={styles.error}>{error}</div>
         <button
-          onClick={() => navigate("/profile")}
+          onClick={() => navigate("/itineraries")}
           className={styles.backButtonError}
         >
           Back
@@ -258,7 +326,7 @@ const ItineraryDetail = () => {
       <div className={styles.wrapper}>
         <div className={styles.message}>Itinerary not found.</div>
         <button
-          onClick={() => navigate("/profile")}
+          onClick={() => navigate("/itineraries")}
           className={styles.backButtonError}
         >
           Back
@@ -271,7 +339,7 @@ const ItineraryDetail = () => {
     <div className={styles.mainWrapper}>
       <div className={styles.container}>
         <div className={styles.header}>
-          <button onClick={() => navigate("/home")} className={styles.backLink}>
+          <button onClick={() => navigate(-1)} className={styles.backLink}>
             <i className="ri-arrow-left-line"></i>
           </button>
           <h1 className={styles.headerTitle}>{itinerary.title}</h1>
@@ -357,12 +425,35 @@ const ItineraryDetail = () => {
                 <span>Create Post</span>
               </button>
             )}
+            <div className={styles.viewsCount}>
+                <i className="ri-eye-line"></i>
+                <span>{itinerary.views}</span>
+            </div>
             <button onClick={handleBookmarkClick} className={styles.bookmarkButton}>
               <i className={isBookmarked ? "ri-bookmark-fill" : "ri-bookmark-line"}></i>
               <span>{isBookmarked ? "Bookmarked" : "Bookmark"}</span>
             </button>
-          </div>
+            <div className={styles.averageRatingDisplay}>
+                <span className={styles.ratingNumber}>
+                    {averageRating.toFixed(1)}/5
+                </span>
+                <span className={styles.ratingCount}>
+                    ({ratingCount} reviews)
+                </span>
+            </div>
         </div>
+      </div>
+          {currentUser && !isOwner && (
+            <div className={styles.userRatingSection}>
+                <p className={styles.userRatingPrompt}>
+                    Gửi đánh giá của riêng bạn
+                </p>
+                <StarRating
+                    initialRating={userRating}
+                    onRate={handleRateItinerary}
+                />
+            </div>
+          )}
 
         {isOwner && showCreatePost && (
             <CreatePost 
@@ -480,7 +571,7 @@ const ItineraryDetail = () => {
         </div>
 
         <div className={styles.postsSection}>
-            <h2 className={styles.sectionTitle}>Related post</h2>
+            <h2 className={styles.sectionTitle}>Bài viết liên quan</h2>
             {posts.length > 0 ? (
                 posts.map(post => (
                     <PostCard
@@ -494,7 +585,7 @@ const ItineraryDetail = () => {
                     />
                 ))
             ) : (
-                <p className={styles.noPostsMessage}>This Itinerary have not have any related post yet.</p>
+                <p className={styles.noPostsMessage}>Chưa có bài viết nào cho Itinerary này.</p>
             )}
         </div>
       </div>
