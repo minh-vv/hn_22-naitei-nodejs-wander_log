@@ -18,7 +18,7 @@ function AuthSuccess() {
 
     if (token && userId) { 
       login(user, token); 
-      navigate("/itineraries"); 
+      navigate("/home"); 
     } else {
       navigate("/signin?error=auth_failed");
     }
