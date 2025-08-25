@@ -6,6 +6,7 @@ import avatarDefault from "../../../assets/images/default_avatar.png";
 import TimeAgo from "../../../component/TimeAgo";
 import postService from "../../../services/post";
 import bookmarkService from "../../../services/bookmark";
+import { useUser } from "../../../context/UserContext";
 
 const PostCard = ({
   post,
@@ -35,6 +36,7 @@ const PostCard = ({
   const [commentText, setCommentText] = useState("");
   const [commentCount, setCommentCount] = useState(post.commentsCount || 0);
   const navigate = useNavigate();
+  const { currentUser } = useUser();
 
   const menuRef = useRef(null);
   const fileInputRef = useRef(null);

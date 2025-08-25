@@ -2,11 +2,13 @@ import React, { useState } from "react";
 import styles from "./Header.module.css";
 import avatarDefault from "../../assets/images/default_avatar.png";
 import { useAuth } from "../../context/AuthContext";
+import { useUser } from "../../context/UserContext";
 
 export default function Header() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   const { user, isLoggedIn, logout } = useAuth();
+  const { currentUser } = useUser();
 
   const toggleUserMenu = () => setIsMenuOpen(!isMenuOpen);
 
@@ -51,8 +53,7 @@ export default function Header() {
                     onClick={toggleUserMenu}
                     className={styles.userMenuButton}
                   >
-                    <img
-                      src={user?.avatar || avatarDefault}
+                      src={currentUser?.avatar || user.avatar || avatarDefault}
                       alt="Avatar"
                       className={styles.avatar}
                     />
