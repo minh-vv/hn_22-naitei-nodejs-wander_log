@@ -66,7 +66,7 @@ export default function BookmarkList() {
         setSelectedPost(item.post);
       }
     } else {
-      navigate(`/itineraries/${item.itinerary.id}`);
+      navigate(`/itineraries/${item.itinerary.slug}`);
     }
   };
 

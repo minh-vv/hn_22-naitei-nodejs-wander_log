@@ -460,7 +460,7 @@ export default function Profile() {
                       <DollarSign size={16} /> {formatCurrency(it.budget)}
                     </p>
                     <Link
-                      to={`/itineraries/${it.id}`}
+                      to={`/itineraries/${it.slug}`}
                       className={styles.itineraryButton}
                     >
                       Xem chi tiết

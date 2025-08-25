@@ -53,7 +53,6 @@ export default function Header() {
                     onClick={toggleUserMenu}
                     className={styles.userMenuButton}
                   >
-                    <img
                       src={currentUser?.avatar || user.avatar || avatarDefault}
                       alt="Avatar"
                       className={styles.avatar}
@@ -86,7 +85,7 @@ export default function Header() {
               <div className={styles.authButtons}>
                 <a href="/signin" className={styles.loginButton}>
                   Đăng nhập
-                </a>
+                </a >
                 <a href="/signup" className={styles.registerButton}>
                   Đăng ký
                 </a>

@@ -1,4 +1,15 @@
-import { Controller, Post, Body, HttpCode, HttpStatus, Get, UseGuards, Req, Res } from '@nestjs/common';
+import {
+  Controller,
+  Post,
+  Body,
+  HttpCode,
+  HttpStatus,
+  Get,
+  UseGuards,
+  Req,
+  Res,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { Response } from 'express';
 import { AuthService } from './auth.service';
@@ -37,8 +48,7 @@ export class AuthController {
 
   @Get('google')
   @UseGuards(AuthGuard('google'))
-  async googleAuth(@Req() req) {
-  }
+  async googleAuth(@Req() req) {}
 
   @Get('google/callback')
   @UseGuards(AuthGuard('google'))
@@ -46,6 +56,8 @@ export class AuthController {
     const { user, token } = req.user;
     
     const clientURL = process.env.APP_CLIENT_URL || 'http://localhost:3001';
-    res.redirect(`${clientURL}/auth/success?token=${token}&userId=${user.id}`);
+    res.redirect(
+      `${clientURL}/auth/success?token=${token}&userId=${user.id}&userName=${user.name || ''}&userAvatar=${user.avatar || ''}`
+    );
   }
 }
