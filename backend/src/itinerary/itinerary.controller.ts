@@ -8,6 +8,7 @@ import {
   Put,
   UseGuards,
   UnauthorizedException, 
+  Patch
 } from '@nestjs/common';
 import { ItineraryService } from './itinerary.service';
 import { CreateItineraryDto } from './dto/create-itinerary.dto';
@@ -73,5 +74,10 @@ export class ItineraryController {
         throw new UnauthorizedException('User not authenticated.');
     }
     return this.itineraryService.remove(id, user.id);
+  }
+
+  @Patch(':slug/view')
+  async increaseItineraryViews(@Param('slug') slug: string) {
+    return this.itineraryService.increaseViews(slug);
   }
 }

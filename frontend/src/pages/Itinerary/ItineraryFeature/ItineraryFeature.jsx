@@ -110,7 +110,7 @@ const ItineraryFeature = () => {
             <div
               key={itinerary.id}
               className={styles.itineraryCard}
-              onClick={() => navigate(`/itineraries/${itinerary.id}`)}
+              onClick={() => navigate(`/itineraries/${itinerary.slug}`)}
             >
               <h2 className={styles.cardTitle}>{itinerary.title}</h2>
               <button

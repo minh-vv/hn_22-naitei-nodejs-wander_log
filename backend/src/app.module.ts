@@ -25,6 +25,7 @@ import { InteractModule } from './interact/interact.module';
 import { AdminModule } from './admin/admin.module';
 import { BookmarksModule } from './bookmarks/bookmarks.module';
 import { UploadsModule } from './uploads/uploads.module'; 
+import { RatingsModule } from './ratings/ratings.module';
 
 @Module({
   imports: [
@@ -50,6 +51,7 @@ import { UploadsModule } from './uploads/uploads.module';
     InteractModule,
     AdminModule,
     BookmarksModule,
+    RatingsModule,
   ],
   controllers: [AppController, PostsController, UsersController],
   providers: [AppService, PostsService, UsersService],

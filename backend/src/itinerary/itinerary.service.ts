@@ -44,6 +44,7 @@ export class ItineraryService {
         user: true,
         posts: true,
         activities: true,
+        ratings: true, 
       },
     });
   }
@@ -63,6 +64,7 @@ export class ItineraryService {
       where: { slug },
       include: {
         user: true,
+        ratings: { select: { value: true, userId: true } }, 
         activities: {
           orderBy: {
             startTime: 'asc',
@@ -88,7 +90,15 @@ export class ItineraryService {
       throw new ForbiddenException(this.i18n.t('itinerary.forbidden_access'));
     }
 
-    return itinerary;
+    const averageRating = itinerary.ratings.length > 0
+      ? itinerary.ratings.reduce((acc, cur) => acc + cur.value, 0) / itinerary.ratings.length
+      : 0;
+      
+    return {
+      ...itinerary,
+      averageRating: parseFloat(averageRating.toFixed(1)), 
+      ratingCount: itinerary.ratings.length,
+    };
   }
 
   async findOneById(id: string, userId: string) {
@@ -96,6 +106,7 @@ export class ItineraryService {
       where: { id },
       include: {
         user: true,
+        ratings: { select: { value: true, userId: true } }, 
         activities: {
           orderBy: {
             startTime: 'asc',
@@ -116,14 +127,17 @@ export class ItineraryService {
         this.i18n.t('itinerary.not_found', { args: { id: id } }),
       );
     }
-    
-    if (itinerary.userId !== userId) {
-      throw new ForbiddenException(this.i18n.t('itinerary.forbidden_access'));
-    }
 
-    return itinerary;
+    const averageRating = itinerary.ratings.length > 0
+      ? itinerary.ratings.reduce((acc, cur) => acc + cur.value, 0) / itinerary.ratings.length
+      : 0;
+      
+    return {
+      ...itinerary,
+      averageRating: parseFloat(averageRating.toFixed(1)), 
+      ratingCount: itinerary.ratings.length,
+    };
   }
-
 
   async update(
     id: string,
@@ -192,6 +206,10 @@ export class ItineraryService {
     await this.prisma.bookmark.deleteMany({
       where: { itemId: id, type: 'ITINERARY' },
     });
+    
+    await this.prisma.rating.deleteMany({ 
+      where: { itineraryId: id },
+    });
 
     return {
       message: this.i18n.t('itinerary.deleted_success', {
@@ -208,6 +226,7 @@ export class ItineraryService {
       startDate: Date;
       endDate: Date;
       totalLikes: number;
+      slug: string;
       user: {
         id: string;
         name: string;
@@ -235,6 +254,7 @@ export class ItineraryService {
         budget: true,
         startDate: true,
         endDate: true,
+        slug: true,
         user: {
           select: {
             id: true,
@@ -259,6 +279,7 @@ export class ItineraryService {
           endDate: itinerary.endDate,
           totalLikes: _sum.likeCount ?? 0,
           user: itinerary.user,
+          slug: itinerary.slug,
         };
       })
       .filter(
@@ -267,4 +288,12 @@ export class ItineraryService {
 
     return result;
   }
+
+  
+  async increaseViews(slug: string) {
+      return this.prisma.itinerary.update({
+        where: { slug },
+        data: { views: { increment: 1 } },
+      });
+    }
 }
