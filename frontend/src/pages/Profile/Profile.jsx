@@ -116,6 +116,7 @@ export default function Profile() {
   const [isFollowing, setIsFollowing] = useState(false);
   const [followLoading, setFollowLoading] = useState(false);
   const [postsLoading, setPostsLoading] = useState(false);
+  const [loadUpload, setLoadUpload] = useState(false);
 
   const [editForm, setEditForm] = useState({
     name: "",
@@ -248,6 +249,7 @@ export default function Profile() {
     if (!file) return;
     try {
       setError("");
+      setLoadUpload("Đang upload ảnh! Hãy đợi ít phút!");
       const result = await updateAvatar(file);
       if (result.success) {
         setProfile((prev) => ({ ...prev, avatar: result.avatarUrl }));
@@ -258,6 +260,7 @@ export default function Profile() {
       setError(err.message || "Cập nhật ảnh đại diện thất bại");
     } finally {
       if (avatarFileInputRef.current) avatarFileInputRef.current.value = "";
+      setLoadUpload("");
     }
   };
 
@@ -331,7 +334,7 @@ export default function Profile() {
       <div className={styles.container}>
         {error && <div className={styles.error}>{error}</div>}
         {success && <div className={styles.success}>{success}</div>}
-
+        {loadUpload && <div className={styles.loadUpload}>{loadUpload}</div>}
         <div className={styles.profileHeader}>
           <div className={styles.avatarContainer}>
             <img
@@ -439,11 +442,7 @@ export default function Profile() {
                 itineraries.map((it) => (
                   <div key={it.id} className={styles.itineraryCard}>
                     <img
-                      src={
-                        it.coverImage
-                          ? `${process.env.REACT_APP_API_BASE_URL}${it.coverImage}`
-                          : coverItinerary
-                      }
+                      src={it.coverImage ? it.coverImage : coverItinerary}
                       alt={it.title}
                     />
                     <h3>{it.title}</h3>

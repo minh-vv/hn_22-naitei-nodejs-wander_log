@@ -24,7 +24,7 @@ const ItineraryDetail = () => {
 
   const [isBookmarked, setIsBookmarked] = useState(false);
   const [bookmarkId, setBookmarkId] = useState(null);
-  
+
   const [showCreatePost, setShowCreatePost] = useState(false);
   const [editingPostId, setEditingPostId] = useState(null);
 
@@ -55,7 +55,7 @@ const ItineraryDetail = () => {
 
   const checkBookmarkStatus = async () => {
     try {
-      const res = await bookmarkService.check("ITINERARY", id); 
+      const res = await bookmarkService.check("ITINERARY", id);
       setIsBookmarked(res.isBookmarked);
       setBookmarkId(res.bookmarkId || null);
     } catch (error) {
@@ -73,7 +73,8 @@ const ItineraryDetail = () => {
     }
   }, [itinerary]);
 
-  const isOwner = itinerary && currentUser && itinerary.user.id === currentUser.id;
+  const isOwner =
+    itinerary && currentUser && itinerary.user.id === currentUser.id;
 
   const handleDeleteItinerary = async () => {
     if (window.confirm("Are you sure you want to delete this itinerary?")) {
@@ -127,7 +128,10 @@ const ItineraryDetail = () => {
         setIsBookmarked(false);
         setBookmarkId(null);
       } else {
-        const newBookmark = await bookmarkService.create({ type: "ITINERARY", itemId: id });
+        const newBookmark = await bookmarkService.create({
+          type: "ITINERARY",
+          itemId: id,
+        });
         setIsBookmarked(true);
         setBookmarkId(newBookmark.id);
       }
@@ -143,18 +147,18 @@ const ItineraryDetail = () => {
 
   const handlePostCreated = (newPost) => {
     setShowCreatePost(false);
-    setPosts(prevPosts => [newPost, ...prevPosts]);
+    setPosts((prevPosts) => [newPost, ...prevPosts]);
   };
 
   const handleCancelCreatePost = () => {
     setShowCreatePost(false);
   };
-  
+
   const handleDeletePost = async (post) => {
     if (window.confirm("Are you sure you want to delete this post?")) {
       try {
         await postService.deletePost(post.id);
-        setPosts(prevPosts => prevPosts.filter(p => p.id !== post.id));
+        setPosts((prevPosts) => prevPosts.filter((p) => p.id !== post.id));
       } catch (error) {
         console.error("Error when delete post:", error);
       }
@@ -164,17 +168,22 @@ const ItineraryDetail = () => {
   const handleEditPost = (post) => {
     setEditingPostId(post.id);
   };
-  
+
   const handleUpdatePost = async (updatedPostData) => {
     try {
-      const res = await postService.updatePost(updatedPostData.id, updatedPostData);
-      setPosts(prevPosts => prevPosts.map(p => (p.id === res.id ? res : p)));
+      const res = await postService.updatePost(
+        updatedPostData.id,
+        updatedPostData
+      );
+      setPosts((prevPosts) =>
+        prevPosts.map((p) => (p.id === res.id ? res : p))
+      );
       setEditingPostId(null);
     } catch (error) {
       console.error("Error when update:", error);
     }
   };
-  
+
   const groupActivitiesByDate = (activities) => {
     if (!activities) return {};
     const grouped = {};
@@ -201,7 +210,9 @@ const ItineraryDetail = () => {
     return grouped;
   };
 
-  const groupedActivities = itinerary ? groupActivitiesByDate(itinerary.activities) : {};
+  const groupedActivities = itinerary
+    ? groupActivitiesByDate(itinerary.activities)
+    : {};
   const sortedDates = Object.keys(groupedActivities).sort();
 
   const formatDate = (dateString, formatType) => {
@@ -279,8 +290,9 @@ const ItineraryDetail = () => {
           <div className={styles.heroImageContainer}>
             <img
               src={
-                itinerary.coverImage ? `${process.env.REACT_APP_API_BASE_URL}${itinerary.coverImage}` :
-                "https://images.unsplash.com/photo-1501785888041-af3ef285b470?q=80&w=2670&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
+                itinerary.coverImage
+                  ? itinerary.coverImage
+                  : "https://images.unsplash.com/photo-1501785888041-af3ef285b470?q=80&w=2670&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
               }
               alt={itinerary.title}
               className={styles.heroImage}
@@ -350,26 +362,36 @@ const ItineraryDetail = () => {
 
           <div className={styles.actionButtons}>
             {isOwner && (
-              <button onClick={handleCreatePostClick} className={styles.createPostButton}>
+              <button
+                onClick={handleCreatePostClick}
+                className={styles.createPostButton}
+              >
                 <i className="ri-add-circle-line"></i>
                 <span>Create Post</span>
               </button>
             )}
-            <button onClick={handleBookmarkClick} className={styles.bookmarkButton}>
-              <i className={isBookmarked ? "ri-bookmark-fill" : "ri-bookmark-line"}></i>
+            <button
+              onClick={handleBookmarkClick}
+              className={styles.bookmarkButton}
+            >
+              <i
+                className={
+                  isBookmarked ? "ri-bookmark-fill" : "ri-bookmark-line"
+                }
+              ></i>
               <span>{isBookmarked ? "Bookmarked" : "Bookmark"}</span>
             </button>
           </div>
         </div>
 
         {isOwner && showCreatePost && (
-            <CreatePost 
-                itinerary={itinerary} 
-                onPostCreated={handlePostCreated} 
-                onCancel={handleCancelCreatePost}
-            />
+          <CreatePost
+            itinerary={itinerary}
+            onPostCreated={handlePostCreated}
+            onCancel={handleCancelCreatePost}
+          />
         )}
-        
+
         <div className={styles.descriptionContainer}>
           <p className={styles.description}>{itinerary.description}</p>
         </div>
@@ -399,7 +421,7 @@ const ItineraryDetail = () => {
             </button>
           </div>
         )}
-        
+
         <div className={styles.itineraryDays}>
           {sortedDates.length === 0 ? (
             <div className={styles.emptyActivities}>
@@ -436,7 +458,9 @@ const ItineraryDetail = () => {
                           {isOwner && (
                             <div className={styles.activityControls}>
                               <button
-                                onClick={() => handleEditActivityClick(activity)}
+                                onClick={() =>
+                                  handleEditActivityClick(activity)
+                                }
                                 className={styles.editActivityButton}
                                 title="Edit activity"
                               >
@@ -478,22 +502,24 @@ const ItineraryDetail = () => {
         </div>
 
         <div className={styles.postsSection}>
-            <h2 className={styles.sectionTitle}>Related Post</h2>
-            {posts.length > 0 ? (
-                posts.map(post => (
-                    <PostCard
-                      key={post.id} 
-                      post={post}
-                      isEditing={editingPostId === post.id}
-                      onDelete={handleDeletePost}
-                      onEdit={() => handleEditPost(post)}
-                      onCancelEdit={() => setEditingPostId(null)}
-                      onSubmitEdit={handleUpdatePost}
-                    />
-                ))
-            ) : (
-                <p className={styles.noPostsMessage}>This itinerary have not have any related post.</p>
-            )}
+          <h2 className={styles.sectionTitle}>Related Post</h2>
+          {posts.length > 0 ? (
+            posts.map((post) => (
+              <PostCard
+                key={post.id}
+                post={post}
+                isEditing={editingPostId === post.id}
+                onDelete={handleDeletePost}
+                onEdit={() => handleEditPost(post)}
+                onCancelEdit={() => setEditingPostId(null)}
+                onSubmitEdit={handleUpdatePost}
+              />
+            ))
+          ) : (
+            <p className={styles.noPostsMessage}>
+              This itinerary have not have any related post.
+            </p>
+          )}
         </div>
       </div>
 

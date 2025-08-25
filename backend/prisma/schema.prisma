@@ -139,6 +139,7 @@ model Post {
 model Media {
   id        String   @id @default(cuid())
   url       String   @db.Text 
+  publicId  String?  @map("public_id")
   postId    String   @map("post_id")
   createdAt DateTime @default(now()) @map("created_at")
   

@@ -8,16 +8,18 @@ import { CreatePostDto } from './dto/create-post.dto';
 import { UpdatePostDto } from './dto/update-post.dto';
 import { Visibility } from '@prisma/client';
 import { I18nService } from 'nestjs-i18n';
+import { UploadService } from 'src/uploads/uploads.service';
 
 @Injectable()
 export class PostsService {
   constructor(
     private prisma: PrismaService,
     private readonly i18n: I18nService,
+    private readonly uploadService: UploadService,
   ) {}
 
   async create(userId: string, createPostDto: CreatePostDto) {
-    const { content, itineraryId, mediaUrls } = createPostDto;
+    const { content, itineraryId, mediaFiles } = createPostDto;
 
     const itinerary = await this.prisma.itinerary.findUnique({
       where: { id: itineraryId },
@@ -41,7 +43,10 @@ export class PostsService {
         user: { connect: { id: userId } },
         itinerary: { connect: { id: itineraryId } },
         media: {
-          create: mediaUrls.map((url) => ({ url })),
+          create: mediaFiles.map((file) => ({
+            url: file.url,
+            publicId: file.publicId,
+          })),
         },
       },
       include: {
@@ -157,24 +162,37 @@ export class PostsService {
   async update(postId: string, userId: string, updatePostDto: UpdatePostDto) {
     await this.findPostAndCheckOwnership(postId, userId);
 
-    const { content, mediaUrlsToAdd, mediaIdsToDelete } = updatePostDto;
+    const { content, mediaFilesToAdd, mediaIdsToDelete } = updatePostDto;
 
     const updatedPost = await this.prisma.$transaction(async (tx) => {
       if (mediaIdsToDelete && mediaIdsToDelete.length > 0) {
+        const medias = await this.prisma.media.findMany({
+          where: { id: { in: mediaIdsToDelete }, postId },
+          select: { publicId: true },
+        });
+        for (const m of medias) {
+          if (m.publicId) {
+            try {
+              await this.uploadService.deleteByPublicId(m.publicId);
+            } catch (e) {
+              console.error('Delete from Cloudinary failed:', e);
+            }
+          }
+        }
+
         await tx.media.deleteMany({
           where: {
-            id: {
-              in: mediaIdsToDelete,
-            },
+            id: { in: mediaIdsToDelete },
             postId: postId,
           },
         });
       }
 
-      if (mediaUrlsToAdd && mediaUrlsToAdd.length > 0) {
+      if (mediaFilesToAdd && mediaFilesToAdd.length > 0) {
         await tx.media.createMany({
-          data: mediaUrlsToAdd.map((url) => ({
-            url,
+          data: mediaFilesToAdd.map((file) => ({
+            url: file.url,
+            publicId: file.publicId,
             postId: postId,
           })),
         });
@@ -208,6 +226,7 @@ export class PostsService {
             select: {
               id: true,
               url: true,
+              publicId: true,
             },
           },
           favoritedBy: {
@@ -227,7 +246,6 @@ export class PostsService {
 
   async delete(postId: string, userId: string) {
     await this.findPostAndCheckOwnership(postId, userId);
-
     await this.prisma.post.delete({ where: { id: postId } });
     await this.prisma.bookmark.deleteMany({
       where: { itemId: postId, type: 'POST' },

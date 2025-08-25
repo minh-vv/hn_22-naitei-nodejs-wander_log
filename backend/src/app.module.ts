@@ -24,8 +24,8 @@ import { UsersModule } from './users/users.module';
 import { InteractModule } from './interact/interact.module';
 import { AdminModule } from './admin/admin.module';
 import { BookmarksModule } from './bookmarks/bookmarks.module';
-import { UploadsModule } from './uploads/uploads.module'; 
-
+import { CloudinaryModule } from './cloudinary/cloudinary.module';
+import { UploadModule } from './uploads/uploads.module';
 @Module({
   imports: [
     ConfigModule.forRoot({
@@ -38,7 +38,6 @@ import { UploadsModule } from './uploads/uploads.module';
     MailsModule,
     ItineraryModule,
     PostsModule,
-    UploadsModule,
     I18nModule.forRoot(i18nConfig),
     FilesModule,
     ServeStaticModule.forRoot({
@@ -50,6 +49,8 @@ import { UploadsModule } from './uploads/uploads.module';
     InteractModule,
     AdminModule,
     BookmarksModule,
+    CloudinaryModule,
+    UploadModule,
   ],
   controllers: [AppController, PostsController, UsersController],
   providers: [AppService, PostsService, UsersService],

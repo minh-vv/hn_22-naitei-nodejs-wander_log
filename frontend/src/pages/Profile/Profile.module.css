@@ -629,6 +629,15 @@
   border-left: 4px solid #4caf50;
 }
 
+.loadUpload {
+  background: #ffebee;
+  color: #856404;
+  padding: 16px;
+  border-radius: 8px;
+  margin-bottom: 20px;
+  border-left: 4px solid #856404;
+}
+
 @media (max-width: 768px) {
   .container {
     padding: 16px;

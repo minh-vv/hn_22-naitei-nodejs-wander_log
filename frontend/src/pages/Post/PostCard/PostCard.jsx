@@ -7,6 +7,7 @@ import TimeAgo from "../../../component/TimeAgo";
 import postService from "../../../services/post";
 import bookmarkService from "../../../services/bookmark";
 import { useUser } from "../../../context/UserContext";
+import uploadService from "../../../services/upload";
 
 const PostCard = ({
   post,
@@ -37,6 +38,8 @@ const PostCard = ({
   const [commentCount, setCommentCount] = useState(post.commentsCount || 0);
   const navigate = useNavigate();
   const { currentUser } = useUser();
+  const [uploadedResults, setUploadedResults] = useState(null);
+  const [uploading, setUploading] = useState(false);
 
   const menuRef = useRef(null);
   const fileInputRef = useRef(null);
@@ -195,17 +198,49 @@ const PostCard = ({
     setRemovedImageIds((prev) => [...prev, id]);
   }, []);
 
-  const handleRemoveNewImage = useCallback((index) => {
-    setNewImages((prev) => prev.filter((_, i) => i !== index));
-  }, []);
+  const handleRemoveNewImage = useCallback(
+    async (index) => {
+      const removedFile = uploadedResults[index];
 
-  const handleAddImages = (e) => {
+      if (removedFile.publicId) {
+        try {
+          await uploadService.deleteMedia(
+            removedFile.publicId,
+            removedFile.type.startsWith("video") ? "video" : "image"
+          );
+          console.log("Deleted from Cloudinary:", removedFile.publicId);
+        } catch (err) {
+          console.error("Failed to delete media", err);
+        }
+      }
+
+      URL.revokeObjectURL(newImages[index].preview);
+      setNewImages((prev) => prev.filter((_, i) => i !== index));
+    },
+    [newImages]
+  );
+
+  const handleAddImages = async (e) => {
     const files = Array.from(e.target.files);
     const mapped = files.map((file) => ({
       file,
       preview: URL.createObjectURL(file),
     }));
     setNewImages((prev) => [...prev, ...mapped]);
+    setUploading(true);
+    try {
+      const uploaded = await uploadService.uploadMediaFiles(files);
+      const uploadedWithType = uploaded.map((item, idx) => ({
+        ...item,
+        type: files[idx].type,
+      }));
+
+      setUploadedResults((prev) => [...(prev || []), ...uploadedWithType]);
+    } catch (err) {
+      console.error("Upload failed:", err);
+    } finally {
+      setUploading(false);
+    }
   };
 
   const handleSaveEdit = async () => {
@@ -215,16 +250,10 @@ const PostCard = ({
     }
 
     try {
-      const mediaUrls = (
-        await postService.uploadMediaFiles(newImages.map((img) => img.file))
-      )
-        .map((url) => url.trim().replace(/^"|"$/g, ""))
-        .filter((url) => url);
-
       onSubmitEdit({
         id: post.id,
         content: editedContent,
-        mediaUrlsToAdd: mediaUrls,
+        mediaFilesToAdd: uploadedResults,
         mediaIdsToDelete: removedImageIds,
       });
     } catch (error) {
@@ -302,7 +331,6 @@ const PostCard = ({
       );
     }
 
-    // nhiều hơn 2
     return (
       <div className={styles.imageGridTwo}>
         {isVideo(post.media[0].url) ? (
@@ -349,6 +377,11 @@ const PostCard = ({
 
   return (
     <div className={styles.postCard}>
+      {uploading && (
+        <div className={styles.uploadingNotice}>
+          Uploading files, please wait...
+        </div>
+      )}
       <div className={styles.header}>
         <div className={styles.authorInfo}>
           <img

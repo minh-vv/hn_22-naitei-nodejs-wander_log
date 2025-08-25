@@ -52,26 +52,6 @@ const postService = {
     }
   },
 
-  uploadMediaFiles: async (files) => {
-    try {
-      const uploadedUrls = [];
-      for (const file of files) {
-        const formData = new FormData();
-        formData.append("file", file);
-        const res = await apiClient.post("/files/upload", formData, {
-          headers: { "Content-Type": "multipart/form-data" },
-          skipAuth: true,
-        });
-        uploadedUrls.push(...res.data.mediaUrls);
-      }
-      return uploadedUrls;
-    } catch (error) {
-      throw new Error(
-        error.response?.data?.message || "Failed to upload media files"
-      );
-    }
-  },
-
   likePost: async (id) => {
     try {
       const res = await apiClient.post(`/posts/${id}/like`);

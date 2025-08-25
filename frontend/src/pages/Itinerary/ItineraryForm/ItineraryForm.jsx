@@ -46,7 +46,7 @@ const ItineraryForm = () => {
             coverImage: itinerary.coverImage || null,
           });
           if (itinerary.coverImage) {
-            setCoverImagePreview(`http://localhost:3000${itinerary.coverImage}`);
+            setCoverImagePreview(`${itinerary.coverImage}`);
           }
         } catch (err) {
           setError("Failed to load itinerary for editing.");
@@ -113,7 +113,9 @@ const ItineraryForm = () => {
       }
 
       if (coverImageFile) {
-        finalCoverImageUrl = await uploadService.uploadItineraryCover(coverImageFile);
+        finalCoverImageUrl = await uploadService.uploadItineraryCover(
+          coverImageFile
+        );
       } else if (isEditing && !formData.coverImage) {
         finalCoverImageUrl = null;
       }
@@ -159,7 +161,7 @@ const ItineraryForm = () => {
       <div className={styles.container}>
         <div className={styles.header}>
           <button
-            onClick={() => navigate("/home")} 
+            onClick={() => navigate("/home")}
             className={styles.backButton}
           >
             <ArrowLeft size={24} />
@@ -261,8 +263,16 @@ const ItineraryForm = () => {
             </button>
             {coverImagePreview && (
               <div className={styles.imagePreviewContainer}>
-                <img src={coverImagePreview} alt="Cover Preview" className={styles.imagePreview} />
-                <button type="button" onClick={handleRemoveImage} className={styles.removeImageButton}>
+                <img
+                  src={coverImagePreview}
+                  alt="Cover Preview"
+                  className={styles.imagePreview}
+                />
+                <button
+                  type="button"
+                  onClick={handleRemoveImage}
+                  className={styles.removeImageButton}
+                >
                   &times;
                 </button>
               </div>

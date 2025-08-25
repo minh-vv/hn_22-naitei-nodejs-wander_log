@@ -1,7 +1,7 @@
 import React, { createContext, useState, useContext, useEffect } from "react";
 import { useAuth } from "./AuthContext";
 import userService from "../services/user.js";
-import postService from "../services/post";
+import uploadService from "../services/upload.js";
 
 const UserContext = createContext(null);
 
@@ -31,8 +31,8 @@ export function UserProvider({ children }) {
     try {
       setIsUpdatingAvatar(true);
 
-      const urls = await postService.uploadMediaFiles([file]);
-      const avatarUrl = urls?.[0]?.trim()?.replace(/^"|"$/g, "");
+      const urls = await uploadService.uploadMediaFiles([file]);
+      const avatarUrl = urls[0]?.url;
 
       if (avatarUrl) {
         const updatedProfile = await userService.updateProfile({
