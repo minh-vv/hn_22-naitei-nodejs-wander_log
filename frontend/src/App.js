@@ -22,6 +22,7 @@ import AdminItineraries from "./pages/Admin/AdminItineraries/AdminItineraries";
 import AdminItineraryDetail from './pages/Admin/AdminItineraryDetail/AdminItineraryDetail'; 
 import AdminUserDetail from "./pages/Admin/AdminUserDetail/AdminUserDetail";
 import Profile from "./pages/Profile/Profile";
+import Search from "./pages/Search/Search";
 
 const ProtectedRoute = ({ children }) => {
   const token = sessionStorage.getItem("userToken");
@@ -63,6 +64,16 @@ function App() {
           element={
             <ProtectedRoute>
               <Home />
+            </ProtectedRoute>
+          } 
+        />
+
+        {/* Search route */}
+        <Route 
+          path="/search" 
+          element={
+            <ProtectedRoute>
+              <Search />
             </ProtectedRoute>
           } 
         />
@@ -112,7 +123,7 @@ function App() {
           } 
         />
         <Route 
-          path="/itineraries/:id" 
+          path="/itineraries/:slug" 
           element={
             <ProtectedRoute>
               <ItineraryDetail />

@@ -7,6 +7,7 @@ import { AuthModule } from 'src/auth/auth.module';
 @Module({
   imports: [AuthModule],
   providers: [ItineraryService, PrismaService],
-  controllers: [ItineraryController]
+  controllers: [ItineraryController],
+  exports: [ItineraryService]
 })
 export class ItineraryModule {}

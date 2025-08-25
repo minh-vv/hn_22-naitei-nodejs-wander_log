@@ -3,62 +3,81 @@ import {
   Get,
   Post,
   Body,
-  Put,
   Param,
   Delete,
+  Put,
   UseGuards,
-  Req,
+  UnauthorizedException, 
+  Patch
 } from '@nestjs/common';
 import { ItineraryService } from './itinerary.service';
 import { CreateItineraryDto } from './dto/create-itinerary.dto';
 import { UpdateItineraryDto } from './dto/update-itinerary.dto';
-import { JwtAuthGuard } from '../auth/jwt-auth.guard';
+import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
 import { GetUser } from 'src/auth/get-user.decorator';
 import { User } from '@prisma/client';
 
+@UseGuards(JwtAuthGuard)
 @Controller('itineraries')
 export class ItineraryController {
   constructor(private readonly itineraryService: ItineraryService) {}
 
-  @UseGuards(JwtAuthGuard)
   @Post()
-  async create(
-    @Body() createItineraryDto: CreateItineraryDto,
-    @GetUser() user: User,
-  ) {
+  create(@Body() createItineraryDto: CreateItineraryDto, @GetUser() user: User) {
+    if (!user || !user.id) {
+        throw new UnauthorizedException('User not authenticated.');
+    }
     return this.itineraryService.create(user.id, createItineraryDto);
   }
 
-  @UseGuards(JwtAuthGuard)
   @Get()
-  async findAll(@GetUser() user: User) {
+  findAll(@GetUser() user: User) {
+    if (!user || !user.id) {
+        throw new UnauthorizedException('User not authenticated.');
+    }
     return this.itineraryService.findAll(user.id);
   }
 
   @Get('feature')
-  async findFeaturedItinerary() {
+  findFeaturedItinerary() {
     return this.itineraryService.findFeaturedItinerary();
   }
 
-  @UseGuards(JwtAuthGuard)
-  @Get(':id')
-  async findOne(@Param('id') id: string, @GetUser() user: User) {
-    return this.itineraryService.findOne(id, user.id);
+  @Get('id/:id')
+  findOneById(@Param('id') id: string, @GetUser() user: User) {
+    if (!user || !user.id) {
+        throw new UnauthorizedException('User not authenticated.');
+    }
+    return this.itineraryService.findOneById(id, user.id);
   }
 
-  @UseGuards(JwtAuthGuard)
+  @Get(':slug')
+  findOne(@Param('slug') slug: string, @GetUser() user: User) {
+    return this.itineraryService.findOne(slug, user?.id);
+  }
+
   @Put(':id')
-  async update(
+  update(
     @Param('id') id: string,
     @Body() updateItineraryDto: UpdateItineraryDto,
     @GetUser() user: User,
   ) {
+    if (!user || !user.id) {
+        throw new UnauthorizedException('User not authenticated.');
+    }
     return this.itineraryService.update(id, user.id, updateItineraryDto);
   }
 
-  @UseGuards(JwtAuthGuard)
   @Delete(':id')
-  async remove(@Param('id') id: string, @GetUser() user: User) {
+  remove(@Param('id') id: string, @GetUser() user: User) {
+    if (!user || !user.id) {
+        throw new UnauthorizedException('User not authenticated.');
+    }
     return this.itineraryService.remove(id, user.id);
+  }
+
+  @Patch(':slug/view')
+  async increaseItineraryViews(@Param('slug') slug: string) {
+    return this.itineraryService.increaseViews(slug);
   }
 }

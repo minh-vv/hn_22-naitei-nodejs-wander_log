@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import itineraryService from "../../../services/itinerary";
-import uploadService from "../../../services/upload";
+import uploadService from "../../../services/upload"; 
 import { Plus, Edit, ArrowLeft } from "lucide-react";
 import styles from "./ItineraryForm.module.css";
 
@@ -14,6 +14,7 @@ const ItineraryForm = () => {
     budget: "",
     visibility: "PRIVATE",
     coverImage: null,
+    slug: "", 
   });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
@@ -36,14 +37,15 @@ const ItineraryForm = () => {
             navigate("/signin");
             return;
           }
-          const itinerary = await itineraryService.getItineraryById(id);
+          const itineraryData = await itineraryService.getItineraryById(id); 
           setFormData({
-            ...itinerary,
-            startDate: itinerary.startDate.split("T")[0],
-            endDate: itinerary.endDate.split("T")[0],
-            budget: itinerary.budget !== null ? itinerary.budget : "",
-            visibility: itinerary.visibility,
-            coverImage: itinerary.coverImage || null,
+            ...itineraryData,
+            startDate: itineraryData.startDate.split("T")[0],
+            endDate: itineraryData.endDate.split("T")[0],
+            budget: itineraryData.budget !== null ? itineraryData.budget : "",
+            visibility: itineraryData.visibility,
+            coverImage: itineraryData.coverImage || null,
+            slug: itineraryData.slug || "", 
           });
           if (itinerary.coverImage) {
             setCoverImagePreview(`${itinerary.coverImage}`);
@@ -131,13 +133,13 @@ const ItineraryForm = () => {
       };
 
       if (isEditing) {
-        await itineraryService.updateItinerary(id, dataToSend);
+        const updatedItinerary = await itineraryService.updateItinerary(id, dataToSend);
         setMessage("Itinerary updated successfully!");
-        setTimeout(() => navigate(`/itineraries/${id}`), 2000);
+        setTimeout(() => navigate(`/itineraries/${updatedItinerary.slug}`), 2000);
       } else {
         const newItinerary = await itineraryService.createItinerary(dataToSend);
         setMessage("Itinerary created successfully!");
-        setTimeout(() => navigate(`/itineraries/${newItinerary.id}`), 2000);
+        setTimeout(() => navigate(`/itineraries/${newItinerary.slug}`), 2000);
       }
     } catch (err) {
       setError(`Error: ${err.message || "Failed to save itinerary."}`);
@@ -161,7 +163,7 @@ const ItineraryForm = () => {
       <div className={styles.container}>
         <div className={styles.header}>
           <button
-            onClick={() => navigate("/home")}
+            onClick={() => navigate(`/itineraries/${formData.slug}`)}
             className={styles.backButton}
           >
             <ArrowLeft size={24} />
