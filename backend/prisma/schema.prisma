@@ -47,6 +47,7 @@ model User {
   passwordResets  PasswordReset[]
   itineraries     Itinerary[]
   posts           Post[]
+  ratings         Rating[]
 
   followedBy      Follow[]               @relation("FollowerUsers")
   following       Follow[]               @relation("FollowingUsers")
@@ -84,6 +85,7 @@ model PasswordReset {
 model Itinerary {
   id          String     @id @default(cuid())
   title       String
+  slug        String     @unique
   destination String?
   startDate   DateTime   @map("start_date")
   endDate     DateTime   @map("end_date")
@@ -93,9 +95,11 @@ model Itinerary {
   createdAt   DateTime   @default(now()) @map("created_at")
   updatedAt   DateTime   @updatedAt
   coverImage  String?
+  views            Int   @default(0)
   user        User       @relation(fields: [userId], references: [id], onDelete: Cascade)
   posts       Post[]
   activities  Activity[]
+  ratings     Rating[]
   @@map("itineraries")
 }
 
@@ -197,4 +201,17 @@ model AdminLog {
   createdAt DateTime @default(now()) @map("created_at")
 
   @@map("admin_logs")
+}
+
+model Rating {
+  id            String    @id @default(uuid())
+  itineraryId   String
+  itinerary     Itinerary @relation(fields: [itineraryId], references: [id], onDelete: Cascade)
+  userId        String
+  user          User      @relation(fields: [userId], references: [id])
+  value         Int       
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  @@unique([userId, itineraryId])
 }

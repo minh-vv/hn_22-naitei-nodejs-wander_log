@@ -123,7 +123,7 @@ function App() {
           } 
         />
         <Route 
-          path="/itineraries/:id" 
+          path="/itineraries/:slug" 
           element={
             <ProtectedRoute>
               <ItineraryDetail />

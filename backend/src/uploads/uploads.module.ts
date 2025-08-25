@@ -2,16 +2,16 @@ import { Module } from '@nestjs/common';
 import { MulterModule } from '@nestjs/platform-express';
 import { UploadsController } from './uploads.controller';
 import { diskStorage } from 'multer';
-import { extname } from 'path';
+import { generateRandomFilename } from '../utils/file-upload.utils'; 
 
 @Module({
   imports: [
     MulterModule.register({
       storage: diskStorage({
-        destination: './uploads/itinerary-covers', 
+        destination: './uploads/itinerary-covers',
         filename: (req, file, cb) => {
-          const randomName = Array(32).fill(null).map(() => (Math.round(Math.random() * 16)).toString(16)).join('');
-          cb(null, `${randomName}${extname(file.originalname)}`);
+          const filename = generateRandomFilename(file.originalname);
+          cb(null, filename);
         },
       }),
       fileFilter: (req, file, cb) => {

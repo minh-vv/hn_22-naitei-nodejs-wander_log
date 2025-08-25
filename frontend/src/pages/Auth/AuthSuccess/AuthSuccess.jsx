@@ -11,9 +11,13 @@ function AuthSuccess() {
   useEffect(() => {
     const token = searchParams.get("token");
     const userId = searchParams.get("userId");
+    const userName = searchParams.get("userName");
+    const userAvatar = searchParams.get("userAvatar");
 
     const user = { 
         id: userId,
+        name: userName,
+        avatar: userAvatar,
     };
 
     if (token && userId) { 

@@ -78,7 +78,7 @@ export default function Header() {
                     className={styles.userMenuButton}
                   >
                     <img
-                      src={user.avatar || avatarDefault}
+                      src={user?.avatar || avatarDefault}
                       alt="Avatar"
                       className={styles.avatar}
                     />
@@ -110,7 +110,7 @@ export default function Header() {
               <div className={styles.authButtons}>
                 <a href="/signin" className={styles.loginButton}>
                   Đăng nhập
-                </a>
+                </a >
                 <a href="/signup" className={styles.registerButton}>
                   Đăng ký
                 </a>
