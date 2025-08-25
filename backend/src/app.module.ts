@@ -24,7 +24,8 @@ import { UsersModule } from './users/users.module';
 import { InteractModule } from './interact/interact.module';
 import { AdminModule } from './admin/admin.module';
 import { BookmarksModule } from './bookmarks/bookmarks.module';
-import { UploadsModule } from './uploads/uploads.module'; 
+import { UploadsModule } from './uploads/uploads.module';
+import { SearchModule } from './search/search.module'; 
 import { RatingsModule } from './ratings/ratings.module';
 
 @Module({
@@ -51,6 +52,7 @@ import { RatingsModule } from './ratings/ratings.module';
     InteractModule,
     AdminModule,
     BookmarksModule,
+    SearchModule,
     RatingsModule,
   ],
   controllers: [AppController, PostsController, UsersController],

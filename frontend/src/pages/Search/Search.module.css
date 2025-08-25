@@ -1,0 +1,410 @@
+.searchPage {
+    min-height: 100vh;
+    background-color: #f8f9fa;
+  }
+  
+  .container {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 20px;
+  }
+  
+  .searchSection {
+    background: white;
+    border-radius: 12px;
+    padding: 24px;
+    margin-bottom: 24px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  }
+  
+  .searchForm {
+    width: 100%;
+  }
+  
+  .searchInputGroup {
+    display: flex;
+    gap: 12px;
+    align-items: center;
+  }
+  
+  .searchInput {
+    flex: 1;
+    padding: 12px 16px;
+    border: 2px solid #e9ecef;
+    border-radius: 8px;
+    font-size: 16px;
+    transition: border-color 0.2s ease;
+  }
+  
+  .searchInput:focus {
+    outline: none;
+    border-color: #007bff;
+  }
+  
+  .searchButton {
+    padding: 12px 16px;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 18px;
+    transition: background-color 0.2s ease;
+  }
+  
+  .searchButton:hover {
+    background-color: #0056b3;
+  }
+  
+  .tabsContainer {
+    display: flex;
+    gap: 4px;
+    margin-bottom: 24px;
+    background: white;
+    border-radius: 8px;
+    padding: 4px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  }
+  
+  .tab {
+    flex: 1;
+    padding: 12px 16px;
+    border: none;
+    background: transparent;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: 500;
+    transition: all 0.2s ease;
+    color: #6c757d;
+  }
+  
+  .tab:hover {
+    background-color: #f8f9fa;
+    color: #495057;
+  }
+  
+  .tab.active {
+    background-color: #007bff;
+    color: white;
+  }
+  
+  .resultsSection {
+    space-y: 24px;
+  }
+  
+  .resultGroup {
+    background: white;
+    border-radius: 12px;
+    padding: 24px;
+    margin-bottom: 24px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  }
+  
+  .resultGroupTitle {
+    margin: 0 0 16px 0;
+    font-size: 18px;
+    font-weight: 600;
+    color: #333;
+  }
+  
+  .userResults,
+  .itineraryResults,
+  .locationResults {
+    display: grid;
+    gap: 16px;
+  }
+  
+  .userCard,
+  .itineraryCard,
+  .locationCard {
+    display: flex;
+    align-items: center;
+    padding: 16px;
+    border: 1px solid #e9ecef;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+  
+  .userCard:hover,
+  .itineraryCard:hover,
+  .locationCard:hover {
+    border-color: #007bff;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 123, 255, 0.15);
+  }
+  
+  .userAvatar,
+  .authorAvatar {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    object-fit: cover;
+    margin-right: 12px;
+  }
+  
+  .userInfo,
+  .itineraryInfo,
+  .locationInfo {
+    flex: 1;
+  }
+  
+  .userName,
+  .itineraryTitle,
+  .locationName {
+    margin: 0 0 4px 0;
+    font-size: 16px;
+    font-weight: 600;
+    color: #333;
+  }
+  
+  .userBio,
+  .itineraryDestination,
+  .itineraryDates,
+  .locationType {
+    margin: 0;
+    font-size: 14px;
+    color: #6c757d;
+  }
+  
+  .itineraryDestination {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    margin-bottom: 8px;
+  }
+  
+  .itineraryDates {
+    margin-bottom: 12px;
+  }
+  
+  .itineraryCover {
+    width: 80px;
+    height: 60px;
+    border-radius: 6px;
+    object-fit: cover;
+    margin-right: 16px;
+  }
+  
+  .itineraryAuthor {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  
+  .authorName {
+    font-size: 14px;
+    color: #6c757d;
+  }
+  
+  .locationIcon {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    background-color: #e9ecef;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-right: 12px;
+    font-size: 20px;
+    color: #6c757d;
+  }
+  
+  .loading {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 48px 24px;
+    color: #6c757d;
+  }
+  
+  .spinner {
+    width: 32px;
+    height: 32px;
+    border: 3px solid #e9ecef;
+    border-top: 3px solid #007bff;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    margin-bottom: 16px;
+  }
+  
+  @keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+  }
+  
+  .noResults {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 48px 24px;
+    text-align: center;
+    color: #6c757d;
+  }
+  
+  .noResultsIcon {
+    font-size: 48px;
+    margin-bottom: 16px;
+    opacity: 0.5;
+  }
+  
+  .noResults h3 {
+    margin: 0 0 8px 0;
+    color: #333;
+  }
+  
+  .noResults p {
+    margin: 0;
+  }
+  
+  /* Responsive */
+  @media (max-width: 768px) {
+    .container {
+      padding: 16px;
+    }
+  
+    .searchSection {
+      padding: 16px;
+    }
+  
+    .tabsContainer {
+      flex-direction: column;
+      gap: 8px;
+    }
+  
+    .tab {
+      text-align: center;
+    }
+  
+    .userCard,
+    .itineraryCard,
+    .locationCard {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 12px;
+    }
+  
+    .itineraryCover {
+      width: 100%;
+      height: 120px;
+      margin-right: 0;
+    }
+  }
+
+  .pagination {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 8px;
+    margin: 24px 0;
+    padding: 20px;
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  }
+
+  .pageButton {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 8px 16px;
+    background: #f8f9fa;
+    border: 1px solid #e9ecef;
+    border-radius: 6px;
+    color: #495057;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: 500;
+    transition: all 0.2s ease;
+  }
+
+  .pageButton:hover:not(.disabled) {
+    background: #007bff;
+    color: white;
+    border-color: #007bff;
+  }
+
+  .pageButton.disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    pointer-events: none;
+  }
+
+  .pageNumbers {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    margin: 0 12px;
+  }
+
+  .pageNumber {
+    width: 36px;
+    height: 36px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #f8f9fa;
+    border: 1px solid #e9ecef;
+    border-radius: 6px;
+    color: #495057;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: 500;
+    transition: all 0.2s ease;
+  }
+
+  .pageNumber:hover {
+    background: #e9ecef;
+    border-color: #dee2e6;
+  }
+
+  .pageNumber.active {
+    background: #007bff;
+    color: white;
+    border-color: #007bff;
+  }
+
+  .ellipsis {
+    padding: 0 8px;
+    color: #6c757d;
+    font-weight: bold;
+  }
+
+  .pageInfo {
+    text-align: center;
+    padding: 16px;
+    color: #6c757d;
+    font-size: 14px;
+    background: white;
+    border-radius: 8px;
+    margin-top: 16px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+  }
+
+  /* Mobile pagination */
+  @media (max-width: 768px) {
+    .pagination {
+      flex-direction: column;
+      gap: 12px;
+      padding: 16px;
+    }
+
+    .pageNumbers {
+      order: -1;
+      margin: 0;
+    }
+
+    .pageButton {
+      width: 100%;
+      justify-content: center;
+      max-width: 120px;
+    }
+
+    .pageNumber {
+      width: 32px;
+      height: 32px;
+      font-size: 13px;
+    }
+  }
