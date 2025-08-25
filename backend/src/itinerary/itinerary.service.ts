@@ -8,6 +8,7 @@ import { CreateItineraryDto } from './dto/create-itinerary.dto';
 import { UpdateItineraryDto } from './dto/update-itinerary.dto';
 import { I18nService } from 'nestjs-i18n';
 import { ITINERARY_FEATURED_LIMIT } from '../config/itinerary.config';
+import slugify from 'slugify';
 
 @Injectable()
 export class ItineraryService {
@@ -17,12 +18,32 @@ export class ItineraryService {
   ) {}
 
   async create(userId: string, createItineraryDto: CreateItineraryDto) {
+    const { title, ...rest } = createItineraryDto;
+
+    let baseSlug = slugify(title, { lower: true, locale: 'vi', remove: /[*+~.()'"!:@]/g });
+    let slug = baseSlug;
+    let existingItinerary = await this.prisma.itinerary.findUnique({ where: { slug } });
+    let count = 1;
+
+    while (existingItinerary) {
+      slug = `${baseSlug}-${count}`;
+      existingItinerary = await this.prisma.itinerary.findUnique({ where: { slug } });
+      count++;
+    }
+
     return this.prisma.itinerary.create({
       data: {
-        ...createItineraryDto,
+        ...rest,
+        title,
         startDate: new Date(createItineraryDto.startDate),
         endDate: new Date(createItineraryDto.endDate),
         userId,
+        slug,
+      },
+      include: {
+        user: true,
+        posts: true,
+        activities: true,
       },
     });
   }
@@ -37,7 +58,40 @@ export class ItineraryService {
     });
   }
 
-  async findOne(id: string, userId: string) {
+  async findOne(slug: string, userId: string) {
+    const itinerary = await this.prisma.itinerary.findUnique({
+      where: { slug },
+      include: {
+        user: true,
+        activities: {
+          orderBy: {
+            startTime: 'asc',
+          },
+        },
+        posts: { 
+          include: {
+            user: true,
+            media: true,
+          },
+          orderBy: { createdAt: 'desc' }, 
+        },
+      },
+    });
+
+    if (!itinerary) {
+      throw new NotFoundException(
+        this.i18n.t('itinerary.not_found', { args: { slug: slug } }),
+      );
+    }
+
+    if (itinerary.userId !== userId && itinerary.visibility === 'PRIVATE') {
+      throw new ForbiddenException(this.i18n.t('itinerary.forbidden_access'));
+    }
+
+    return itinerary;
+  }
+
+  async findOneById(id: string, userId: string) {
     const itinerary = await this.prisma.itinerary.findUnique({
       where: { id },
       include: {
@@ -62,13 +116,14 @@ export class ItineraryService {
         this.i18n.t('itinerary.not_found', { args: { id: id } }),
       );
     }
-
-    if (itinerary.userId !== userId && itinerary.visibility === 'PRIVATE') {
+    
+    if (itinerary.userId !== userId) {
       throw new ForbiddenException(this.i18n.t('itinerary.forbidden_access'));
     }
 
     return itinerary;
   }
+
 
   async update(
     id: string,
@@ -91,9 +146,25 @@ export class ItineraryService {
       throw new ForbiddenException(this.i18n.t('itinerary.forbidden_update'));
     }
 
+    const dataToUpdate: any = { ...updateItineraryDto };
+
+    if (updateItineraryDto.title && updateItineraryDto.title !== itinerary.title) {
+      let baseSlug = slugify(updateItineraryDto.title, { lower: true, locale: 'vi', remove: /[*+~.()'"!:@]/g });
+      let newSlug = baseSlug;
+      let existingItinerary = await this.prisma.itinerary.findUnique({ where: { slug: newSlug } });
+      let count = 1;
+
+      while (existingItinerary && existingItinerary.id !== id) {
+        newSlug = `${baseSlug}-${count}`;
+        existingItinerary = await this.prisma.itinerary.findUnique({ where: { slug: newSlug } });
+        count++;
+      }
+      dataToUpdate.slug = newSlug;
+    }
+
     return this.prisma.itinerary.update({
       where: { id },
-      data: updateItineraryDto,
+      data: dataToUpdate,
     });
   }
 

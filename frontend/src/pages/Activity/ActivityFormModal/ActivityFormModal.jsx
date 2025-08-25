@@ -191,7 +191,7 @@ const ActivityFormModal = ({
               value={cost}
               onChange={(e) => setCost(e.target.value)}
               className={styles.input}
-              placeholder="Chi phí (không bắt buộc)"
+              placeholder="Cost (optional)"
             />
           </div>
           {formError && (

@@ -123,6 +123,7 @@ export class BookmarksService {
               destination: true,
               startDate: true,
               endDate: true,
+              slug: true,
             },
           });
 

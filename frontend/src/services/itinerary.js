@@ -24,16 +24,22 @@ const itineraryService = {
       );
     }
   },
+  
+  getItineraryBySlug: async (slug) => {
+    try {
+      const response = await apiClient.get(`/itineraries/${slug}`);
+      return response.data;
+    } catch (error) {
+      throw new Error(error.response?.data?.message || "Failed to fetch itinerary");
+    }
+  },
 
   getItineraryById: async (id) => {
     try {
-      const response = await apiClient.get(`/itineraries/${id}`);
+      const response = await apiClient.get(`/itineraries/id/${id}`);
       return response.data;
     } catch (error) {
-      throw new Error(
-        error.response?.data?.message ||
-          `Failed to fetch itinerary with ID ${id}`
-      );
+      throw new Error(error.response?.data?.message || "Failed to fetch itinerary for editing");
     }
   },
 
