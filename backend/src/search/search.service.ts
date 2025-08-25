@@ -1,15 +1,16 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
+import { Visibility } from '@prisma/client';
 
 @Injectable()
 export class SearchService {
   constructor(private prisma: PrismaService) {}
 
-  async searchAll(query: string) {
+  async searchAll(query: string, page: number = 1, limit: number = 10) {
     const [users, itineraries, locations] = await Promise.all([
-      this.searchUsers(query),
-      this.searchItineraries(query),
-      this.searchLocations(query),
+      this.searchUsers(query, page, limit),
+      this.searchItineraries(query, page, limit),
+      this.searchLocations(query, page, limit),
     ]);
 
     return {
@@ -19,81 +20,119 @@ export class SearchService {
     };
   }
 
-  private async searchUsers(query: string) {
-    return this.prisma.user.findMany({
-      where: {
-        AND: [
-          { isActive: true },
-          {
-            OR: [
-              {
-                name: {
-                  contains: query,
-                },
+  private async searchUsers(query: string, page: number, limit: number) {
+    const skip = (page - 1) * limit;
+    
+    const whereCondition = {
+      AND: [
+        { isActive: true },
+        {
+          OR: [
+            {
+              name: {
+                contains: query,
               },
-              {
-                email: {
-                  contains: query,
-                },
+            },
+            {
+              email: {
+                contains: query,
               },
-              {
-                bio: {
-                  contains: query,
-                },
+            },
+            {
+              bio: {
+                contains: query,
               },
-            ],
-          },
-        ],
-      },
-      select: {
-        id: true,
-        name: true,
-        avatar: true,
-        bio: true,
-        email: true,
-      },
-      take: 20,
-    });
+            },
+          ],
+        },
+      ],
+    };
+
+    const [data, total] = await Promise.all([
+      this.prisma.user.findMany({
+        where: whereCondition,
+        select: {
+          id: true,
+          name: true,
+          avatar: true,
+          bio: true,
+          email: true,
+        },
+        skip,
+        take: limit,
+      }),
+      this.prisma.user.count({
+        where: whereCondition,
+      }),
+    ]);
+
+    const totalPages = Math.ceil(total / limit);
+
+    return {
+      data,
+      total,
+      page,
+      totalPages,
+    };
   }
 
-  private async searchItineraries(query: string) {
-    return this.prisma.itinerary.findMany({
-      where: {
-        AND: [
-          { visibility: 'PUBLIC' },
-          {
-            OR: [
-              {
-                title: {
-                  contains: query,
-                },
+  private async searchItineraries(query: string, page: number, limit: number) {
+    const skip = (page - 1) * limit;
+    
+    const whereCondition = {
+              AND: [
+          { visibility: Visibility.PUBLIC },
+        {
+          OR: [
+            {
+              title: {
+                contains: query,
               },
-              {
-                destination: {
-                  contains: query,
-                },
+            },
+            {
+              destination: {
+                contains: query,
               },
-            ],
-          },
-        ],
-      },
-      include: {
-        user: {
-          select: {
-            id: true,
-            name: true,
-            avatar: true,
+            },
+          ],
+        },
+      ],
+    };
+
+    const [data, total] = await Promise.all([
+      this.prisma.itinerary.findMany({
+        where: whereCondition,
+        include: {
+          user: {
+            select: {
+              id: true,
+              name: true,
+              avatar: true,
+            },
           },
         },
-      },
-      take: 20,
-      orderBy: {
-        createdAt: 'desc',
-      },
-    });
+        skip,
+        take: limit,
+        orderBy: {
+          createdAt: 'desc',
+        },
+      }),
+      this.prisma.itinerary.count({
+        where: whereCondition,
+      }),
+    ]);
+
+    const totalPages = Math.ceil(total / limit);
+
+    return {
+      data,
+      total,
+      page,
+      totalPages,
+    };
   }
 
-  private async searchLocations(query: string) {
+  private async searchLocations(query: string, page: number, limit: number) {
     const [activityLocations, destinationLocations] = await Promise.all([
       this.prisma.activity.findMany({
         where: {
@@ -105,12 +144,12 @@ export class SearchService {
           location: true,
         },
         distinct: ['location'],
-        take: 10,
+        take: 100, 
       }),
       this.prisma.itinerary.findMany({
         where: {
-          AND: [
-            { visibility: 'PUBLIC' },
+                  AND: [
+          { visibility: Visibility.PUBLIC },
             {
               destination: {
                 contains: query,
@@ -122,7 +161,7 @@ export class SearchService {
           destination: true,
         },
         distinct: ['destination'],
-        take: 10,
+        take: 100,
       }),
     ]);
 
@@ -140,13 +179,22 @@ export class SearchService {
       }
     });
 
-    return Array.from(locationSet)
+    const allLocations = Array.from(locationSet)
       .filter(location => 
         location.toLowerCase().includes(query.toLowerCase())
       )
-      .slice(0, 20)
-      .map(location => ({
-        name: location,
-      }));
+      .map(location => ({ name: location }));
+
+    const total = allLocations.length;
+    const skip = (page - 1) * limit;
+    const data = allLocations.slice(skip, skip + limit);
+    const totalPages = Math.ceil(total / limit);
+
+    return {
+      data,
+      total,
+      page,
+      totalPages,
+    };
   }
 }

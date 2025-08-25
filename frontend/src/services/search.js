@@ -1,10 +1,10 @@
 import apiClient from "./apiClient";
 
 const searchService = {
-  search: async (query) => {
+  search: async (query, page = 1, limit = 10) => {
     try {
       const response = await apiClient.get("/search", {
-        params: { query }
+        params: { query, page, limit }
       });
       return response.data;
     } catch (error) {

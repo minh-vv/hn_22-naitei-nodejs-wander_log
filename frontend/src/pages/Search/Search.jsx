@@ -8,34 +8,47 @@ export default function Search() {
   const [searchParams, setSearchParams] = useSearchParams();
   const [query, setQuery] = useState(searchParams.get("query") || "");
   const [results, setResults] = useState({
-    users: [],
-    itineraries: [],
-    locations: []
+    users: { data: [], total: 0, page: 1, totalPages: 0 },
+    itineraries: { data: [], total: 0, page: 1, totalPages: 0 },
+    locations: { data: [], total: 0, page: 1, totalPages: 0 }
   });
   const [loading, setLoading] = useState(false);
   const [activeTab, setActiveTab] = useState("all");
+  const [currentPage, setCurrentPage] = useState(1);
+  const [itemsPerPage] = useState(10);
 
   useEffect(() => {
     const queryParam = searchParams.get("query");
+    const pageParam = searchParams.get("page");
     if (queryParam) {
       setQuery(queryParam);
-      performSearch(queryParam);
+      const page = parseInt(pageParam) || 1;
+      setCurrentPage(page);
+      performSearch(queryParam, page);
     }
   }, [searchParams]);
 
-  const performSearch = async (searchQuery) => {
+  const performSearch = async (searchQuery, page = 1) => {
     if (!searchQuery.trim()) {
-      setResults({ users: [], itineraries: [], locations: [] });
+      setResults({
+        users: { data: [], total: 0, page: 1, totalPages: 0 },
+        itineraries: { data: [], total: 0, page: 1, totalPages: 0 },
+        locations: { data: [], total: 0, page: 1, totalPages: 0 }
+      });
       return;
     }
 
     setLoading(true);
     try {
-      const searchResults = await searchService.search(searchQuery);
+      const searchResults = await searchService.search(searchQuery, page, itemsPerPage);
       setResults(searchResults);
     } catch (error) {
       console.error("Search failed:", error);
-      setResults({ users: [], itineraries: [], locations: [] });
+      setResults({
+        users: { data: [], total: 0, page: 1, totalPages: 0 },
+        itineraries: { data: [], total: 0, page: 1, totalPages: 0 },
+        locations: { data: [], total: 0, page: 1, totalPages: 0 }
+      });
     } finally {
       setLoading(false);
     }
@@ -44,8 +57,14 @@ export default function Search() {
   const handleSearchSubmit = (e) => {
     e.preventDefault();
     if (query.trim()) {
-      setSearchParams({ query: query.trim() });
+      setCurrentPage(1);
+      setSearchParams({ query: query.trim(), page: 1 });
     }
+  };
+
+  const handlePageChange = (newPage) => {
+    setCurrentPage(newPage);
+    setSearchParams({ query, page: newPage });
   };
 
   const handleUserClick = (userId) => {
@@ -59,18 +78,47 @@ export default function Search() {
   const filteredResults = () => {
     switch (activeTab) {
       case "users":
-        return { users: results.users, itineraries: [], locations: [] };
+        return { 
+          users: results.users, 
+          itineraries: { data: [], total: 0, page: 1, totalPages: 0 }, 
+          locations: { data: [], total: 0, page: 1, totalPages: 0 } 
+        };
       case "itineraries":
-        return { users: [], itineraries: results.itineraries, locations: [] };
+        return { 
+          users: { data: [], total: 0, page: 1, totalPages: 0 }, 
+          itineraries: results.itineraries, 
+          locations: { data: [], total: 0, page: 1, totalPages: 0 } 
+        };
       case "locations":
-        return { users: [], itineraries: [], locations: results.locations };
+        return { 
+          users: { data: [], total: 0, page: 1, totalPages: 0 }, 
+          itineraries: { data: [], total: 0, page: 1, totalPages: 0 }, 
+          locations: results.locations 
+        };
       default:
         return results;
     }
   };
 
   const currentResults = filteredResults();
-  const totalResults = results.users.length + results.itineraries.length + results.locations.length;
+  const totalResults = results.users.total + results.itineraries.total + results.locations.total;
+
+  const getCurrentPagination = () => {
+    switch (activeTab) {
+      case "users":
+        return results.users;
+      case "itineraries":
+        return results.itineraries;
+      case "locations":
+        return results.locations;
+      default:
+        const maxResult = [results.users, results.itineraries, results.locations]
+          .sort((a, b) => b.total - a.total)[0];
+        return maxResult;
+    }
+  };
+
+  const currentPagination = getCurrentPagination();
 
   return (
     <div className={styles.searchPage}>
@@ -106,19 +154,19 @@ export default function Search() {
                 className={`${styles.tab} ${activeTab === "users" ? styles.active : ""}`}
                 onClick={() => setActiveTab("users")}
               >
-                Người dùng ({results.users.length})
+                Người dùng ({results.users.total})
               </button>
               <button
                 className={`${styles.tab} ${activeTab === "itineraries" ? styles.active : ""}`}
                 onClick={() => setActiveTab("itineraries")}
               >
-                Lịch trình ({results.itineraries.length})
+                Lịch trình ({results.itineraries.total})
               </button>
               <button
                 className={`${styles.tab} ${activeTab === "locations" ? styles.active : ""}`}
                 onClick={() => setActiveTab("locations")}
               >
-                Địa điểm ({results.locations.length})
+                Địa điểm ({results.locations.total})
               </button>
             </div>
 
@@ -130,11 +178,11 @@ export default function Search() {
                 </div>
               ) : (
                 <>
-                  {currentResults.users.length > 0 && (
+                  {currentResults.users.data.length > 0 && (
                     <div className={styles.resultGroup}>
                       <h3 className={styles.resultGroupTitle}>Người dùng</h3>
                       <div className={styles.userResults}>
-                        {currentResults.users.map((user) => (
+                        {currentResults.users.data.map((user) => (
                           <div
                             key={user.id}
                             className={styles.userCard}
@@ -157,11 +205,11 @@ export default function Search() {
                     </div>
                   )}
 
-                  {currentResults.itineraries.length > 0 && (
+                  {currentResults.itineraries.data.length > 0 && (
                     <div className={styles.resultGroup}>
                       <h3 className={styles.resultGroupTitle}>Lịch trình</h3>
                       <div className={styles.itineraryResults}>
-                        {currentResults.itineraries.map((itinerary) => (
+                        {currentResults.itineraries.data.map((itinerary) => (
                           <div
                             key={itinerary.id}
                             className={styles.itineraryCard}
@@ -204,11 +252,11 @@ export default function Search() {
                     </div>
                   )}
 
-                  {currentResults.locations.length > 0 && (
+                  {currentResults.locations.data.length > 0 && (
                     <div className={styles.resultGroup}>
                       <h3 className={styles.resultGroupTitle}>Địa điểm</h3>
                       <div className={styles.locationResults}>
-                        {currentResults.locations.map((location, index) => (
+                        {currentResults.locations.data.map((location, index) => (
                           <div key={index} className={styles.locationCard}>
                             <div className={styles.locationIcon}>
                               <i className="ri-map-pin-line"></i>
@@ -232,6 +280,57 @@ export default function Search() {
                       </div>
                       <h3>Không tìm thấy kết quả</h3>
                       <p>Thử tìm kiếm với từ khóa khác</p>
+                    </div>
+                  )}
+
+                  {totalResults > 0 && currentPagination.totalPages > 1 && (
+                    <div className={styles.pagination}>
+                      <button
+                        className={`${styles.pageButton} ${currentPage === 1 ? styles.disabled : ''}`}
+                        onClick={() => handlePageChange(currentPage - 1)}
+                        disabled={currentPage === 1}
+                      >
+                        <i className="ri-arrow-left-line"></i>
+                        Trước
+                      </button>
+                      
+                      <div className={styles.pageNumbers}>
+                        {Array.from({ length: currentPagination.totalPages }, (_, i) => i + 1)
+                          .filter(page => {
+                            return page === 1 || 
+                                   page === currentPagination.totalPages || 
+                                   Math.abs(page - currentPage) <= 2;
+                          })
+                          .map((page, index, array) => {
+                            const showEllipsis = index > 0 && page - array[index - 1] > 1;
+                            return (
+                              <React.Fragment key={page}>
+                                {showEllipsis && <span className={styles.ellipsis}>...</span>}
+                                <button
+                                  className={`${styles.pageNumber} ${page === currentPage ? styles.active : ''}`}
+                                  onClick={() => handlePageChange(page)}
+                                >
+                                  {page}
+                                </button>
+                              </React.Fragment>
+                            );
+                          })}
+                      </div>
+
+                      <button
+                        className={`${styles.pageButton} ${currentPage === currentPagination.totalPages ? styles.disabled : ''}`}
+                        onClick={() => handlePageChange(currentPage + 1)}
+                        disabled={currentPage === currentPagination.totalPages}
+                      >
+                        Sau
+                        <i className="ri-arrow-right-line"></i>
+                      </button>
+                    </div>
+                  )}
+
+                  {totalResults > 0 && (
+                    <div className={styles.pageInfo}>
+                      Hiển thị {Math.min((currentPage - 1) * itemsPerPage + 1, totalResults)} - {Math.min(currentPage * itemsPerPage, totalResults)} trong tổng số {totalResults} kết quả
                     </div>
                   )}
                 </>
