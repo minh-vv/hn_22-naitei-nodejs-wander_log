@@ -26,6 +26,7 @@ import { AdminModule } from './admin/admin.module';
 import { BookmarksModule } from './bookmarks/bookmarks.module';
 import { UploadsModule } from './uploads/uploads.module';
 import { SearchModule } from './search/search.module'; 
+import { RatingsModule } from './ratings/ratings.module';
 
 @Module({
   imports: [
@@ -52,6 +53,7 @@ import { SearchModule } from './search/search.module';
     AdminModule,
     BookmarksModule,
     SearchModule,
+    RatingsModule,
   ],
   controllers: [AppController, PostsController, UsersController],
   providers: [AppService, PostsService, UsersService],
