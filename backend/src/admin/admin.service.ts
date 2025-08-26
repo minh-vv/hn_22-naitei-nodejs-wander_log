@@ -2,7 +2,8 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { I18nService } from 'nestjs-i18n';
 import { MailsService } from 'src/mails/mails.service';
-import { addDays, addMonths, addYears, subDays, startOfWeek, subWeeks, startOfMonth, subMonths, startOfYear, subYears } from 'date-fns';
+import { addDays, addMonths, addYears, subDays, startOfWeek, subWeeks, startOfMonth, subMonths, startOfYear, subYears, format } from 'date-fns';
+
 
 @Injectable()
 export class AdminService {
@@ -159,43 +160,159 @@ export class AdminService {
 
   async getDashboardStats() {
     const today = new Date();
-    
-    const totalItineraries = await this.prisma.itinerary.count();
-    
     const thisWeekStart = startOfWeek(today, { weekStartsOn: 1 }); 
-    const thisWeekItineraries = await this.prisma.itinerary.count({
-      where: {
-        createdAt: {
-          gte: thisWeekStart,
-        },
-      },
-    });
+    const [
+      totalUsers,
+      newUsersThisWeek,
+      totalItineraries,
+      newItinerariesThisWeek,
+      activeUsers,
+      totalPosts,
+      totalComments,
+      totalRatings,
+      publicItineraries,
+      privateItineraries,
+    ] = await this.prisma.$transaction([
+      this.prisma.user.count(),
+      this.prisma.user.count({ where: { createdAt: { gte: thisWeekStart } } }),
+      this.prisma.itinerary.count(),
+      this.prisma.itinerary.count({ where: { createdAt: { gte: thisWeekStart } } }),
+      this.prisma.user.count({ where: { isActive: true } }),
+      this.prisma.post.count(), 
+      this.prisma.comment.count(),
+      this.prisma.rating.count(),
+      this.prisma.itinerary.count({ where: { visibility: 'PUBLIC' } }),
+      this.prisma.itinerary.count({ where: { visibility: 'PRIVATE' } }),
+    ]);
 
-    const thisMonthStart = startOfMonth(today);
-    const thisMonthItineraries = await this.prisma.itinerary.count({
-      where: {
-        createdAt: {
-          gte: thisMonthStart,
-        },
-      },
-    });
-
-    const thisYearStart = startOfYear(today);
-    const thisYearItineraries = await this.prisma.itinerary.count({
-      where: {
-        createdAt: {
-          gte: thisYearStart,
-        },
-      },
-    });
+    const inactiveUsers = totalUsers - activeUsers;
 
     return {
+      totalUsers,
+      newUsersThisWeek,
       totalItineraries,
-      thisWeekItineraries,
-      thisMonthItineraries,
-      thisYearItineraries,
+      newItinerariesThisWeek,
+      activeUsers,
+      inactiveUsers,
+      totalPosts,
+      totalComments,
+      totalRatings,
+      publicItineraries,
+      privateItineraries,
     };
   }
+
+  async getMonthlyGrowthData() {
+  const now = new Date();
+  const twelveMonthsAgo = subMonths(now, 11);
+  twelveMonthsAgo.setDate(1);
+
+  const [users, itineraries, posts] = await Promise.all([
+    this.prisma.user.findMany({
+      where: { createdAt: { gte: twelveMonthsAgo } },
+      select: { createdAt: true },
+    }),
+    this.prisma.itinerary.findMany({
+      where: { createdAt: { gte: twelveMonthsAgo } },
+      select: { createdAt: true },
+    }),
+    this.prisma.post.findMany({
+      where: { createdAt: { gte: twelveMonthsAgo } },
+      select: { createdAt: true },
+    }),
+  ]);
+
+  const monthlyDataMap = {};
+  for (let i = 0; i < 12; i++) {
+    const month = subMonths(now, i);
+    const monthKey = format(month, 'MMM yyyy');
+    monthlyDataMap[monthKey] = {
+      month: format(month, 'MMM'),
+      newUsers: 0,
+      newItineraries: 0,
+      newPosts: 0,
+    };
+  }
+
+  users.forEach(u => {
+    const monthKey = format(u.createdAt, 'MMM yyyy');
+    if (monthlyDataMap[monthKey]) {
+      monthlyDataMap[monthKey].newUsers++;
+    }
+  });
+
+  itineraries.forEach(i => {
+    const monthKey = format(i.createdAt, 'MMM yyyy');
+    if (monthlyDataMap[monthKey]) {
+      monthlyDataMap[monthKey].newItineraries++;
+    }
+  });
+
+  posts.forEach(p => {
+    const monthKey = format(p.createdAt, 'MMM yyyy');
+    if (monthlyDataMap[monthKey]) {
+      monthlyDataMap[monthKey].newPosts++;
+    }
+  });
+
+  return Object.values(monthlyDataMap).sort((a: { month: string }, b: { month: string }) => {
+    const dateA = new Date(a.month + ' 1, 2000');
+    const dateB = new Date(b.month + ' 1, 2000');
+    return dateA.getMonth() - dateB.getMonth();
+    });
+}
+
+async getTopItinerariesByRatings(limit = 5) {
+  const topItineraries = await this.prisma.itinerary.findMany({
+    orderBy: {
+      ratings: {
+        _count: 'desc',
+      },
+    },
+    take: limit,
+    select: {
+      title: true,
+      _count: {
+        select: { ratings: true },
+      },
+    },
+  });
+
+  return topItineraries.map(item => ({
+    title: item.title,
+    ratingCount: item._count.ratings,
+  }));
+}
+
+async getTopPostsByLikes(limit = 5) {
+  const topPosts = await this.prisma.post.findMany({
+    orderBy: {
+      likeCount: 'desc',
+    },
+    take: limit,
+    select: {
+      content: true,
+      likeCount: true,
+    },
+  });
+
+  return topPosts.map(item => ({
+    content: item.content ? item.content.substring(0, 20) + '...' : 'Untitled Post',
+    likeCount: item.likeCount,
+  }));
+}
+
+async getItineraryVisibilityData() {
+  const [publicCount, privateCount] = await Promise.all([
+    this.prisma.itinerary.count({ where: { visibility: 'PUBLIC' } }),
+    this.prisma.itinerary.count({ where: { visibility: 'PRIVATE' } }),
+  ]);
+
+  return [
+    { name: 'PUBLIC', value: publicCount },
+    { name: 'PRIVATE', value: privateCount },
+  ];
+}
   async findItineraryById(itineraryId: string) {
     const itinerary = await this.prisma.itinerary.findUnique({
       where: { id: itineraryId },
@@ -207,8 +324,26 @@ export class AdminService {
           select: { id: true, content: true },
         },
         activities: {
-          select: { id: true, name: true, location: true },
+          select: { 
+            id: true, 
+            name: true, 
+            location: true,
+            date: true,       
+            startTime: true,   
+            description: true, 
+            cost: true,        
+          },
+          orderBy: [
+            { date: "asc" },
+            { startTime: "asc" }
+          ]
         },
+        _count: {
+          select: { ratings: true },
+        },
+        ratings: {
+          select: { value: true }
+        }
       },
     });
 
@@ -216,7 +351,21 @@ export class AdminService {
       throw new NotFoundException(this.i18n.t('admin.itinerary_not_found'));
     }
 
-    return itinerary;
+    const totalRating = itinerary.ratings.reduce((sum, r) => sum + r.value, 0);
+    const averageRating = itinerary.ratings.length > 0
+      ? totalRating / itinerary.ratings.length
+      : 0;
+
+    const itineraryWithRating: any = {
+      ...itinerary,
+      averageRating: parseFloat(averageRating.toFixed(1)),
+      ratingCount: itinerary._count.ratings,
+    };
+
+    delete itineraryWithRating.ratings;
+    delete itineraryWithRating._count;
+    
+    return itineraryWithRating;
   }
 
   async deleteItinerary(adminId: string, itineraryId: string) {

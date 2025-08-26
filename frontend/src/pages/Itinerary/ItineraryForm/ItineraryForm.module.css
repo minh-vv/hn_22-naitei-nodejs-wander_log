@@ -1,4 +1,7 @@
 .wrapper {
+    font-family: 'Inter', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    font-size: 0.95rem; 
+    line-height: 1.6;   
     display: flex;
     justify-content: center;
     align-items: center;
@@ -6,6 +9,15 @@
     padding: 2rem;
     background-color: #f0f2f5;
 }
+
+
+.title {
+    font-size: 1.75rem;  
+    font-weight: 600;
+    color: #333;
+    margin: 0;
+}
+
 
 .container {
     background-color: #ffffff;
@@ -40,12 +52,6 @@
     background-color: #e9ecef;
 }
 
-.title {
-    font-size: 2rem;
-    font-weight: 700;
-    color: #333;
-    margin: 0;
-}
 
 .success {
     background-color: #d4edda;

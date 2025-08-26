@@ -47,11 +47,11 @@ const ItineraryForm = () => {
             coverImage: itineraryData.coverImage || null,
             slug: itineraryData.slug || "", 
           });
-          if (itinerary.coverImage) {
-            setCoverImagePreview(`${itinerary.coverImage}`);
+          if (itineraryData.coverImage) {
+            setCoverImagePreview(`${itineraryData.coverImage}`);
           }
         } catch (err) {
-          setError("Failed to load itinerary for editing.");
+          setError("Không thể tải lịch trình để chỉnh sửa.");
         } finally {
           setLoading(false);
         }
@@ -134,15 +134,15 @@ const ItineraryForm = () => {
 
       if (isEditing) {
         const updatedItinerary = await itineraryService.updateItinerary(id, dataToSend);
-        setMessage("Itinerary updated successfully!");
+        setMessage("Cập nhật lịch trình thành công!");
         setTimeout(() => navigate(`/itineraries/${updatedItinerary.slug}`), 2000);
       } else {
         const newItinerary = await itineraryService.createItinerary(dataToSend);
-        setMessage("Itinerary created successfully!");
+        setMessage("Tạo lịch trình thành công!");
         setTimeout(() => navigate(`/itineraries/${newItinerary.slug}`), 2000);
       }
     } catch (err) {
-      setError(`Error: ${err.message || "Failed to save itinerary."}`);
+      setError(`Lỗi: ${err.message || "Không thể lưu lịch trình."}`);
     } finally {
       setLoading(false);
     }
@@ -152,7 +152,7 @@ const ItineraryForm = () => {
     return (
       <div className={styles.wrapper}>
         <div className={styles.container}>
-          <h2 className={styles.title}>Loading Itinerary...</h2>
+          <h2 className={styles.title}>Đang tải lịch trình...</h2>
         </div>
       </div>
     );
@@ -169,7 +169,7 @@ const ItineraryForm = () => {
             <ArrowLeft size={24} />
           </button>
           <h2 className={styles.title}>
-            {isEditing ? "Edit Itinerary" : "Create New Itinerary"}
+            {isEditing ? "Chỉnh sửa lịch trình" : "Tạo lịch trình mới"}
           </h2>
         </div>
 
@@ -178,7 +178,7 @@ const ItineraryForm = () => {
 
         <form onSubmit={handleSubmit} className={styles.form}>
           <div className={styles.formGroup}>
-            <label htmlFor="title">Itinerary Name:</label>
+            <label htmlFor="title">Tên lịch trình:</label>
             <input
               type="text"
               id="title"
@@ -190,7 +190,7 @@ const ItineraryForm = () => {
             />
           </div>
           <div className={styles.formGroup}>
-            <label htmlFor="destination">Destination:</label>
+            <label htmlFor="destination">Điểm đến:</label>
             <input
               type="text"
               id="destination"
@@ -201,7 +201,7 @@ const ItineraryForm = () => {
             />
           </div>
           <div className={styles.formGroup}>
-            <label htmlFor="startDate">Start Date:</label>
+            <label htmlFor="startDate">Ngày bắt đầu:</label>
             <input
               type="date"
               id="startDate"
@@ -213,7 +213,7 @@ const ItineraryForm = () => {
             />
           </div>
           <div className={styles.formGroup}>
-            <label htmlFor="endDate">End Date:</label>
+            <label htmlFor="endDate">Ngày kết thúc:</label>
             <input
               type="date"
               id="endDate"
@@ -225,7 +225,7 @@ const ItineraryForm = () => {
             />
           </div>
           <div className={styles.formGroup}>
-            <label htmlFor="budget">Estimated Budget:</label>
+            <label htmlFor="budget">Ngân sách dự kiến:</label>
             <input
               type="number"
               id="budget"
@@ -244,10 +244,10 @@ const ItineraryForm = () => {
               onChange={handleChange}
               className={styles.checkbox}
             />
-            <label htmlFor="visibility">Make Public</label>
+            <label htmlFor="visibility">Công khai</label>
           </div>
           <div className={styles.formGroup}>
-            <label htmlFor="coverImageUpload">Cover Photo:</label>
+            <label htmlFor="coverImageUpload">Ảnh bìa:</label>
             <input
               type="file"
               id="coverImageUpload"
@@ -261,13 +261,13 @@ const ItineraryForm = () => {
               onClick={() => fileInputRef.current.click()}
               className={styles.uploadButton}
             >
-              {coverImagePreview ? "Change Photo" : "Choose Photo"}
+              {coverImagePreview ? "Đổi ảnh" : "Chọn ảnh"}
             </button>
             {coverImagePreview && (
               <div className={styles.imagePreviewContainer}>
                 <img
                   src={coverImagePreview}
-                  alt="Cover Preview"
+                  alt="Xem trước ảnh bìa"
                   className={styles.imagePreview}
                 />
                 <button
@@ -283,7 +283,7 @@ const ItineraryForm = () => {
 
           <button type="submit" className={styles.button} disabled={loading}>
             {loading ? (
-              "Saving..."
+              "Đang lưu..."
             ) : (
               <>
                 {isEditing ? (
@@ -291,7 +291,7 @@ const ItineraryForm = () => {
                 ) : (
                   <Plus size={20} className={styles.buttonIcon} />
                 )}
-                {isEditing ? "Update" : "Create"}
+                {isEditing ? "Cập nhật" : "Tạo mới"}
               </>
             )}
           </button>

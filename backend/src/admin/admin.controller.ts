@@ -68,4 +68,25 @@ export class AdminController {
     const admin = req.user as JwtPayload;
     return this.adminService.deleteItinerary(admin.id, itineraryId);
   }
+
+  @Get('analytics/monthly-growth')
+  getMonthlyGrowthData() {
+      return this.adminService.getMonthlyGrowthData();
+  }
+
+  @Get('analytics/top-itineraries-by-ratings')
+  getTopItinerariesByRatings() {
+      return this.adminService.getTopItinerariesByRatings();
+  }
+
+  @Get('analytics/top-posts-by-likes')
+  getTopPostsByLikes() {
+      return this.adminService.getTopPostsByLikes();
+  }
+
+  @Get('analytics/itinerary-visibility')
+  getItineraryVisibilityData() {
+      return this.adminService.getItineraryVisibilityData();
+  }
+
 }

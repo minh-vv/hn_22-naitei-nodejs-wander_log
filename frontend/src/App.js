@@ -26,6 +26,7 @@ import Search from "./pages/Search/Search";
 import { AuthProvider } from "./context/AuthContext";
 import { NotificationProvider } from "./context/NotificationContext";
 import ToastContainer from "./component/Toast/ToastContainer";
+import AdminAnalytics from "./pages/Admin/AdminAnalytics/AdminAnalytics";
 
 const ProtectedRoute = ({ children }) => {
   const token = sessionStorage.getItem("userToken");
@@ -191,6 +192,14 @@ function App() {
           element={
             <AdminProtectedRoute>
               <AdminUsers />
+            </AdminProtectedRoute>
+          }
+        />
+        <Route
+          path="/admin/analytics"
+          element={
+            <AdminProtectedRoute>
+              <AdminAnalytics/>
             </AdminProtectedRoute>
           }
         />
