@@ -36,7 +36,7 @@ export default function usePostActions(initialPosts = []) {
     try {
       const updated = await postService.updatePost(updatedPost.id, {
         content: updatedPost.content,
-        mediaUrlsToAdd: updatedPost.mediaUrlsToAdd,
+        mediaFilesToAdd: updatedPost.mediaFilesToAdd,
         mediaIdsToDelete: updatedPost.mediaIdsToDelete,
       });
 
