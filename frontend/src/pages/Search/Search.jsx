@@ -1,11 +1,12 @@
 import React, { useState, useEffect, useCallback } from "react";
-import { useSearchParams } from "react-router-dom";
+import { useSearchParams, useNavigate } from "react-router-dom";
 import Header from "../../component/Header/Header";
 import searchService from "../../services/search";
 import styles from "./Search.module.css";
 
 export default function Search() {
   const [searchParams, setSearchParams] = useSearchParams();
+  const navigate = useNavigate();
   const [query, setQuery] = useState(searchParams.get("query") || "");
   const [results, setResults] = useState({
     users: { data: [], total: 0, page: 1, totalPages: 0 },

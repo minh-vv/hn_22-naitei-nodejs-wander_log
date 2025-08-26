@@ -14,6 +14,7 @@ import { I18nContext, I18nService } from 'nestjs-i18n';
 import { ForgotPasswordDto } from './dto/forgot-password.dto';
 import { randomBytes } from 'crypto';
 import { ResetPasswordDto } from './dto/reset-password.dto';
+import { ChangePasswordDto } from './dto/change-password.dto';
 import { MailsService } from 'src/mails/mails.service';
 
 @Injectable()
@@ -43,7 +44,7 @@ export class AuthService {
       data: { email, passwordHash, name },
     });
 
-    const payload = { sub: user.id, email: user.email, role: user.role };
+    const payload = { sub: user.id, email: user.email, role: user.role, authProvider: user.authProvider };
     const token = this.jwtService.sign(payload);
 
     return {
@@ -53,6 +54,7 @@ export class AuthService {
         name: user.name,
         role: user.role,
         avatar: user.avatar,
+        authProvider: user.authProvider,
       },
       token,
     };
@@ -90,7 +92,7 @@ export class AuthService {
       );
     }
 
-    const payload = { sub: user.id, email: user.email, role: user.role };
+    const payload = { sub: user.id, email: user.email, role: user.role, authProvider: user.authProvider };
     const token = this.jwtService.sign(payload);
 
     return {
@@ -100,6 +102,7 @@ export class AuthService {
         name: user.name,
         role: user.role,
         avatar: user.avatar,
+        authProvider: user.authProvider,
       },
       token,
     };
@@ -194,6 +197,71 @@ export class AuthService {
       }),
     };
   }
+
+  async changePassword(userId: string, changePasswordDto: ChangePasswordDto) {
+    const { currentPassword, newPassword, confirmPassword } = changePasswordDto;
+
+    if (newPassword !== confirmPassword) {
+      throw new BadRequestException(
+        this.i18n.t('auth.passwords_do_not_match', {
+          lang: I18nContext.current()?.lang,
+        }),
+      );
+    }
+
+    const user = await this.prisma.user.findUnique({
+      where: { id: userId },
+    });
+
+    if (!user) {
+      throw new NotFoundException(
+        this.i18n.t('auth.user_not_found', {
+          lang: I18nContext.current()?.lang,
+        }),
+      );
+    }
+
+    // Check if user logged in with OAuth (Google)
+    if (user.authProvider === 'GOOGLE' || !user.passwordHash) {
+      throw new BadRequestException(
+        this.i18n.t('auth.oauth_user_cannot_change_password', {
+          lang: I18nContext.current()?.lang,
+        }),
+      );
+    }
+
+    const currentPasswordValid = await compare(currentPassword, user.passwordHash);
+    if (!currentPasswordValid) {
+      throw new UnauthorizedException(
+        this.i18n.t('auth.current_password_incorrect', {
+          lang: I18nContext.current()?.lang,
+        }),
+      );
+    }
+
+    const samePassword = await compare(newPassword, user.passwordHash);
+    if (samePassword) {
+      throw new BadRequestException(
+        this.i18n.t('auth.new_password_same_as_current', {
+          lang: I18nContext.current()?.lang,
+        }),
+      );
+    }
+
+    const newPasswordHash = await hash(newPassword, 10);
+    
+    await this.prisma.user.update({
+      where: { id: userId },
+      data: { passwordHash: newPasswordHash },
+    });
+
+    return {
+      message: this.i18n.t('auth.password_changed_success', {
+        lang: I18nContext.current()?.lang,
+      }),
+    };
+  }
+
   async validateOAuthUser(oauthUser: {
     googleId: string;
     email: string;
@@ -231,7 +299,7 @@ export class AuthService {
       });
     }
 
-    const payload = { sub: user.id, email: user.email, role: user.role };
+    const payload = { sub: user.id, email: user.email, role: user.role, authProvider: user.authProvider };
     const token = this.jwtService.sign(payload);
 
     return {
@@ -241,6 +309,7 @@ export class AuthService {
         name: user.name,
         role: user.role,
         avatar: user.avatar,
+        authProvider: user.authProvider,
       },
       token,
     };

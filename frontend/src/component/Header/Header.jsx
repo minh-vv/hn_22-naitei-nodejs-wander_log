@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import styles from "./Header.module.css";
 import avatarDefault from "../../assets/images/default_avatar.png";
@@ -10,11 +10,25 @@ export default function Header() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const navigate = useNavigate();
+  const menuRef = useRef(null);
 
   const { user, isLoggedIn, logout } = useAuth();
   const { currentUser } = useUser();
 
   const toggleUserMenu = () => setIsMenuOpen(!isMenuOpen);
+
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (menuRef.current && !menuRef.current.contains(event.target)) {
+        setIsMenuOpen(false);
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, []);
 
   const handleSearchSubmit = (e) => {
     e.preventDefault();
@@ -72,7 +86,7 @@ export default function Header() {
               <>
                 <NotificationDropdown />
 
-                <div className={styles.userMenu}>
+                <div className={styles.userMenu} ref={menuRef}>
                   <button
                     onClick={toggleUserMenu}
                     className={styles.userMenuButton}
@@ -92,9 +106,11 @@ export default function Header() {
                       <a href="/profile" className={styles.dropdownItem}>
                         Trang cá nhân
                       </a>
-                      <a href="/notifications" className={styles.dropdownItem}>
-                        Thông báo
-                      </a>
+                      {user?.authProvider !== 'GOOGLE' && (
+                        <a href="/change-password" className={styles.dropdownItem}>
+                          Đổi mật khẩu
+                        </a>
+                      )}
                       <button
                         type="button"
                         className={styles.logoutButton}
