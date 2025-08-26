@@ -34,16 +34,16 @@ const userService = {
     }
   },
 
-  getUserStats: async () => {
+  getUserStats: async (userId) => {
     try {
-      const response = await apiClient.get("/users/profile/stats");
-      return response.data;
+        const response = await apiClient.get(`/users/${userId}/stats`); 
+        return response.data;
     } catch (error) {
-      throw new Error(
-        error.response?.data?.message || "Failed to fetch user stats"
-      );
+        throw new Error(
+            error.response?.data?.message || "Failed to fetch user stats"
+        );
     }
-  },
+},
 
   getMyItineraries: async () => {
     try {
@@ -94,6 +94,28 @@ const userService = {
     } catch (error) {
       throw new Error(
         error.response?.data?.message || "Failed to unfollow user"
+      );
+    }
+  },
+
+  getFollowersList: async (userId) => {
+    try {
+      const response = await apiClient.get(`/users/${userId}/followers`);
+      return response.data;
+    } catch (error) {
+      throw new Error(
+        error.response?.data?.message || "Failed to fetch followers"
+      );
+    }
+  },
+
+  getFollowingList: async (userId) => {
+    try {
+      const response = await apiClient.get(`/users/${userId}/following`);
+      return response.data;
+    } catch (error) {
+      throw new Error(
+        error.response?.data?.message || "Failed to fetch following"
       );
     }
   },

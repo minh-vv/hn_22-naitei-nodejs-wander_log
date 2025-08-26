@@ -13,7 +13,7 @@ import { Calendar, DollarSign } from "lucide-react";
 import moment from "moment";
 import BookmarkList from "../../component/Profile/BookmarkList.jsx";
 import postService from "../../services/post";
-
+import FollowModal from "../../component/FollowModal/FollowModal.jsx"
 function EditProfileForm({ editForm, setEditForm, onCancel, onSubmit }) {
   return (
     <div
@@ -118,6 +118,12 @@ export default function Profile() {
   const [postsLoading, setPostsLoading] = useState(false);
   const [loadUpload, setLoadUpload] = useState(false);
 
+  const [modalOpen, setModalOpen] = useState(false);
+  const [modalTitle, setModalTitle] = useState('');
+  const [followList, setFollowList] = useState([]);
+  const [listLoading, setListLoading] = useState(false);
+  const [listError, setListError] = useState(null);
+
   const [editForm, setEditForm] = useState({
     name: "",
     email: "",
@@ -143,11 +149,18 @@ export default function Profile() {
   const isOwnProfile =
     !userId || userId === (userContextUser?.id || currentUser?.id);
 
-  useEffect(() => {
+useEffect(() => {
+  const targetUserId = userId || currentUser?.id;
+  
+  if (targetUserId) {
     loadProfile();
     loadItineraries();
-    if (isOwnProfile) loadStats();
-  }, [userId, currentUser]);
+    loadStats(targetUserId); 
+    if (isOwnProfile) {
+    }
+  }
+
+}, [userId, currentUser, isOwnProfile]); 
 
   useEffect(() => {
     if (activeTab === "posts") loadPosts();
@@ -175,13 +188,13 @@ export default function Profile() {
     }
   };
 
-  const loadStats = async () => {
-    try {
-      const statsData = await userService.getUserStats();
-      setStats(statsData);
-    } catch (err) {
-      console.error("Failed to load stats:", err);
-    }
+  const loadStats = async (targetUserId) => {
+      try {
+          const statsData = await userService.getUserStats(targetUserId);
+          setStats(statsData);
+      } catch (err) {
+          console.error("Failed to load stats:", err);
+      }
   };
 
   const loadItineraries = async () => {
@@ -293,6 +306,57 @@ export default function Profile() {
       setError(err.message);
     } finally {
       setFollowLoading(false);
+    }
+  };
+
+  const handleOpenModal = async (type) => {
+  const targetUserId = userId || currentUser?.id;
+  if (!targetUserId || !currentUser) return; 
+
+  setModalOpen(true);
+  setListLoading(true);
+  setListError(null);
+
+  try {
+    let data = [];
+    if (type === 'followers') {
+      setModalTitle('Người theo dõi');
+      data = await userService.getFollowersList(targetUserId, currentUser.id);
+    } else {
+      setModalTitle('Đang theo dõi');
+      data = await userService.getFollowingList(targetUserId, currentUser.id);
+    }
+    setFollowList(data);
+  } catch (err) {
+    setListError('Không thể tải danh sách. Vui lòng thử lại.');
+  } finally {
+    setListLoading(false);
+  }
+};
+
+  const handleCloseModal = () => {
+    setModalOpen(false);
+    setFollowList([]);
+    setListError(null);
+  };
+  
+  const handleFollowFromModal = async (targetUserId) => {
+    try {
+      await userService.followUser(targetUserId);
+      setFollowList(prevList => prevList.map(u => u.id === targetUserId ? { ...u, isFollowing: true } : u));
+      loadStats();
+    } catch (error) {
+      console.error('Failed to follow:', error);
+    }
+  };
+
+  const handleUnfollowFromModal = async (targetUserId) => {
+    try {
+      await userService.unfollowUser(targetUserId);
+      setFollowList(prevList => prevList.map(u => u.id === targetUserId ? { ...u, isFollowing: false } : u));
+      loadStats();
+    } catch (error) {
+      console.error('Failed to unfollow:', error);
     }
   };
 
@@ -410,10 +474,10 @@ export default function Profile() {
             <div>
               <b>{stats.totalItineraries}</b> lịch trình
             </div>
-            <div>
+            <div className={styles.statsItem} onClick={() => handleOpenModal('followers')}>
               <b>{stats.followersCount}</b> người theo dõi
             </div>
-            <div>
+            <div className={styles.statsItem} onClick={() => handleOpenModal('following')}>
               <b>{stats.followingCount}</b> đang theo dõi
             </div>
           </div>
@@ -530,6 +594,18 @@ export default function Profile() {
           </div>
         )}
       </div>
+      {modalOpen && (
+          <FollowModal
+            title={modalTitle}
+            users={followList}
+            loading={listLoading}
+            error={listError}
+            onClose={handleCloseModal}
+            onFollow={handleFollowFromModal}
+            onUnfollow={handleUnfollowFromModal}
+            currentUserId={currentUser.id}
+          />
+      )}
     </>
   );
 }

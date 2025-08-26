@@ -51,7 +51,7 @@ export class UsersController {
   @Get('profile/stats')
   @UseGuards(JwtAuthGuard)
   @HttpCode(HttpStatus.OK)
-  async getUserStats(@GetUser() user: any): Promise<UserStatsDto> {
+  async getMyStats(@GetUser() user: any): Promise<UserStatsDto> {
     return this.usersService.getUserStats(user.id);
   }
 
@@ -87,4 +87,21 @@ export class UsersController {
   async unfollowUser(@GetUser() user: any, @Param('id') targetUserId: string) {
     return this.usersService.unfollowUser(user.id, targetUserId);
   }
+
+  @Get(':userId/followers')
+  @UseGuards(JwtAuthGuard)
+  async getFollowersList(@Param('userId') userId: string, @GetUser() currentUser: any) {
+    return this.usersService.getFollowersList(userId, currentUser.id);
+  }
+
+  @Get(':userId/following')
+  @UseGuards(JwtAuthGuard)
+  async getFollowingList(@Param('userId') userId: string, @GetUser() currentUser: any) {
+    return this.usersService.getFollowingList(userId, currentUser.id);
+  }
+
+  @Get(':userId/stats')
+  async getUserStats(@Param('userId') userId: string): Promise<UserStatsDto> {
+    return this.usersService.getUserStats(userId);
+}
 }
