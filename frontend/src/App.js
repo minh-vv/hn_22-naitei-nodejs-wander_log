@@ -23,6 +23,9 @@ import AdminItineraryDetail from './pages/Admin/AdminItineraryDetail/AdminItiner
 import AdminUserDetail from "./pages/Admin/AdminUserDetail/AdminUserDetail";
 import Profile from "./pages/Profile/Profile";
 import Search from "./pages/Search/Search";
+import { AuthProvider } from "./context/AuthContext";
+import { NotificationProvider } from "./context/NotificationContext";
+import ToastContainer from "./component/Toast/ToastContainer";
 
 const ProtectedRoute = ({ children }) => {
   const token = sessionStorage.getItem("userToken");
@@ -42,8 +45,11 @@ const AdminProtectedRoute = ({ children }) => {
 
 function App() {
   return (
-    <Router>
-      <Routes>
+    <AuthProvider>
+      <NotificationProvider>
+        <Router>
+          <ToastContainer />
+          <Routes>
         <Route path="/signup" element={<Signup />} />
         <Route path="/signin" element={<Signin />} />
         <Route path="/forgot-password" element={<ForgotPassword />} />
@@ -198,8 +204,10 @@ function App() {
         />
         
         <Route path="*" element={<div>404 - Page Not Found</div>} />
-      </Routes>
-    </Router>
+          </Routes>
+        </Router>
+      </NotificationProvider>
+    </AuthProvider>
   );
 }
 

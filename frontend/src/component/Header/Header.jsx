@@ -4,6 +4,7 @@ import styles from "./Header.module.css";
 import avatarDefault from "../../assets/images/default_avatar.png";
 import { useAuth } from "../../context/AuthContext";
 import { useUser } from "../../context/UserContext";
+import NotificationDropdown from "../Notification/NotificationDropdown";
 
 export default function Header() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -69,16 +70,14 @@ export default function Header() {
           <div className={styles.actionsContainer}>
             {isLoggedIn ? (
               <>
-                <button className={styles.notificationButton}>
-                  <i className="ri-notification-line"></i>
-                  <span className={styles.notificationBadge}></span>
-                </button>
+                <NotificationDropdown />
 
                 <div className={styles.userMenu}>
                   <button
                     onClick={toggleUserMenu}
                     className={styles.userMenuButton}
                   >
+                    <img
                       src={currentUser?.avatar || user.avatar || avatarDefault}
                       alt="Avatar"
                       className={styles.avatar}

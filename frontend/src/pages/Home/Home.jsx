@@ -34,6 +34,7 @@ export default function Home() {
           </div>
         </div>
       </div>
+
       <section className={styles.section}>
         <h2>Lịch trình nổi bật</h2>
         <p>Những hành trình được yêu thích nhất từ cộng đồng</p>
