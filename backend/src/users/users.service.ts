@@ -4,6 +4,8 @@ import {
   ForbiddenException,
   BadRequestException,
   ConflictException,
+  Inject,
+  forwardRef,
 } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { UpdateProfileDto } from './dto/update-profile.dto';
@@ -11,12 +13,15 @@ import { UserProfileDto } from './dto/user-profile.dto';
 import { UserStatsDto } from './dto/user-stats.dto';
 import { I18nService } from 'nestjs-i18n';
 import { User } from '@prisma/client';
+import { NotificationsGateway } from '../notifications/notifications.gateway';
 
 @Injectable()
 export class UsersService {
   constructor(
     private prisma: PrismaService,
     private readonly i18n: I18nService,
+    @Inject(forwardRef(() => NotificationsGateway))
+    private notificationsGateway: NotificationsGateway,
   ) {}
 
   async getProfile(userId: string): Promise<UserProfileDto> {
@@ -154,6 +159,12 @@ export class UsersService {
         followingId: targetUserId,
       },
     });
+
+    try {
+      await this.notificationsGateway.emitNewFollowNotification(currentUserId, targetUserId);
+    } catch (error) {
+      console.error('Failed to send follow notification:', error);
+    }
 
     return this.getProfileResponse(userToFollow, true);
   }

@@ -54,6 +54,8 @@ model User {
   favorites       Favorite[]
   comments        Comment[]
   bookmarks       Bookmark[]
+  notifications   Notification[]
+  sentNotifications Notification[]       @relation("NotificationFromUser")
 
   @@map("users")
 }
@@ -134,6 +136,7 @@ model Post {
 
   comments Comment[]
   commentsCount Int @default(0)
+  notifications Notification[]
 
   @@index([userId])
   @@index([itineraryId])
@@ -214,4 +217,34 @@ model Rating {
   updatedAt     DateTime  @updatedAt
 
   @@unique([userId, itineraryId])
+}
+
+enum NotificationType {
+  NEW_FOLLOW
+  NEW_COMMENT
+  NEW_LIKE
+  NEW_RATING
+}
+
+model Notification {
+  id         String           @id @default(cuid())
+  type       NotificationType
+  title      String
+  message    String
+  isRead     Boolean          @default(false)
+  userId     String           @map("user_id")
+  user       User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  // Optional references to related entities
+  fromUserId String?          @map("from_user_id")
+  fromUser   User?            @relation("NotificationFromUser", fields: [fromUserId], references: [id], onDelete: Cascade)
+  postId     String?          @map("post_id")
+  post       Post?            @relation(fields: [postId], references: [id], onDelete: Cascade)
+  
+  createdAt  DateTime         @default(now()) @map("created_at")
+  updatedAt  DateTime         @updatedAt
+
+  @@index([userId])
+  @@index([isRead])
+  @@map("notifications")
 }

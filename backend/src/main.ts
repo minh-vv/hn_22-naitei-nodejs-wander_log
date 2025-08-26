@@ -4,9 +4,12 @@ import { ValidationPipe } from '@nestjs/common';
 import { I18nValidationExceptionFilter } from 'nestjs-i18n';
 import { join } from 'path'; 
 import { NestExpressApplication } from '@nestjs/platform-express';
+import { SocketIOAdapter } from './socket-io.adapter';
 
 async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(AppModule);
+
+  app.useWebSocketAdapter(new SocketIOAdapter(app));
 
   app.enableCors({
     origin: ['http://localhost:3001', 'http://localhost:3000'],

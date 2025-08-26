@@ -2,16 +2,21 @@ import {
   BadRequestException,
   Injectable,
   NotFoundException,
+  Inject,
+  forwardRef,
 } from '@nestjs/common';
 import { I18nService } from 'nestjs-i18n';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { CreateCommentDto } from './dto/create-comment.dto';
+import { NotificationsGateway } from '../notifications/notifications.gateway';
 
 @Injectable()
 export class InteractService {
   constructor(
     private prisma: PrismaService,
     private i18n: I18nService,
+    @Inject(forwardRef(() => NotificationsGateway))
+    private notificationsGateway: NotificationsGateway,
   ) {}
 
   async like(postId: string, userId: string) {
@@ -39,6 +44,13 @@ export class InteractService {
           },
         }),
       ]);
+
+      try {
+        await this.notificationsGateway.emitNewInteractionNotification('like', userId, postId);
+      } catch (error) {
+        console.error('Failed to send like notification:', error);
+      }
+
       return { action: 'like', favorite, updatedPost };
     } else {
       const [deletedFavorite, updatedPost] = await this.prisma.$transaction([
@@ -97,6 +109,12 @@ export class InteractService {
         },
       }),
     ]);
+
+    try {
+      await this.notificationsGateway.emitNewInteractionNotification('comment', userId, postId);
+    } catch (error) {
+      console.error('Failed to send comment notification:', error);
+    }
 
     return {
       newComment,

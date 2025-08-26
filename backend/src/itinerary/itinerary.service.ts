@@ -8,7 +8,7 @@ import { CreateItineraryDto } from './dto/create-itinerary.dto';
 import { UpdateItineraryDto } from './dto/update-itinerary.dto';
 import { I18nService } from 'nestjs-i18n';
 import { ITINERARY_FEATURED_LIMIT } from '../config/itinerary.config';
-import slugify from 'slugify';
+const slugify = require('slugify');
 
 @Injectable()
 export class ItineraryService {
