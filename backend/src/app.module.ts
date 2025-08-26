@@ -27,6 +27,7 @@ import { BookmarksModule } from './bookmarks/bookmarks.module';
 import { UploadsModule } from './uploads/uploads.module';
 import { SearchModule } from './search/search.module'; 
 import { RatingsModule } from './ratings/ratings.module';
+import { NotificationsModule } from './notifications/notifications.module';
 
 @Module({
   imports: [
@@ -54,6 +55,7 @@ import { RatingsModule } from './ratings/ratings.module';
     BookmarksModule,
     SearchModule,
     RatingsModule,
+    NotificationsModule,
   ],
   controllers: [AppController, PostsController, UsersController],
   providers: [AppService, PostsService, UsersService],
