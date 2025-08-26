@@ -917,3 +917,88 @@ button:focus,
     display: none;
   }
 }
+
+.addFirstActivityButton {
+  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+  color: #ffffff;
+  border: none;
+  padding: 1rem 2rem;
+  border-radius: 12px;
+  font-size: 1.1rem;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+  transition: all 0.3s ease;
+  margin: 2rem auto;
+  min-width: 250px;
+  box-shadow: 
+    0 4px 12px rgba(16, 185, 129, 0.3),
+    0 0 0 1px rgba(255, 255, 255, 0.1);
+  position: relative;
+  overflow: hidden;
+}
+
+.addFirstActivityButton::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+  transition: left 0.5s ease;
+}
+
+.addFirstActivityButton:hover {
+  transform: translateY(-2px);
+  box-shadow: 
+    0 8px 25px rgba(16, 185, 129, 0.4),
+    0 0 0 1px rgba(255, 255, 255, 0.2);
+  background: linear-gradient(135deg, #059669 0%, #047857 100%);
+}
+
+.addFirstActivityButton:hover::before {
+  left: 100%;
+}
+
+.addFirstActivityButton:active {
+  transform: translateY(0);
+  transition: all 0.1s ease;
+}
+
+.addFirstActivityButton i {
+  font-size: 1.3rem;
+  display: flex;
+  align-items: center;
+}
+
+.addFirstActivityButton:focus {
+  outline: 2px solid #10b981;
+  outline-offset: 2px;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .addFirstActivityButton {
+    padding: 0.875rem 1.5rem;
+    font-size: 1rem;
+    min-width: 200px;
+    gap: 0.5rem;
+  }
+  
+  .addFirstActivityButton i {
+    font-size: 1.2rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .addFirstActivityButton {
+    padding: 0.75rem 1.25rem;
+    font-size: 0.95rem;
+    min-width: 180px;
+    margin: 1.5rem auto;
+  }
+}

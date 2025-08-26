@@ -64,7 +64,7 @@ const AdminUserDetail = () => {
 
       {user.coverPhoto && (
         <div className={styles.coverPhotoWrapper}>
-          <img src={user.coverPhoto} alt="Cover" className={styles.coverPhoto} />
+          <img src={user.coverPhoto } alt="Cover" className={styles.coverPhoto} />
         </div>
       )}
 

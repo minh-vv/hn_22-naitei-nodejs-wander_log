@@ -12,6 +12,8 @@ import {
 } from "lucide-react";
 import moment from "moment";
 import styles from "./ItineraryList.module.css";
+import Header from "../../../component/Header/Header";
+import ItineraryModal from "../../../component/ItineraryModal/ItineraryModal"; 
 
 const ItineraryList = () => {
   const [itineraries, setItineraries] = useState([]);
@@ -19,27 +21,34 @@ const ItineraryList = () => {
   const [error, setError] = useState(null);
   const navigate = useNavigate();
 
-  useEffect(() => {
-    const fetchItineraries = async () => {
-      try {
-        const token = sessionStorage.getItem("userToken");
-        if (!token) {
-          navigate("/signin");
-          return;
-        }
-        const data = await itineraryService.getAllItineraries();
-        setItineraries(data);
-      } catch (err) {
-        setError("Failed to load itineraries.");
-      } finally {
-        setLoading(false);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [editingItinerary, setEditingItinerary] = useState(null);
+
+  const fetchItineraries = async () => {
+    setLoading(true);
+    setError(null);
+    try {
+      const token = sessionStorage.getItem("userToken");
+      if (!token) {
+        navigate("/signin");
+        return;
       }
-    };
+      const data = await itineraryService.getAllItineraries();
+      setItineraries(data);
+    } catch (err) {
+      setError("Không thể tải danh sách lịch trình.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
     fetchItineraries();
   }, [navigate]);
 
-  const handleDelete = async (id) => {
-    if (window.confirm("Are you sure you want to delete this itinerary?")) {
+  const handleDelete = async (id, e) => {
+    e.stopPropagation(); 
+    if (window.confirm("Bạn có chắc chắn muốn xóa lịch trình này không?")) {
       try {
         const token = sessionStorage.getItem("userToken");
         if (!token) {
@@ -51,14 +60,48 @@ const ItineraryList = () => {
           prev.filter((itinerary) => itinerary.id !== id)
         );
       } catch (err) {
-        setError("Failed to delete itinerary. Please try again.");
+        setError("Không thể xóa lịch trình. Vui lòng thử lại.");
       }
     }
   };
 
+  const handleOpenCreateModal = () => {
+    setEditingItinerary(null); 
+    setIsModalOpen(true);
+  };
+
+  const handleOpenEditModal = async (itineraryId, e) => {
+    e.stopPropagation(); 
+    e.preventDefault(); 
+    setLoading(true);
+    try {
+      const token = sessionStorage.getItem("userToken");
+      if (!token) {
+        navigate("/signin");
+        return;
+      }
+      const data = await itineraryService.getItineraryById(itineraryId);
+      setEditingItinerary(data);
+      setIsModalOpen(true);
+    } catch (err) {
+      setError("Không thể tải lịch trình để chỉnh sửa.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleCloseModal = () => {
+    setIsModalOpen(false);
+    setEditingItinerary(null);
+  };
+
+  const handleSaveSuccess = () => {
+    fetchItineraries();
+  };
+
   const formatCurrency = (amount) => {
-    if (amount === undefined || amount === null) {
-      return "Not specified";
+    if (amount === undefined || amount === null || amount === "") {
+      return "Không xác định";
     }
     return new Intl.NumberFormat("vi-VN", {
       style: "currency",
@@ -66,40 +109,45 @@ const ItineraryList = () => {
     }).format(amount);
   };
 
-  if (loading) {
-    return <div className={styles.loading}>Loading...</div>;
+  if (loading && !editingItinerary) {
+    return <div className={styles.loading}>Đang tải...</div>;
   }
 
-  const placeholderImage = "https://www.thetravelmagazine.net/wp-content/uploads/maxresdefault4.jpg";
+  const placeholderImage =
+    "https://www.thetravelmagazine.net/wp-content/uploads/maxresdefault4.jpg";
 
   return (
     <div className={styles.wrapper}>
+      <Header />
       <div className={styles.container}>
         <div className={styles.header}>
-          <h1 className={styles.title}>My Itineraries</h1>
+          <h1 className={styles.title}>Lịch trình của bạn</h1>
           <button
-            onClick={() => navigate("/itineraries/new")}
+            onClick={handleOpenCreateModal} 
             className={styles.primaryButton}
           >
-            <Plus size={20} /> New Itinerary
+            <Plus size={20} /> Tạo lịch trình mới
           </button>
         </div>
 
         {error && <p className={styles.error}>{error}</p>}
 
         {itineraries.length === 0 ? (
-          <p className={styles.emptyMessage}>You have no itineraries yet.</p>
+          <p className={styles.emptyMessage}>
+            Chưa có lịch trình nào nha ní :D{" "}
+          </p>
         ) : (
           <div className={styles.itineraryGrid}>
             {itineraries.map((itinerary) => (
-              <div
-                key={itinerary.id}
-                className={styles.itineraryCard}
-              >
+              <div key={itinerary.id} className={styles.itineraryCard}>
                 <Link to={`/itineraries/${itinerary.slug}`}>
                   <div className={styles.cardImageContainer}>
-                    <img 
-                      src={itinerary.coverImage ? `${process.env.REACT_APP_API_BASE_URL}${itinerary.coverImage}` : placeholderImage}
+                    <img
+                      src={
+                        itinerary.coverImage
+                          ? itinerary.coverImage
+                          : placeholderImage
+                      }
                       alt={itinerary.title}
                       className={styles.cardImage}
                     />
@@ -127,30 +175,24 @@ const ItineraryList = () => {
                   {itinerary.visibility === "PUBLIC" && (
                     <div className={styles.cardVisibility}>
                       <Globe size={14} />
-                      <span>Public</span>
+                      <span>Công khai</span>
                     </div>
                   )}
                   {itinerary.visibility === "PRIVATE" && (
                     <div className={`${styles.cardVisibility} ${styles.private}`}>
                       <Lock size={14} />
-                      <span>Private</span>
+                      <span>Riêng tư</span>
                     </div>
                   )}
                   <div className={styles.actionButtons}>
                     <button
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        navigate(`/itineraries/edit/${itinerary.id}`);
-                      }}
+                      onClick={(e) => handleOpenEditModal(itinerary.id, e)}
                       className={`${styles.iconButton} ${styles.editButton}`}
                     >
                       <Edit size={18} />
                     </button>
                     <button
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        handleDelete(itinerary.id);
-                      }}
+                      onClick={(e) => handleDelete(itinerary.id, e)}
                       className={`${styles.iconButton} ${styles.deleteButton}`}
                     >
                       <Trash2 size={18} />
@@ -162,6 +204,13 @@ const ItineraryList = () => {
           </div>
         )}
       </div>
+
+      <ItineraryModal
+        isOpen={isModalOpen}
+        onClose={handleCloseModal}
+        initialItineraryData={editingItinerary}
+        onSave={handleSaveSuccess}
+      />
     </div>
   );
 };

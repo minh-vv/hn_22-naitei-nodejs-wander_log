@@ -80,6 +80,7 @@ export class AdminService {
       where: { id: userId },
       select: {
         id: true,
+        avatar: true,
         email: true,
         name: true,
         role: true,
