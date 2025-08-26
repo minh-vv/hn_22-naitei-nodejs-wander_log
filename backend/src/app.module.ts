@@ -25,9 +25,10 @@ import { InteractModule } from './interact/interact.module';
 import { AdminModule } from './admin/admin.module';
 import { BookmarksModule } from './bookmarks/bookmarks.module';
 import { CloudinaryModule } from './cloudinary/cloudinary.module';
-import { UploadModule } from './uploads/uploads.module';
+import { UploadsModule } from './uploads/uploads.module';
 import { SearchModule } from './search/search.module'; 
 import { RatingsModule } from './ratings/ratings.module';
+import { NotificationsModule } from './notifications/notifications.module';
 
 @Module({
   imports: [
@@ -53,9 +54,10 @@ import { RatingsModule } from './ratings/ratings.module';
     AdminModule,
     BookmarksModule,
     CloudinaryModule,
-    UploadModule,
+    UploadsModule,
     SearchModule,
     RatingsModule,
+    NotificationsModule,
   ],
   controllers: [AppController, PostsController, UsersController],
   providers: [AppService, PostsService, UsersService],
