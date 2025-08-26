@@ -47,8 +47,8 @@ const ItineraryForm = () => {
             coverImage: itineraryData.coverImage || null,
             slug: itineraryData.slug || "", 
           });
-          if (itineraryData.coverImage) {
-            setCoverImagePreview(`${process.env.REACT_APP_API_BASE_URL}${itineraryData.coverImage}`);
+          if (itinerary.coverImage) {
+            setCoverImagePreview(`${itinerary.coverImage}`);
           }
         } catch (err) {
           setError("Failed to load itinerary for editing.");
@@ -115,7 +115,9 @@ const ItineraryForm = () => {
       }
 
       if (coverImageFile) {
-        finalCoverImageUrl = await uploadService.uploadItineraryCover(coverImageFile);
+        finalCoverImageUrl = await uploadService.uploadItineraryCover(
+          coverImageFile
+        );
       } else if (isEditing && !formData.coverImage) {
         finalCoverImageUrl = null;
       }
@@ -263,8 +265,16 @@ const ItineraryForm = () => {
             </button>
             {coverImagePreview && (
               <div className={styles.imagePreviewContainer}>
-                <img src={coverImagePreview} alt="Cover Preview" className={styles.imagePreview} />
-                <button type="button" onClick={handleRemoveImage} className={styles.removeImageButton}>
+                <img
+                  src={coverImagePreview}
+                  alt="Cover Preview"
+                  className={styles.imagePreview}
+                />
+                <button
+                  type="button"
+                  onClick={handleRemoveImage}
+                  className={styles.removeImageButton}
+                >
                   &times;
                 </button>
               </div>

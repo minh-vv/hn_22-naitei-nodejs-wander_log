@@ -1,5 +1,4 @@
 import { IsArray, IsNotEmpty, IsOptional, IsString } from 'class-validator';
-import { IsCustomUrl } from 'src/common/validators/is-custom-url.validator';
 
 export class CreatePostDto {
   @IsString()
@@ -10,7 +9,6 @@ export class CreatePostDto {
   itineraryId: string;
 
   @IsArray()
-  @IsCustomUrl({ each: true })
   @IsNotEmpty({ each: true })
-  mediaUrls: string[];
+  mediaFiles: { url: string; publicId: string }[];
 }

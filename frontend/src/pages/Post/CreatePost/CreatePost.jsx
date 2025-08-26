@@ -5,41 +5,77 @@ import avatarDefault from "../../../assets/images/default_avatar.png";
 import itineraryService from "../../../services/itinerary";
 import postService from "../../../services/post";
 import { useAuth } from "../../../context/AuthContext";
+import uploadService from "../../../services/upload";
 
 const CreatePost = ({ itinerary, onPostCreated, onCancel }) => {
   const [postContent, setPostContent] = useState("");
   const [selectedFiles, setSelectedFiles] = useState([]);
   const [previewUrls, setPreviewUrls] = useState([]);
-  const [selectedItinerary, setSelectedItinerary] = useState(itinerary || null); 
+  const [selectedItinerary, setSelectedItinerary] = useState(itinerary || null);
   const [itineraries, setItineraries] = useState([]);
   const [loading, setLoading] = useState(false);
   const [showItineraryList, setShowItineraryList] = useState(false);
   const itineraryListRef = useRef(null);
   const [error, setError] = useState(null);
+  const [uploadedResults, setUploadedResults] = useState(null);
+  const [uploading, setUploading] = useState(false);
 
   const { user, token } = useAuth();
   const navigate = useNavigate();
   const fileInputRef = useRef(null);
 
   const isPostButtonEnabled =
-    postContent.trim() && selectedFiles.length > 0 && selectedItinerary;
+    postContent.trim() &&
+    selectedFiles.length > 0 &&
+    selectedItinerary &&
+    !uploading;
 
   useEffect(() => {
     setSelectedItinerary(itinerary || null);
   }, [itinerary]);
 
-  const handleFileSelect = (event) => {
+  const handleFileSelect = async (event) => {
     const files = Array.from(event.target.files);
-    setSelectedFiles((prevFiles) => [...prevFiles, ...files]);
+
     const newPreviewUrls = files.map((file) => URL.createObjectURL(file));
-    setPreviewUrls((prevUrls) => [...prevUrls, ...newPreviewUrls]);
+    setPreviewUrls((prev) => [...prev, ...newPreviewUrls]);
+    setSelectedFiles((prev) => [...prev, ...files]);
+
+    setUploading(true);
+    try {
+      const uploaded = await uploadService.uploadMediaFiles(files);
+      const uploadedWithType = uploaded.map((item, idx) => ({
+        ...item,
+        type: files[idx].type,
+      }));
+
+      setUploadedResults((prev) => [...(prev || []), ...uploadedWithType]);
+    } catch (err) {
+      console.error("Upload failed:", err);
+    } finally {
+      setUploading(false);
+    }
   };
 
   const handleAddMediaClick = () => {
     fileInputRef.current.click();
   };
 
-  const handleRemoveFile = (indexToRemove) => {
+  const handleRemoveFile = async (indexToRemove) => {
+    const removedFile = uploadedResults[indexToRemove];
+
+    if (removedFile.publicId) {
+      try {
+        await uploadService.deleteMedia(
+          removedFile.publicId,
+          removedFile.type.startsWith("video") ? "video" : "image"
+        );
+        console.log("Deleted from Cloudinary:", removedFile.publicId);
+      } catch (err) {
+        console.error("Failed to delete media", err);
+      }
+    }
+
     URL.revokeObjectURL(previewUrls[indexToRemove]);
     setSelectedFiles((prevFiles) =>
       prevFiles.filter((_, index) => index !== indexToRemove)
@@ -57,14 +93,11 @@ const CreatePost = ({ itinerary, onPostCreated, onCancel }) => {
         navigate("/signin");
         return;
       }
-      const mediaUrls = (await postService.uploadMediaFiles(selectedFiles))
-        .map((url) => url.trim().replace(/^"|"$/g, ""))
-        .filter((url) => url);
 
       const postData = {
         content: postContent,
         itineraryId: selectedItinerary.id,
-        mediaUrls,
+        mediaFiles: uploadedResults,
       };
 
       const createdPost = await postService.createPost(postData);
@@ -113,13 +146,19 @@ const CreatePost = ({ itinerary, onPostCreated, onCancel }) => {
     setSelectedFiles([]);
     previewUrls.forEach((url) => URL.revokeObjectURL(url));
     setPreviewUrls([]);
-    setSelectedItinerary(itinerary || null); 
+    setSelectedItinerary(itinerary || null);
     setItineraries([]);
     if (onCancel) onCancel();
   };
 
   return (
     <div className={styles.createPostContainer}>
+      {uploading && (
+        <div className={styles.uploadingNotice}>
+          Uploading files, please wait...
+        </div>
+      )}
+
       <div className={styles.contentWrapper}>
         <img
           src={user?.avatar || avatarDefault}
@@ -167,28 +206,40 @@ const CreatePost = ({ itinerary, onPostCreated, onCancel }) => {
         </div>
       )}
 
-      {showItineraryList && itineraries.length > 0 && (
-        <div className={styles.itineraryList} ref={itineraryListRef}>
-          {itineraries.map((item) => (
-            <div
-              key={item.id}
-              className={styles.itineraryItem}
-              onClick={() => {
-                if (item.visibility === "PRIVATE") {
-                  alert(
-                    "Bạn không thể tạo bài viết với lịch trình chưa công khai"
-                  );
-                  return;
-                }
-                setSelectedItinerary(item);
-                setItineraries([]);
-                setShowItineraryList(false); 
-              }}
-            >
-              {item.title}
+      {showItineraryList && (
+        <>
+          {itineraries.length > 0 ? (
+            <div className={styles.itineraryList} ref={itineraryListRef}>
+              {itineraries.map((item) => (
+                <div
+                  key={item.id}
+                  className={styles.itineraryItem}
+                  onClick={() => {
+                    if (item.visibility === "PRIVATE") {
+                      alert(
+                        "Bạn không thể tạo bài viết với lịch trình chưa công khai"
+                      );
+                      return;
+                    }
+                    setSelectedItinerary(item);
+                    setItineraries([]);
+                    setShowItineraryList(false);
+                  }}
+                >
+                  {item.title}
+                </div>
+              ))}
             </div>
-          ))}
-        </div>
+          ) : (
+            <div className={styles.noItineraryMessage}>
+              <i className={`ri-route-line ${styles.iconBlue}`}></i>
+              <span>
+                Bạn không có lịch trình công khai nào! Hãy tạo 1 lịch trình cho
+                bản thân trước nhé!
+              </span>
+            </div>
+          )}
+        </>
       )}
 
       <div className={styles.actionsContainer}>

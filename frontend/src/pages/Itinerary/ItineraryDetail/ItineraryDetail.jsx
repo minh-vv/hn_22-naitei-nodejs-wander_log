@@ -98,7 +98,6 @@ const ItineraryDetail = () => {
   const [isBookmarked, setIsBookmarked] = useState(false);
   const [bookmarkId, setBookmarkId] = useState(null);
   const [bookmarkLoading, setBookmarkLoading] = useState(false);
-  
   const [showCreatePost, setShowCreatePost] = useState(false);
   const [editingPostId, setEditingPostId] = useState(null);
 
@@ -359,14 +358,14 @@ const ItineraryDetail = () => {
 
   const handlePostCreated = (newPost) => {
     setShowCreatePost(false);
-    setPosts(prevPosts => [newPost, ...prevPosts]);
+    setPosts((prevPosts) => [newPost, ...prevPosts]);
     showNotification("Tạo bài viết thành công!", "success");
   };
 
   const handleCancelCreatePost = () => {
     setShowCreatePost(false);
   };
-  
+
   const handleDeletePost = async (post) => {
     if (window.confirm("Bạn có chắc chắn muốn xóa bài viết này không?")) {
       try {
@@ -383,11 +382,16 @@ const ItineraryDetail = () => {
   const handleEditPost = (post) => {
     setEditingPostId(post.id);
   };
-  
+
   const handleUpdatePost = async (updatedPostData) => {
     try {
-      const res = await postService.updatePost(updatedPostData.id, updatedPostData);
-      setPosts(prevPosts => prevPosts.map(p => (p.id === res.id ? res : p)));
+      const res = await postService.updatePost(
+        updatedPostData.id,
+        updatedPostData
+      );
+      setPosts((prevPosts) =>
+        prevPosts.map((p) => (p.id === res.id ? res : p))
+      );
       setEditingPostId(null);
       showNotification("Cập nhật bài viết thành công!", "success");
     } catch (error) {
@@ -395,7 +399,7 @@ const ItineraryDetail = () => {
       showNotification("Không thể cập nhật bài viết. Vui lòng thử lại.", "error");
     }
   };
-  
+
   const groupActivitiesByDate = (activities) => {
     if (!activities) return {};
     const grouped = {};
@@ -422,7 +426,9 @@ const ItineraryDetail = () => {
     return grouped;
   };
 
-  const groupedActivities = itinerary ? groupActivitiesByDate(itinerary.activities) : {};
+  const groupedActivities = itinerary
+    ? groupActivitiesByDate(itinerary.activities)
+    : {};
   const sortedDates = Object.keys(groupedActivities).sort();
 
   const formatDate = (dateString, formatType) => {
@@ -517,8 +523,9 @@ const ItineraryDetail = () => {
             <LazyImage
               ref={heroImageRef}
               src={
-                itinerary.coverImage ? `${process.env.REACT_APP_API_BASE_URL}${itinerary.coverImage}` :
-                "https://images.unsplash.com/photo-1501785888041-af3ef285b470?q=80&w=2670&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
+                itinerary.coverImage
+                  ? itinerary.coverImage
+                  : "https://images.unsplash.com/photo-1501785888041-af3ef285b470?q=80&w=2670&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
               }
               alt={itinerary.title}
               className={styles.heroImage}
@@ -581,7 +588,10 @@ const ItineraryDetail = () => {
 
           <div className={styles.actionButtons}>
             {isOwner && (
-              <button onClick={handleCreatePostClick} className={styles.createPostButton}>
+              <button
+                onClick={handleCreatePostClick}
+                className={styles.createPostButton}
+              >
                 <i className="ri-add-circle-line"></i>
                 <span>Tạo bài viết</span>
               </button>
@@ -621,13 +631,13 @@ const ItineraryDetail = () => {
           )}
 
         {isOwner && showCreatePost && (
-            <CreatePost 
-                itinerary={itinerary} 
-                onPostCreated={handlePostCreated} 
-                onCancel={handleCancelCreatePost}
-            />
+          <CreatePost
+            itinerary={itinerary}
+            onPostCreated={handlePostCreated}
+            onCancel={handleCancelCreatePost}
+          />
         )}
-
+        
         {isOwner && (
           <div className={styles.actionButtonsRow}>
             <button
@@ -699,7 +709,9 @@ const ItineraryDetail = () => {
                           {isOwner && (
                             <div className={styles.activityControls}>
                               <button
-                                onClick={() => handleEditActivityClick(activity)}
+                                onClick={() =>
+                                  handleEditActivityClick(activity)
+                                }
                                 className={styles.editActivityButton}
                                 title="Chỉnh sửa hoạt động"
                               >
@@ -777,7 +789,6 @@ const ItineraryDetail = () => {
         />
       )}
 
-      {/* Floating Action Button for quick navigation */}
       <div className={styles.floatingActions}>
         <button 
           className={styles.floatingButton}
@@ -788,7 +799,6 @@ const ItineraryDetail = () => {
         </button>
       </div>
 
-      {/* Progress indicator */}
       <div className={styles.progressBar}>
         <div className={styles.progressFill}></div>
       </div>

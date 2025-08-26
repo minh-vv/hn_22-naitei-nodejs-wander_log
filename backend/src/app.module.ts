@@ -24,6 +24,7 @@ import { UsersModule } from './users/users.module';
 import { InteractModule } from './interact/interact.module';
 import { AdminModule } from './admin/admin.module';
 import { BookmarksModule } from './bookmarks/bookmarks.module';
+import { CloudinaryModule } from './cloudinary/cloudinary.module';
 import { UploadsModule } from './uploads/uploads.module';
 import { SearchModule } from './search/search.module'; 
 import { RatingsModule } from './ratings/ratings.module';
@@ -41,7 +42,6 @@ import { NotificationsModule } from './notifications/notifications.module';
     MailsModule,
     ItineraryModule,
     PostsModule,
-    UploadsModule,
     I18nModule.forRoot(i18nConfig),
     FilesModule,
     ServeStaticModule.forRoot({
@@ -53,6 +53,8 @@ import { NotificationsModule } from './notifications/notifications.module';
     InteractModule,
     AdminModule,
     BookmarksModule,
+    CloudinaryModule,
+    UploadsModule,
     SearchModule,
     RatingsModule,
     NotificationsModule,
