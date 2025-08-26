@@ -47,8 +47,8 @@ const ItineraryForm = () => {
             coverImage: itineraryData.coverImage || null,
             slug: itineraryData.slug || "", 
           });
-          if (itinerary.coverImage) {
-            setCoverImagePreview(`${itinerary.coverImage}`);
+          if (itineraryData.coverImage) {
+            setCoverImagePreview(`${itineraryData.coverImage}`);
           }
         } catch (err) {
           setError("Failed to load itinerary for editing.");

@@ -80,7 +80,7 @@ export class SearchService {
     const skip = (page - 1) * limit;
     
     const whereCondition = {
-              AND: [
+        AND: [
           { visibility: Visibility.PUBLIC },
         {
           OR: [
@@ -148,8 +148,8 @@ export class SearchService {
       }),
       this.prisma.itinerary.findMany({
         where: {
-                  AND: [
-          { visibility: Visibility.PUBLIC },
+          AND: [
+           { visibility: Visibility.PUBLIC },
             {
               destination: {
                 contains: query,

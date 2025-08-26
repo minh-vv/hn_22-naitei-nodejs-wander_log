@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { useSearchParams } from "react-router-dom";
 import Header from "../../component/Header/Header";
 import searchService from "../../services/search";
@@ -26,9 +26,9 @@ export default function Search() {
       setCurrentPage(page);
       performSearch(queryParam, page);
     }
-  }, [searchParams]);
+  }, [searchParams, performSearch]);
 
-  const performSearch = async (searchQuery, page = 1) => {
+  const performSearch = useCallback(async (searchQuery, page = 1) => {
     if (!searchQuery.trim()) {
       setResults({
         users: { data: [], total: 0, page: 1, totalPages: 0 },
@@ -52,7 +52,7 @@ export default function Search() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [itemsPerPage]);
 
   const handleSearchSubmit = (e) => {
     e.preventDefault();
@@ -68,11 +68,11 @@ export default function Search() {
   };
 
   const handleUserClick = (userId) => {
-    window.location.href = `/profile/${userId}`;
+    navigate(`/profile/${userId}`);
   };
 
   const handleItineraryClick = (itineraryId) => {
-    window.location.href = `/itineraries/${itineraryId}`;
+    navigate(`/itineraries/${itineraryId}`);  
   };
 
   const filteredResults = () => {

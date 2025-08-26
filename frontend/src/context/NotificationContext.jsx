@@ -2,6 +2,11 @@ import React, { createContext, useContext, useEffect, useState, useCallback } fr
 import { io } from 'socket.io-client';
 import { useAuth } from './AuthContext';
 
+const NOTIFICATION_FETCH_DELAY_MS = 1000;
+
+let toastIdCounter = 0;
+const generateToastId = () => `toast_${Date.now()}_${++toastIdCounter}`;
+
 const NotificationContext = createContext();
 
 export const useNotification = () => {
@@ -22,8 +27,9 @@ export const NotificationProvider = ({ children }) => {
 
   useEffect(() => {
     if (user && token) {
+      const socketUrl = process.env.REACT_APP_API_BASE_URL || 'http://localhost:3000';
       const socketInstance = io(
-        'http://localhost:3000/notifications',
+        `${socketUrl}/notifications`,
         {
           auth: {
             token: token,
@@ -50,7 +56,7 @@ export const NotificationProvider = ({ children }) => {
         setNotifications(prev => [notification, ...prev]);
         setUnreadCount(prev => prev + 1);
         addToast({
-          id: Date.now(),
+          id: generateToastId(),
           type: 'info',
           title: notification.title,
           message: notification.message,
@@ -62,7 +68,7 @@ export const NotificationProvider = ({ children }) => {
         setNotifications(prev => [notification, ...prev]);
         setUnreadCount(prev => prev + 1);
         addToast({
-          id: Date.now(),
+          id: generateToastId(),
           type: 'info',
           title: notification.title,
           message: notification.message,
@@ -107,7 +113,7 @@ export const NotificationProvider = ({ children }) => {
       socketInstance.on('notification:error', (error) => {
         console.error('Notification error:', error);
         addToast({
-          id: Date.now(),
+          id: generateToastId(),
           type: 'error',
           title: 'Lỗi',
           message: error.message || 'Có lỗi xảy ra với thông báo',
@@ -119,7 +125,7 @@ export const NotificationProvider = ({ children }) => {
 
       setTimeout(() => {
         socketInstance.emit('notification:getAll');
-      }, 1000);
+      }, NOTIFICATION_FETCH_DELAY_MS);
 
       return () => {
         socketInstance.close();

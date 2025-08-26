@@ -54,6 +54,4 @@ export class NotificationsController {
   async markAllAsRead(@Request() req) {
     return this.notificationsService.markAllAsRead(req.user.id);
   }
-
-
 }
