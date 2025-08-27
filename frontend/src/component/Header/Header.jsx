@@ -5,10 +5,12 @@ import avatarDefault from "../../assets/images/default_avatar.png";
 import { useAuth } from "../../context/AuthContext";
 import { useUser } from "../../context/UserContext";
 import NotificationDropdown from "../Notification/NotificationDropdown";
+import ItineraryModal from "../ItineraryModal/ItineraryModal";
 
 export default function Header() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
+  const [isModalOpen, setIsModalOpen] = useState(false);
   const navigate = useNavigate();
 
   const { user, isLoggedIn, logout } = useAuth();
@@ -22,6 +24,20 @@ export default function Header() {
       navigate(`/search?query=${encodeURIComponent(searchQuery.trim())}`);
       setSearchQuery("");
     }
+  };
+
+  const handleOpenCreateModal = (e) => {
+    e.preventDefault();
+    setIsModalOpen(true);
+  };
+
+  const handleCloseModal = () => {
+    setIsModalOpen(false);
+  };
+
+  const handleSaveSuccess = () => {
+    window.alert("Lịch trình đã được tạo thành công!");
+    window.location.reload();
   };
 
   return (
@@ -44,12 +60,11 @@ export default function Header() {
             <a href="/posts/feed" className={styles.navLink}>
               Bảng tin
             </a>
-            <a href="/itineraries/new" className={styles.navLink}>
+            <a href="#" className={styles.navLink} onClick={handleOpenCreateModal}>
               Tạo lịch trình
             </a>
           </nav>
 
-          {/* Search bar */}
           <div className={styles.searchContainer}>
             <form onSubmit={handleSearchSubmit} className={styles.searchForm}>
               <div className={styles.searchInputGroup}>
@@ -110,7 +125,7 @@ export default function Header() {
               <div className={styles.authButtons}>
                 <a href="/signin" className={styles.loginButton}>
                   Đăng nhập
-                </a >
+                </a>
                 <a href="/signup" className={styles.registerButton}>
                   Đăng ký
                 </a>
@@ -119,6 +134,12 @@ export default function Header() {
           </div>
         </div>
       </div>
+      <ItineraryModal
+        isOpen={isModalOpen}
+        onClose={handleCloseModal}
+        onSave={handleSaveSuccess}
+        initialItineraryData={null}
+      />
     </header>
   );
 }

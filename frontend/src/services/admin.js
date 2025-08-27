@@ -85,4 +85,42 @@ export const deleteItinerary = async (itineraryId) => {
     }
 };
 
+export const getMonthlyGrowthData = async () => {
+    try {
+        const response = await apiClient.get('/admin/analytics/monthly-growth');
+        return response.data;
+    } catch (error) {
+        console.error("Failed to fetch monthly growth data:", error);
+        throw error;
+    }
+};
 
+export const getTopItinerariesByRatings = async () => {
+    try {
+        const response = await apiClient.get('/admin/analytics/top-itineraries-by-ratings');
+        return response.data;
+    } catch (error) {
+        console.error("Failed to fetch top itineraries by ratings:", error);
+        throw error;
+    }
+};
+
+export const getTopPostsByLikes = async () => {
+    try {
+        const response = await apiClient.get('/admin/analytics/top-posts-by-likes');
+        return response.data;
+    } catch (error) {
+        console.error("Failed to fetch top posts by likes:", error);
+        throw error;
+    }
+};
+
+export const getItineraryVisibilityData = async () => {
+    try {
+        const response = await apiClient.get('/admin/analytics/itinerary-visibility');
+        return response.data;
+    } catch (error) {
+        console.error("Failed to fetch itinerary visibility data:", error);
+        throw error;
+    }
+};

@@ -136,6 +136,7 @@ export class PostsService {
             id: true,
             title: true,
             budget: true,
+            slug: true,
           },
         },
         media: {
