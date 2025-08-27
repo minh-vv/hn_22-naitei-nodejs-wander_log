@@ -102,12 +102,6 @@ function Signin() {
           >
             Google
           </button>
-          <button
-            onClick={() => handleSocialSignin("facebook")}
-            className={`${styles.socialButton} ${styles.facebook}`}
-          >
-            Facebook
-          </button>
         </div>
         <p className={styles.linkText}>
           Don't have an account? <Link to="/signup">Sign Up Now</Link>
