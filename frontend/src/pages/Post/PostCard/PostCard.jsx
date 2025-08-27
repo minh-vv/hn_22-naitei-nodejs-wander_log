@@ -217,7 +217,7 @@ const PostCard = ({
       URL.revokeObjectURL(newImages[index].preview);
       setNewImages((prev) => prev.filter((_, i) => i !== index));
     },
-    [newImages]
+    [newImages, uploadedResults]
   );
 
   const handleAddImages = async (e) => {
@@ -270,7 +270,9 @@ const PostCard = ({
   const handleCloseLightbox = () => setIsLightboxOpen(false);
 
   const handleNextImage = () => {
-    setCurrentImageIndex((prevIndex) => (prevIndex + 1) % post.media.length);
+    setCurrentImageIndex(
+      (prevIndex) => (prevIndex + 1) % post.media.length
+    );
   };
 
   const handlePrevImage = () => {
@@ -437,7 +439,7 @@ const PostCard = ({
       {post.itinerary && (
         <div className={styles.tripSection}>
           <Link
-            to={`/itineraries/${post.itinerary.id}`}
+            to={`/itineraries/${post.itinerary.slug}`} // **ĐÃ SỬA: Dùng slug thay vì id**
             className={styles.tripLink}
           >
             <div className={styles.tripContent}>
@@ -613,7 +615,7 @@ const PostCard = ({
         <div className={styles.commentsSection}>
           <div className={styles.commentInputWrapper}>
             <img
-              src={avatarDefault}
+              src={currentUser?.avatar || avatarDefault}
               alt="Your avatar"
               className={styles.commentAvatar}
             />
@@ -658,9 +660,14 @@ const PostCard = ({
                     </div>
                     <div className={styles.commentActions}>
                       <TimeAgo timestamp={comment.createdAt} />
-                      <button onClick={() => handleDeleteComment(comment.id)}>
-                        Delete
-                      </button>
+                      {currentUser &&
+                        currentUser.id === comment.user.id && (
+                          <button
+                            onClick={() => handleDeleteComment(comment.id)}
+                          >
+                            Delete
+                          </button>
+                        )}
                     </div>
                   </div>
                 </div>
