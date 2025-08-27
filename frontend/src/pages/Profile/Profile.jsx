@@ -177,7 +177,7 @@ useEffect(() => {
       setEditForm({
         name: profileData.name || "",
         email: profileData.email || "",
-        location: "Hà Nội, Việt Nam",
+        location: profileData.location || "",
         bio: profileData.bio || "",
       });
       setIsFollowing(Boolean(profileData.isFollowing));
@@ -229,6 +229,7 @@ useEffect(() => {
       const updatedProfile = await userService.updateProfile({
         name: editForm.name,
         bio: editForm.bio,
+        location: editForm.location,
       });
       setProfile(updatedProfile);
       setIsEditing(false);
@@ -442,7 +443,7 @@ useEffect(() => {
             <h1>{profile.name || "Chưa có tên"}</h1>
             <p>{profile.email}</p>
             <p>
-              <i className="ri-map-pin-line" /> Hà Nội, Việt Nam
+              <i className="ri-map-pin-line" /> {profile.location}
             </p>
             {profile.bio && <p>{profile.bio}</p>}
           </div>

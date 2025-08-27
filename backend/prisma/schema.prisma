@@ -36,6 +36,7 @@ model User {
   coverPhoto      String?           @map("cover_photo")
   bio             String?           @db.Text
   role            Role              @default(USER)
+  location        String?
   isActive        Boolean           @default(true) @map("is_active")
 
   googleId        String?           @unique @map("google_id")

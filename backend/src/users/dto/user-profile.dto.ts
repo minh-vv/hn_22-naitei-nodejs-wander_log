@@ -6,6 +6,7 @@ export class UserProfileDto {
   coverPhoto: string | null;
   bio: string | null;
   role: string;
+  location: string | null;
   isActive: boolean;
   createdAt: Date;
   updatedAt: Date;

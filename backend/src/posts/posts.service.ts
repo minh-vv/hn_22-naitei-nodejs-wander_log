@@ -63,6 +63,7 @@ export class PostsService {
             id: true,
             title: true,
             budget: true,
+            slug: true,
           },
         },
       },
@@ -85,6 +86,7 @@ export class PostsService {
           select: {
             title: true,
             budget: true,
+            slug: true,
           },
         },
         media: {
@@ -222,6 +224,7 @@ export class PostsService {
               id: true,
               title: true,
               budget: true,
+              slug: true,
             },
           },
           media: {

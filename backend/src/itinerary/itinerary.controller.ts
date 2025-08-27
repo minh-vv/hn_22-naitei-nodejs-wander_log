@@ -34,6 +34,7 @@ export class ItineraryController {
   }
 
   @Get()
+  @UseGuards(JwtAuthGuard)
   findAll(@GetUser() user: User) {
     if (!user || !user.id) {
       throw new UnauthorizedException('User not authenticated.');

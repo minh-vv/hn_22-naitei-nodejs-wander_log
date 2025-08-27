@@ -216,6 +216,7 @@ export class UsersService {
       avatar: user.avatar,
       coverPhoto: user.coverPhoto,
       bio: user.bio,
+      location: user.location,
       role: user.role,
       isActive: user.isActive,
       createdAt: user.createdAt,
@@ -230,6 +231,7 @@ export class UsersService {
       avatar: user.avatar,
       coverPhoto: user.coverPhoto,
       bio: user.bio,
+      location: user.location,
       role: user.role,
       isActive: user.isActive,
       createdAt: user.createdAt,
@@ -305,6 +307,7 @@ export class UsersService {
             id: true,
             title: true,
             budget: true,
+            slug: true,
           },
         },
         media: {
@@ -329,9 +332,7 @@ export class UsersService {
   }
 
 
-// Trong users.service.ts
-
-async getFollowersList(userId: string, currentUserId: string) {
+  async getFollowersList(userId: string, currentUserId: string) {
     const user = await this.findById(userId);
 
     const followers = await this.prisma.follow.findMany({
@@ -368,10 +369,10 @@ async getFollowersList(userId: string, currentUserId: string) {
         ...f.follower,
         isFollowing: followedByIds.has(f.follower.id),
     }));
-}
+  }
 
 
-async getFollowingList(userId: string, currentUserId: string) {
+  async getFollowingList(userId: string, currentUserId: string) {
     const user = await this.findById(userId);
 
     const following = await this.prisma.follow.findMany({
@@ -408,5 +409,5 @@ async getFollowingList(userId: string, currentUserId: string) {
         ...f.following,
         isFollowing: followedByIds.has(f.following.id),
     }));
-}
+  }
 }

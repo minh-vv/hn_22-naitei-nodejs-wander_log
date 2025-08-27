@@ -16,6 +16,7 @@ const PostCard = ({
   onCancelEdit,
   onSubmitEdit,
   onBookmarkChange,
+  currentUser
 }) => {
   const [isLiked, setIsLiked] = useState(post.isLiked);
   const [likesCount, setLikesCount] = useState(post.likeCount);

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import styles from "./Header.module.css";
 import avatarDefault from "../../assets/images/default_avatar.png";
@@ -54,112 +54,115 @@ export default function Header() {
     window.location.reload();
   };
 
-  return (
-    <header className={styles.header}>
-      <div className={styles.container}>
-        <div className={styles.flexContainer}>
-          <div className={styles.logoContainer}>
-            <Link to="/home" className={styles.logoLink}>
-              <div>
-                <img
-                  src="/logo.png"
-                  alt="WanderLog Logo"
-                  className={styles.logoIconWrapper}
-                />
-              </div>
-            </Link>
-          </div>
-
-          <nav className={styles.desktopNav}>
-            <Link to="/home" className={styles.navLink}>
-              Trang chủ
-            </Link>
-            <Link to="/posts/feed" className={styles.navLink}>
-              Bảng tin
-            </Link>
-            <Link to="/itineraries/new" className={styles.navLink}>
-            <a href="#" className={styles.navLink} onClick={handleOpenCreateModal}>
-              Tạo lịch trình
-            </a>
-          </nav>
-
-          <div className={styles.searchContainer}>
-            <form onSubmit={handleSearchSubmit} className={styles.searchForm}>
-              <div className={styles.searchInputGroup}>
-                <input
-                  type="text"
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  placeholder="Tìm kiếm..."
-                  className={styles.searchInput}
-                />
-                <button type="submit" className={styles.searchButton}>
-                  <i className="ri-search-line"></i>
-                </button>
-              </div>
-            </form>
-          </div>
-
-          <div className={styles.actionsContainer}>
-            {isLoggedIn ? (
-              <>
-                <NotificationDropdown />
-
-                <div className={styles.userMenu} ref={menuRef}>
-                  <button
-                    onClick={toggleUserMenu}
-                    className={styles.userMenuButton}
-                  >
-                    <img
-                      src={currentUser?.avatar || user.avatar || avatarDefault}
-                      alt="Avatar"
-                      className={styles.avatar}
-                    />
-                    <i
-                      className={`ri-arrow-down-s-line ${styles.dropdownIcon}`}
-                    ></i>
-                  </button>
-
-                  {isMenuOpen && (
-                    <div className={styles.dropdownMenu}>
-                      <a href="/profile" className={styles.dropdownItem}>
-                        Trang cá nhân
-                      </a>
-                      {user?.authProvider !== 'GOOGLE' && (
-                        <a href="/change-password" className={styles.dropdownItem}>
-                          Đổi mật khẩu
-                        </a>
-                      )}
-                      <button
-                        type="button"
-                        className={styles.logoutButton}
-                        onClick={logout}
-                      >
-                        Đăng xuất
-                      </button>
-                    </div>
-                  )}
+return (
+    <>
+      <header className={styles.header}>
+        <div className={styles.container}>
+          <div className={styles.flexContainer}>
+            <div className={styles.logoContainer}>
+              <Link to="/home" className={styles.logoLink}>
+                <div>
+                  <img
+                    src="/logo.png"
+                    alt="WanderLog Logo"
+                    className={styles.logoIconWrapper}
+                  />
                 </div>
-              </>
-            ) : (
-              <div className={styles.authButtons}>
-                <a href="/signin" className={styles.loginButton}>
-                  Đăng nhập
-                </a>
-                <a href="/signup" className={styles.registerButton}>
-                  Đăng ký
-                </a>
-              </div>
-            )}
+              </Link>
+            </div>
+
+            <nav className={styles.desktopNav}>
+              <Link to="/home" className={styles.navLink}>
+                Trang chủ
+              </Link>
+              <Link to="/posts/feed" className={styles.navLink}>
+                Bảng tin
+              </Link>
+              <a href="#" className={styles.navLink} onClick={handleOpenCreateModal}>
+                Tạo lịch trình
+              </a>
+            </nav>
+
+            <div className={styles.searchContainer}>
+              <form onSubmit={handleSearchSubmit} className={styles.searchForm}>
+                <div className={styles.searchInputGroup}>
+                  <input
+                    type="text"
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    placeholder="Tìm kiếm..."
+                    className={styles.searchInput}
+                  />
+                  <button type="submit" className={styles.searchButton}>
+                    <i className="ri-search-line"></i>
+                  </button>
+                </div>
+              </form>
+            </div>
+
+            <div className={styles.actionsContainer}>
+              {isLoggedIn ? (
+                <>
+                  <NotificationDropdown />
+                  <div className={styles.userMenu} ref={menuRef}>
+                    <button
+                      onClick={toggleUserMenu}
+                      className={styles.userMenuButton}
+                    >
+                      <img
+                        src={currentUser?.avatar || user.avatar || avatarDefault}
+                        alt="Avatar"
+                        className={styles.avatar}
+                      />
+                      <i
+                        className={`ri-arrow-down-s-line ${styles.dropdownIcon}`}
+                      ></i>
+                    </button>
+
+                    {isMenuOpen && (
+                      <div className={styles.dropdownMenu}>
+                        <a href="/profile" className={styles.dropdownItem}>
+                          Trang cá nhân
+                        </a>
+                        {user?.authProvider !== 'GOOGLE' && (
+                          <a href="/change-password" className={styles.dropdownItem}>
+                            Đổi mật khẩu
+                          </a>
+                        )}
+                        <button
+                          type="button"
+                          className={styles.logoutButton}
+                          onClick={logout}
+                        >
+                          Đăng xuất
+                        </button>
+                      </div>
+                    )}
+                  </div>
+                </>
+              ) : (
+                <div className={styles.authButtons}>
+                  <a href="/signin" className={styles.loginButton}>
+                    Đăng nhập
+                  </a>
+                  <a href="/signup" className={styles.registerButton}>
+                    Đăng ký
+                  </a>
+                </div>
+              )}
+            </div>
           </div>
         </div>
-      </div>
+      </header>
+
+      {/* Modal để bên ngoài header */}
       <ItineraryModal
         isOpen={isModalOpen}
         onClose={handleCloseModal}
         onSave={handleSaveSuccess}
         initialItineraryData={null}
       />
-    </header>
+    </>
   );
+
 }

@@ -11,6 +11,10 @@ export class UpdateProfileDto {
 
   @IsOptional()
   @IsString()
+  location?: string;
+  
+  @IsOptional()
+  @IsString()
   @MaxLength(500, {
     message: i18nValidationMessage('validation.bio_max_length'),
   })
