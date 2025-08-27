@@ -49,16 +49,6 @@ const SearchFilter = ({ onFilter, onClear, isLoading, isFiltered = false, search
   const [isExpanded, setIsExpanded] = useState(false);
   const [showCountryDropdown, setShowCountryDropdown] = useState(false);
 
-  // Auto-sync disabled: Search and filter destination are independent
-  // React.useEffect(() => {
-  //   if (initialQuery !== filters.destination && !isDestinationEdited) {
-  //     setFilters(prev => ({
-  //       ...prev,
-  //       destination: initialQuery
-  //     }));
-  //   }
-  // }, [initialQuery, isDestinationEdited]);
-
   const handleInputChange = (field, value) => {
     setFilters(prev => ({
       ...prev,

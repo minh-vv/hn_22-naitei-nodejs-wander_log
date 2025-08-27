@@ -328,12 +328,10 @@ export class ItineraryService {
 
     const skip = (page - 1) * limit;
 
-    // Build where clause
     const where: any = {
       visibility: 'PUBLIC',
     };
 
-    // Handle search query with highest priority - searches across multiple fields
     if (searchQuery) {
       where.OR = [
         {
@@ -367,7 +365,6 @@ export class ItineraryService {
       ];
     }
 
-    // Handle destination filter (more specific than search query)
     if (destination) {
       const destinationCondition = {
         destination: {
@@ -376,7 +373,6 @@ export class ItineraryService {
       };
 
       if (where.OR) {
-        // If search query exists, combine with AND
         where.AND = where.AND || [];
         where.AND.push(destinationCondition);
       } else {
@@ -384,7 +380,6 @@ export class ItineraryService {
       }
     }
 
-    // Handle country filter (search in destination field)
     if (country) {
       const countryCondition = {
         destination: {
@@ -392,18 +387,15 @@ export class ItineraryService {
         },
       };
 
-      // Always use AND to combine with existing conditions
       where.AND = where.AND || [];
       where.AND.push(countryCondition);
     }
 
-    // Handle duration filter
     if (duration) {
       const durationConditions: any = {};
       
       switch (duration) {
         case '1-3':
-          // Trip duration between 1-3 days
           durationConditions.AND = [
             {
               OR: [
@@ -413,7 +405,6 @@ export class ItineraryService {
                     { endDate: { gte: new Date(Date.now() + 1 * 24 * 60 * 60 * 1000) } }
                   ]
                 },
-                // For future trips, calculate duration
                 {
                   startDate: { gte: new Date() }
                 }
@@ -435,7 +426,6 @@ export class ItineraryService {
       Object.assign(where, durationConditions);
     }
 
-    // Handle budget filters
     if (budgetRange) {
       let budgetCondition: any = {};
       
@@ -468,7 +458,6 @@ export class ItineraryService {
       where.AND.push(budgetCondition);
     }
 
-    // Handle custom budget range
     if (budgetMin !== undefined || budgetMax !== undefined) {
       const budgetCondition: any = {};
       
@@ -484,7 +473,6 @@ export class ItineraryService {
       where.AND.push({ budget: budgetCondition });
     }
 
-    // Handle tags filter
     if (tags && tags.length > 0) {
       where.activities = {
         some: {
@@ -497,7 +485,6 @@ export class ItineraryService {
       };
     }
 
-    // Handle rating filter
     if (minRating !== undefined) {
       where.ratings = {
         some: {
@@ -508,7 +495,6 @@ export class ItineraryService {
       };
     }
 
-    // Build orderBy clause
     let orderBy: any = {};
     switch (sortBy) {
       case 'startDate':
@@ -524,17 +510,14 @@ export class ItineraryService {
         orderBy = { budget: sortOrder };
         break;
       case 'rating':
-        // Sort by average rating - will need to be handled in the query
-        orderBy = { createdAt: sortOrder }; // Fallback for now
+        orderBy = { createdAt: sortOrder }; 
         break;
       default:
         orderBy = { createdAt: sortOrder };
     }
 
-    // Get total count for pagination
     const total = await this.prisma.itinerary.count({ where });
 
-    // Get filtered itineraries
     const itineraries = await this.prisma.itinerary.findMany({
       where,
       orderBy,

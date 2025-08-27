@@ -66,8 +66,8 @@ export default function Search() {
     e.preventDefault();
     if (query.trim()) {
       setCurrentPage(1);
-      setFilterResults(null); // Clear any existing filter results
-      setActiveTab("all"); // Reset to all tab
+      setFilterResults(null); 
+      setActiveTab("all"); 
       setSearchParams({ query: query.trim(), page: 1 });
     }
   };
@@ -89,19 +89,14 @@ export default function Search() {
   const handleFilter = async (filters) => {
     setIsFiltering(true);
     try {
-      // Search query has priority - filter runs on search results
       const combinedFilters = {
         ...filters,
-        // Always include search query if present - search has higher priority
         ...(query.trim() && { searchQuery: query.trim() })
       };
       
       const filterData = await searchService.filterSchedules(combinedFilters);
       setFilterResults(filterData);
-      // Keep current tab, don't force switch to itineraries
-      // setActiveTab("itineraries"); // Removed: Keep default "all" tab
       
-      // Update URL to include filter state
       const newParams = new URLSearchParams(searchParams);
       if (query.trim()) {
         newParams.set('query', query.trim());
@@ -120,12 +115,10 @@ export default function Search() {
     setFilterResults(null);
     setActiveTab("all");
     
-    // Remove filter state from URL but keep search query
     const newParams = new URLSearchParams(searchParams);
     newParams.delete('filtered');
     setSearchParams(newParams);
     
-    // Re-perform original search if we have a query
     if (query.trim()) {
       performSearch(query, 1);
       setCurrentPage(1);
@@ -133,7 +126,6 @@ export default function Search() {
   };
 
   const filteredResults = () => {
-    // Priority: Filter results override search results for itineraries
     const currentItineraries = filterResults || results.itineraries;
     
     switch (activeTab) {
@@ -156,7 +148,6 @@ export default function Search() {
           locations: results.locations,
         };
       default:
-        // "all" tab: show all results, with filtered itineraries if available
         return {
           users: results.users,
           itineraries: currentItineraries,
@@ -170,7 +161,6 @@ export default function Search() {
     ? results.users.total + filterResults.total + results.locations.total
     : results.users.total + results.itineraries.total + results.locations.total;
   
-  // Check if we're in filtered mode
   const isFiltered = !!filterResults;
   const hasSearchQuery = query.trim().length > 0;
 

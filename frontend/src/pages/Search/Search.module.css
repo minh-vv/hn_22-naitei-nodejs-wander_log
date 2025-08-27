@@ -25,11 +25,10 @@
   }
 
   .filterSidebar {
-    /* Sidebar styles are handled in SearchFilter component */
   }
 
   .searchResults {
-    min-width: 0; /* Prevents overflow in grid */
+    min-width: 0; 
   }
   
   .searchForm {
@@ -290,7 +289,7 @@
     }
 
     .filterSidebar {
-      order: -1; /* Put filter on top on mobile */
+      order: -1; 
     }
   
     .tabsContainer {
