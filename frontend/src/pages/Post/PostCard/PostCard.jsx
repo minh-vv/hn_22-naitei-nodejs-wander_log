@@ -6,7 +6,6 @@ import avatarDefault from "../../../assets/images/default_avatar.png";
 import TimeAgo from "../../../component/TimeAgo";
 import postService from "../../../services/post";
 import bookmarkService from "../../../services/bookmark";
-import { useUser } from "../../../context/UserContext";
 import uploadService from "../../../services/upload";
 
 const PostCard = ({
@@ -37,7 +36,6 @@ const PostCard = ({
   const [commentText, setCommentText] = useState("");
   const [commentCount, setCommentCount] = useState(post.commentsCount || 0);
   const navigate = useNavigate();
-  const { currentUser } = useUser();
   const [uploadedResults, setUploadedResults] = useState(null);
   const [uploading, setUploading] = useState(false);
 
@@ -437,7 +435,7 @@ const PostCard = ({
       {post.itinerary && (
         <div className={styles.tripSection}>
           <Link
-            to={`/itineraries/${post.itinerary.id}`}
+            to={`/itineraries/${post.itinerary.slug}`}
             className={styles.tripLink}
           >
             <div className={styles.tripContent}>

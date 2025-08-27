@@ -14,13 +14,16 @@ import ratingsService from "../../../services/ratings";
 import StarRating from "../../../component/StarRating/StarRating";
 
 import styles from "./ItineraryDetail.module.css";
+import { useNotification } from "../../../hooks/useNotification";
 
 const LoadingSkeleton = () => (
   <div className={styles.mainWrapper}>
     <div className={styles.container}>
       <div className={styles.loading}>
         <div className={styles.loadingSpinner}>
-          <div></div><div></div><div></div>
+          <div></div>
+          <div></div>
+          <div></div>
         </div>
         <p>Đang tải hành trình...</p>
       </div>
@@ -31,25 +34,29 @@ const LoadingSkeleton = () => (
 const LazyImage = ({ src, alt, className, onLoad }) => {
   const [loaded, setLoaded] = useState(false);
   const [error, setError] = useState(false);
-  
+
   const handleLoad = () => {
     setLoaded(true);
     if (onLoad) onLoad();
   };
-  
+
   const handleError = () => {
     setError(true);
   };
-  
+
   return (
-    <div className={`${styles.imageContainer} ${loaded ? styles.loaded : ''}`}>
+    <div className={`${styles.imageContainer} ${loaded ? styles.loaded : ""}`}>
       {!loaded && !error && (
         <div className={styles.imageSkeleton}>
           <div className={styles.shimmer}></div>
         </div>
       )}
       <img
-        src={error ? "https://images.unsplash.com/photo-1501785888041-af3ef285b470?q=80&w=2670&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" : src}
+        src={
+          error
+            ? "https://images.unsplash.com/photo-1501785888041-af3ef285b470?q=80&w=2670&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
+            : src
+        }
         alt={alt}
         className={className}
         onLoad={handleLoad}
@@ -63,7 +70,7 @@ const LazyImage = ({ src, alt, className, onLoad }) => {
 
 const AnimatedCounter = ({ value, suffix = "" }) => {
   const [count, setCount] = useState(0);
-  
+
   useEffect(() => {
     let start = 0;
     const end = parseInt(value);
@@ -82,8 +89,13 @@ const AnimatedCounter = ({ value, suffix = "" }) => {
 
     return () => clearInterval(timer);
   }, [value]);
-  
-  return <span>{count.toLocaleString()}{suffix}</span>;
+
+  return (
+    <span>
+      {count.toLocaleString()}
+      {suffix}
+    </span>
+  );
 };
 
 const ItineraryDetail = () => {
@@ -104,12 +116,12 @@ const ItineraryDetail = () => {
   const [averageRating, setAverageRating] = useState(0);
   const [ratingCount, setRatingCount] = useState(0);
   const [userRating, setUserRating] = useState(0);
-  
+
   const navigate = useNavigate();
   const { slug } = useParams();
 
   const { user: currentUser } = useAuth();
-  
+
   const { currentUser: userContextUser } = useUser();
   const hasViewedRef = useRef(false);
   const heroImageRef = useRef(null);
@@ -117,9 +129,9 @@ const ItineraryDetail = () => {
   const scrollToSection = (sectionId) => {
     const element = document.getElementById(sectionId);
     if (element) {
-      element.scrollIntoView({ 
-        behavior: 'smooth',
-        block: 'start'
+      element.scrollIntoView({
+        behavior: "smooth",
+        block: "start",
       });
     }
   };
@@ -133,8 +145,8 @@ const ItineraryDetail = () => {
       }
     };
 
-    window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll);
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
   const fetchItineraryData = async () => {
@@ -146,7 +158,7 @@ const ItineraryDetail = () => {
         navigate("/signin");
         return;
       }
-      
+
       const data = await itineraryService.getItineraryBySlug(slug);
       setItinerary(data);
       setPosts(data.posts || []);
@@ -160,7 +172,7 @@ const ItineraryDetail = () => {
 
   const fetchRatings = async () => {
     if (!itinerary) return;
-    
+
     try {
       const ratings = await ratingsService.getAverageRating(itinerary.id);
       setAverageRating(ratings.averageRating);
@@ -174,7 +186,10 @@ const ItineraryDetail = () => {
     if (!itinerary || !currentUser) return;
 
     try {
-      const userRatingData = await ratingsService.getUserRating(itinerary.id, currentUser.id);
+      const userRatingData = await ratingsService.getUserRating(
+        itinerary.id,
+        currentUser.id
+      );
       if (userRatingData) {
         setUserRating(userRatingData.value);
       }
@@ -190,59 +205,31 @@ const ItineraryDetail = () => {
     }
 
     if (isOwner) {
-      showNotification("Bạn không thể tự đánh giá hành trình của mình.", "warning");
+      showNotification(
+        "Bạn không thể tự đánh giá hành trình của mình.",
+        "warning"
+      );
       return;
     }
 
     try {
       await ratingsService.rate(itinerary.id, value);
-      setUserRating(value); 
-      fetchRatings(); 
-      
+      setUserRating(value);
+      fetchRatings();
+
       showNotification("Bạn đã đánh giá thành công!", "success");
-    } catch (error) { 
+    } catch (error) {
       console.error("Lỗi khi gửi đánh giá:", error);
       showNotification("Gửi đánh giá thất bại. Vui lòng thử lại.", "error");
     }
   };
 
-  const showNotification = (message, type = "info") => {
-    const notification = document.createElement('div');
-    notification.className = `notification notification-${type}`;
-    notification.textContent = message;
-    notification.style.cssText = `
-      position: fixed;
-      top: 20px;
-      right: 20px;
-      padding: 1rem 1.5rem;
-      border-radius: 8px;
-      color: white;
-      font-weight: 600;
-      z-index: 9999;
-      transform: translateX(100%);
-      transition: transform 0.3s ease;
-      background: ${type === 'success' ? '#10b981' : type === 'error' ? '#ef4444' : type === 'warning' ? '#f59e0b' : '#6366f1'};
-      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
-    `;
-    
-    document.body.appendChild(notification);
-    
-    setTimeout(() => {
-      notification.style.transform = 'translateX(0)';
-    }, 100);
-    
-    setTimeout(() => {
-      notification.style.transform = 'translateX(100%)';
-      setTimeout(() => {
-        document.body.removeChild(notification);
-      }, 300);
-    }, 3000);
-  };
+  const { showNotification } = useNotification();
 
   const checkBookmarkStatus = async () => {
     if (!itinerary) return;
     try {
-      const res = await bookmarkService.check("ITINERARY", itinerary.id); 
+      const res = await bookmarkService.check("ITINERARY", itinerary.id);
       setIsBookmarked(res.isBookmarked);
       setBookmarkId(res.bookmarkId || null);
     } catch (error) {
@@ -250,25 +237,26 @@ const ItineraryDetail = () => {
     }
   };
 
-  const isOwner = itinerary && currentUser && itinerary.user.id === currentUser.id;
+  const isOwner =
+    itinerary && currentUser && itinerary.user.id === currentUser.id;
 
   useEffect(() => {
     fetchItineraryData();
 
     if (!hasViewedRef.current) {
-        itineraryService.increaseItineraryViews(slug);
-        hasViewedRef.current = true; 
+      itineraryService.increaseItineraryViews(slug);
+      hasViewedRef.current = true;
     }
   }, [slug, navigate]);
 
   useEffect(() => {
     if (itinerary) {
       checkBookmarkStatus();
-      fetchRatings(); 
+      fetchRatings();
       if (currentUser && !isOwner) {
         fetchUserRating();
       } else {
-        setUserRating(0); 
+        setUserRating(0);
       }
     }
   }, [itinerary, currentUser, isOwner]);
@@ -281,7 +269,10 @@ const ItineraryDetail = () => {
         navigate("/itineraries");
       } catch (err) {
         setError("Không thể xóa hành trình. Vui lòng thử lại.");
-        showNotification("Không thể xóa hành trình. Vui lòng thử lại.", "error");
+        showNotification(
+          "Không thể xóa hành trình. Vui lòng thử lại.",
+          "error"
+        );
       }
     }
   };
@@ -327,26 +318,32 @@ const ItineraryDetail = () => {
 
   const handleBookmarkClick = async () => {
     if (!itinerary) return;
-    
+
     setBookmarkLoading(true);
-    
+
     const wasBookmarked = isBookmarked;
     setIsBookmarked(!isBookmarked);
-    
+
     try {
       if (wasBookmarked) {
         await bookmarkService.remove(bookmarkId);
         setBookmarkId(null);
         showNotification("Đã bỏ lưu hành trình", "info");
       } else {
-        const newBookmark = await bookmarkService.create({ type: "ITINERARY", itemId: itinerary.id });
+        const newBookmark = await bookmarkService.create({
+          type: "ITINERARY",
+          itemId: itinerary.id,
+        });
         setBookmarkId(newBookmark.id);
         showNotification("Đã lưu hành trình thành công!", "success");
       }
     } catch (error) {
       setIsBookmarked(wasBookmarked);
       console.error("Error toggling bookmark:", error);
-      showNotification("Không thể cập nhật bookmark. Vui lòng thử lại.", "error");
+      showNotification(
+        "Không thể cập nhật bookmark. Vui lòng thử lại.",
+        "error"
+      );
     } finally {
       setBookmarkLoading(false);
     }
@@ -370,7 +367,7 @@ const ItineraryDetail = () => {
     if (window.confirm("Bạn có chắc chắn muốn xóa bài viết này không?")) {
       try {
         await postService.deletePost(post.id);
-        setPosts(prevPosts => prevPosts.filter(p => p.id !== post.id));
+        setPosts((prevPosts) => prevPosts.filter((p) => p.id !== post.id));
         showNotification("Xóa bài viết thành công!", "success");
       } catch (error) {
         console.error("Error when delete post:", error);
@@ -396,7 +393,10 @@ const ItineraryDetail = () => {
       showNotification("Cập nhật bài viết thành công!", "success");
     } catch (error) {
       console.error("Error when update:", error);
-      showNotification("Không thể cập nhật bài viết. Vui lòng thử lại.", "error");
+      showNotification(
+        "Không thể cập nhật bài viết. Vui lòng thử lại.",
+        "error"
+      );
     }
   };
 
@@ -539,7 +539,10 @@ const ItineraryDetail = () => {
                 </span>
                 <span className={styles.heroDetailItem}>
                   <i className="ri-time-line"></i>
-                  <AnimatedCounter value={calculateTotalDays()} suffix=" ngày" />
+                  <AnimatedCounter
+                    value={calculateTotalDays()}
+                    suffix=" ngày"
+                  />
                 </span>
                 <span className={styles.heroDetailItem}>
                   <i className="ri-money-dollar-circle-line"></i>
@@ -597,38 +600,48 @@ const ItineraryDetail = () => {
               </button>
             )}
             <div className={styles.viewsCount}>
-                <i className="ri-eye-line"></i>
-                <AnimatedCounter value={itinerary.views || 0} />
+              <i className="ri-eye-line"></i>
+              <AnimatedCounter value={itinerary.views || 0} />
             </div>
-            <button 
-              onClick={handleBookmarkClick} 
+            <button
+              onClick={handleBookmarkClick}
               className={styles.bookmarkButton}
               disabled={bookmarkLoading}
             >
-              <i className={isBookmarked ? "ri-bookmark-fill" : "ri-bookmark-line"}></i>
-              <span>{bookmarkLoading ? "Đang xử lý..." : (isBookmarked ? "Đã lưu" : "Lưu")}</span>
+              <i
+                className={
+                  isBookmarked ? "ri-bookmark-fill" : "ri-bookmark-line"
+                }
+              ></i>
+              <span>
+                {bookmarkLoading
+                  ? "Đang xử lý..."
+                  : isBookmarked
+                  ? "Đã lưu"
+                  : "Lưu"}
+              </span>
             </button>
             <div className={styles.averageRatingDisplay}>
-                <span className={styles.ratingNumber}>
-                    {averageRating.toFixed(1)}/5
-                </span>
-                <span className={styles.ratingCount}>
-                    (<AnimatedCounter value={ratingCount} /> đánh giá)
-                </span>
+              <span className={styles.ratingNumber}>
+                {averageRating.toFixed(1)}/5
+              </span>
+              <span className={styles.ratingCount}>
+                (<AnimatedCounter value={ratingCount} /> đánh giá)
+              </span>
             </div>
+          </div>
         </div>
-      </div>
-          {currentUser && !isOwner && (
-            <div className={styles.userRatingSection}>
-                <p className={styles.userRatingPrompt}>
-                    Gửi đánh giá của riêng bạn
-                </p>
-                <StarRating
-                    initialRating={userRating}
-                    onRate={handleRateItinerary}
-                />
-            </div>
-          )}
+        {currentUser && !isOwner && (
+          <div className={styles.userRatingSection}>
+            <p className={styles.userRatingPrompt}>
+              Gửi đánh giá của riêng bạn
+            </p>
+            <StarRating
+              initialRating={userRating}
+              onRate={handleRateItinerary}
+            />
+          </div>
+        )}
 
         {isOwner && showCreatePost && (
           <CreatePost
@@ -637,7 +650,7 @@ const ItineraryDetail = () => {
             onCancel={handleCancelCreatePost}
           />
         )}
-        
+
         {isOwner && (
           <div className={styles.actionButtonsRow}>
             <button
@@ -663,7 +676,7 @@ const ItineraryDetail = () => {
             </button>
           </div>
         )}
-        
+
         <div className={styles.itineraryDays} id="activities">
           {sortedDates.length === 0 ? (
             <div className={styles.emptyActivities}>
@@ -672,7 +685,10 @@ const ItineraryDetail = () => {
               </div>
               <p>Chưa có hoạt động nào được lên kế hoạch cho hành trình này.</p>
               {isOwner && (
-                <button onClick={handleAddActivityClick} className={styles.addFirstActivityButton}>
+                <button
+                  onClick={handleAddActivityClick}
+                  className={styles.addFirstActivityButton}
+                >
                   <i className="ri-add-circle-line"></i>
                   Thêm hoạt động đầu tiên
                 </button>
@@ -680,7 +696,11 @@ const ItineraryDetail = () => {
             </div>
           ) : (
             sortedDates.map((dateKey, dateIndex) => (
-              <div key={dateKey} className={styles.dayCard} style={{'--index': dateIndex}}>
+              <div
+                key={dateKey}
+                className={styles.dayCard}
+                style={{ "--index": dateIndex }}
+              >
                 <div className={styles.dayHeader}>
                   <div className={styles.dayNumber}>
                     {calculateDayNumber(dateKey)}
@@ -697,7 +717,11 @@ const ItineraryDetail = () => {
 
                 <div className={styles.activitiesList}>
                   {groupedActivities[dateKey].map((activity, index) => (
-                    <div key={activity.id} className={styles.activityItem} style={{'--index': index}}>
+                    <div
+                      key={activity.id}
+                      className={styles.activityItem}
+                      style={{ "--index": index }}
+                    >
                       <div className={styles.activityTime}>
                         {activity.startTime || "Cả ngày"}
                       </div>
@@ -753,27 +777,27 @@ const ItineraryDetail = () => {
         </div>
 
         <div className={styles.postsSection} id="posts">
-            <h2 className={styles.sectionTitle}>Bài viết liên quan</h2>
-            {posts.length > 0 ? (
-                posts.map(post => (
-                    <PostCard
-                      key={post.id} 
-                      post={post}
-                      isEditing={editingPostId === post.id}
-                      onDelete={handleDeletePost}
-                      onEdit={() => handleEditPost(post)}
-                      onCancelEdit={() => setEditingPostId(null)}
-                      onSubmitEdit={handleUpdatePost}
-                    />
-                ))
-            ) : (
-                <div className={styles.noPostsMessage}>
-                  <div className={styles.noPostsIcon}>
-                    <i className="ri-article-line"></i>
-                  </div>
-                  <p>Chưa có bài viết nào cho hành trình này.</p>
-                </div>
-            )}
+          <h2 className={styles.sectionTitle}>Bài viết liên quan</h2>
+          {posts.length > 0 ? (
+            posts.map((post) => (
+              <PostCard
+                key={post.id}
+                post={post}
+                isEditing={editingPostId === post.id}
+                onDelete={handleDeletePost}
+                onEdit={() => handleEditPost(post)}
+                onCancelEdit={() => setEditingPostId(null)}
+                onSubmitEdit={handleUpdatePost}
+              />
+            ))
+          ) : (
+            <div className={styles.noPostsMessage}>
+              <div className={styles.noPostsIcon}>
+                <i className="ri-article-line"></i>
+              </div>
+              <p>Chưa có bài viết nào cho hành trình này.</p>
+            </div>
+          )}
         </div>
       </div>
 
@@ -790,9 +814,9 @@ const ItineraryDetail = () => {
       )}
 
       <div className={styles.floatingActions}>
-        <button 
+        <button
           className={styles.floatingButton}
-          onClick={() => scrollToSection('hero')}
+          onClick={() => scrollToSection("hero")}
           title="Về đầu trang"
         >
           <i className="ri-arrow-up-line"></i>

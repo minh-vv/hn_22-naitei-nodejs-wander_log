@@ -9,29 +9,6 @@ import { useAuth } from "../../../context/AuthContext";
 import Header from "../../../component/Header/Header";
 import usePostActions from "../../../hooks/usePostAction";
 
-function EditPostForm({ post, onCancel, onSubmit }) {
-  const [content, setContent] = useState(post.content);
-
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    onSubmit({ ...post, content });
-  };
-
-  return (
-    <form onSubmit={handleSubmit} className={styles.editPostForm}>
-      <textarea
-        value={content}
-        onChange={(e) => setContent(e.target.value)}
-        rows={4}
-      />
-      <button type="submit">Save</button>
-      <button type="button" onClick={onCancel}>
-        Cancel
-      </button>
-    </form>
-  );
-}
-
 export default function FeedPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -109,7 +86,9 @@ export default function FeedPage() {
       <Header />
       <div className={styles.contentWrapper}>
         <CreatePost
-          onPostCreated={(newPost) => setPosts((prev) => [newPost, ...prev])}
+          onPostCreated={(newPost) => {
+            setPosts((prev) => [newPost, ...prev]);
+          }}
         />
         {renderContent()}
       </div>

@@ -112,7 +112,7 @@ const ItineraryFeature = () => {
               className={styles.itineraryCard}
               onClick={() => navigate(`/itineraries/${itinerary.slug}`)}
             >
-              <h2 className={styles.cardTitle}>{itinerary.title}</h2>
+              <h3 className={styles.cardTitle}>{itinerary.title}</h3>
               <button
                 className={styles.bookmarkButton}
                 onClick={(e) => {
@@ -158,8 +158,8 @@ const ItineraryFeature = () => {
                   <span className={styles.userName}>{itinerary.user.name}</span>
                 </div>
                 <div className={styles.stats}>
-                  <i className={`ri-heart-fill ${styles.likeIcon}`}></i>
-                  <span>{itinerary.totalLikes}</span>
+                  <i className={`ri-eye-fill ${styles.viewIcon}`}></i>
+                  <span>{itinerary.views}</span>
                 </div>
               </div>
             </div>

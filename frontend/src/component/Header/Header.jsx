@@ -30,10 +30,13 @@ export default function Header() {
         <div className={styles.flexContainer}>
           <div className={styles.logoContainer}>
             <a href="/" className={styles.logoLink}>
-              <div className={styles.logoIconWrapper}>
-                <i className="ri-map-pin-line"></i>
+              <div>
+                <img
+                  src="/logo.png"
+                  alt="WanderLog Logo"
+                  className={styles.logoIconWrapper}
+                />
               </div>
-              <span className={styles.logoText}>WanderLog</span>
             </a>
           </div>
 
@@ -49,7 +52,6 @@ export default function Header() {
             </a>
           </nav>
 
-          {/* Search bar */}
           <div className={styles.searchContainer}>
             <form onSubmit={handleSearchSubmit} className={styles.searchForm}>
               <div className={styles.searchInputGroup}>
@@ -110,7 +112,7 @@ export default function Header() {
               <div className={styles.authButtons}>
                 <a href="/signin" className={styles.loginButton}>
                   Đăng nhập
-                </a >
+                </a>
                 <a href="/signup" className={styles.registerButton}>
                   Đăng ký
                 </a>

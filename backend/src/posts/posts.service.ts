@@ -53,6 +53,7 @@ export class PostsService {
         media: true,
         user: {
           select: {
+            id: true,
             name: true,
             avatar: true,
           },
@@ -136,6 +137,7 @@ export class PostsService {
             id: true,
             title: true,
             budget: true,
+            slug: true,
           },
         },
         media: {
