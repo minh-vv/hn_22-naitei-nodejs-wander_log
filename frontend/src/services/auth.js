@@ -65,11 +65,12 @@ const authService = {
     }
   },
 
-  changePassword: async (currentPassword, newPassword) => {
+  changePassword: async (currentPassword, newPassword, confirmPassword) => {
     try {
-      const response = await apiClient.put("/auth/change-password", {
+      const response = await apiClient.post("/auth/change-password", {
         currentPassword,
         newPassword,
+        confirmPassword,
       });
       return response.data;
     } catch (error) {

@@ -49,7 +49,8 @@ function Signin() {
 
   const handleSocialSignin = async (provider) => {
     if (provider === "google") {
-      window.location.href = "http://localhost:3000/auth/google";
+      const apiBaseUrl = process.env.REACT_APP_API_BASE_URL || "http://localhost:3000";
+      window.location.href = `${apiBaseUrl}/auth/google`;
     } else {
       alert(`Social sign-in with ${provider} will be implemented here.`);
     }

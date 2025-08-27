@@ -36,6 +36,21 @@ const ProtectedRoute = ({ children }) => {
   return children;
 };
 
+const ChangePasswordProtectedRoute = ({ children }) => {
+  const token = sessionStorage.getItem("userToken");
+  const user = JSON.parse(sessionStorage.getItem("user") || "{}");
+  
+  if (!token) {
+    return <Navigate to="/signin" replace />;
+  }
+  
+  if (user.authProvider === 'GOOGLE') {
+    return <Navigate to="/profile" replace />;
+  }
+  
+  return children;
+};
+
 const AdminProtectedRoute = ({ children }) => {
   const user = JSON.parse(sessionStorage.getItem("user"));
   if (user && user.role === "ADMIN") {
@@ -59,9 +74,9 @@ function App() {
         <Route
           path="/change-password"
           element={
-            <ProtectedRoute>
+            <ChangePasswordProtectedRoute>
               <ChangePassword />
-            </ProtectedRoute>
+            </ChangePasswordProtectedRoute>
           }
         />
         

@@ -42,10 +42,21 @@ export class NotificationsGateway implements OnGatewayConnection, OnGatewayDisco
     try {
       this.logger.log(`New client attempting connection: ${client.id}`);
       
-      const token = client.handshake.auth?.token || client.handshake.headers?.authorization?.replace('Bearer ', '');
+      let token: string | undefined;
       
-      this.logger.log(`Token received: ${token ? 'YES (length: ' + token.length + ')' : 'NO'}`);
+      if (client.handshake.auth?.token) {
+        token = client.handshake.auth.token;
+      } else if (
+        typeof client.handshake.headers?.authorization === 'string' &&
+        client.handshake.headers.authorization.startsWith('Bearer ')
+      ) {
+        token = client.handshake.headers.authorization.slice(7);
+      } else {
+        token = undefined;
+      }
       
+      this.logger.log(`Token received: ${token ? 'YES' : 'NO'}`);
+
       if (!token) {
         this.logger.warn('Client connected without authentication token');
         client.emit('notification:error', { message: 'No authentication token provided' });
@@ -55,7 +66,7 @@ export class NotificationsGateway implements OnGatewayConnection, OnGatewayDisco
 
       this.logger.log('Verifying JWT token...');
       const payload = this.jwtService.verify(token);
-      this.logger.log(`JWT verified. Payload: ${JSON.stringify(payload)}`);
+      this.logger.log(`JWT verified for userId: ${payload.sub}`);
       
       const userId = payload.sub;
 
