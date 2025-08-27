@@ -126,11 +126,14 @@ export class AuthService {
     const resetToken = randomBytes(32).toString('hex');
     const expiresAt = new Date(Date.now() + 3600000);
 
+    console.log('Generated reset token:', resetToken.substring(0, 10) + '...');
+    console.log('Token expires at:', expiresAt);
+
     await this.prisma.passwordReset.deleteMany({
       where: { userId: user.id },
     });
 
-    await this.prisma.passwordReset.create({
+    const createdReset = await this.prisma.passwordReset.create({
       data: {
         userId: user.id,
         token: resetToken,
@@ -138,12 +141,15 @@ export class AuthService {
       },
     });
 
+    console.log('Created password reset record with ID:', createdReset.id);
+
     await this.mailsService.forgotPassword({
       to: user.email,
       data: {
         token: resetToken,
         user_name: user.name || user.email.split('@')[0],
       },
+      lang: I18nContext.current()?.lang,
     });
 
     return {
@@ -156,12 +162,23 @@ export class AuthService {
   async resetPassword(resetPasswordDto: ResetPasswordDto) {
     const { token, newPassword } = resetPasswordDto;
 
+    console.log('Reset password attempt with token:', token ? token.substring(0, 10) + '...' : 'null');
+
+    if (!token || token.trim() === '') {
+      throw new BadRequestException(
+        this.i18n.t('validation.token_required', {
+          lang: I18nContext.current()?.lang,
+        }),
+      );
+    }
+
     const passwordReset = await this.prisma.passwordReset.findUnique({
-      where: { token },
+      where: { token: token.trim() },
       include: { user: true },
     });
 
     if (!passwordReset) {
+      console.log('Password reset record not found for token');
       throw new BadRequestException(
         this.i18n.t('auth.invalid_reset_token', {
           lang: I18nContext.current()?.lang,
@@ -170,6 +187,7 @@ export class AuthService {
     }
 
     if (passwordReset.expiresAt < new Date()) {
+      console.log('Password reset token expired:', passwordReset.expiresAt);
       await this.prisma.passwordReset.delete({
         where: { id: passwordReset.id },
       });
@@ -191,11 +209,40 @@ export class AuthService {
       where: { id: passwordReset.id },
     });
 
+    console.log('Password reset successful for user:', passwordReset.userId);
+
     return {
       message: this.i18n.t('auth.password_reset_success', {
         lang: I18nContext.current()?.lang,
       }),
     };
+  }
+
+  // Debug method to check active reset tokens
+  async checkActiveResetTokens(email?: string) {
+    const whereClause = email ? {
+      user: { email },
+      expiresAt: { gt: new Date() }
+    } : {
+      expiresAt: { gt: new Date() }
+    };
+
+    const activeTokens = await this.prisma.passwordReset.findMany({
+      where: whereClause,
+      include: { user: { select: { email: true } } },
+      orderBy: { expiresAt: 'desc' }
+    });
+
+    const tokenInfo = activeTokens.map(t => ({
+      id: t.id,
+      email: t.user.email,
+      token: t.token.substring(0, 10) + '...',
+      expiresAt: t.expiresAt,
+    }));
+
+    console.log('Active reset tokens:', tokenInfo);
+
+    return tokenInfo;
   }
 
   async changePassword(userId: string, changePasswordDto: ChangePasswordDto) {

@@ -29,6 +29,7 @@ async function bootstrap() {
   app.useGlobalFilters(
     new I18nValidationExceptionFilter({
       detailedErrors: false,
+      errorHttpStatusCode: 400,
     }),
   );
 

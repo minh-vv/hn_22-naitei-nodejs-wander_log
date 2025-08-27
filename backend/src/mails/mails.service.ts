@@ -18,10 +18,35 @@ export class MailsService {
       token: string;
       user_name: string;
     };
+    lang?: string;
   }): Promise<void> {
+    const subject = this.i18n.t('auth.reset_password_subject', {
+      lang: mailData.lang || 'en',
+    });
+
+    const greeting = this.i18n.t('auth.reset_password_email_greeting', {
+      lang: mailData.lang || 'en',
+    });
+
+    const content = this.i18n.t('auth.reset_password_email_content', {
+      lang: mailData.lang || 'en',
+    });
+
+    const buttonText = this.i18n.t('auth.reset_password_button', {
+      lang: mailData.lang || 'en',
+    });
+
+    const footer = this.i18n.t('auth.reset_password_email_footer', {
+      lang: mailData.lang || 'en',
+    });
+
+    const expiry = this.i18n.t('auth.reset_password_expiry', {
+      lang: mailData.lang || 'en',
+    });
+
     await this.mailerService.sendMail({
       to: mailData.to,
-      subject: 'Reset Password',
+      subject: subject,
       templatePath: path.join(
         this.configService.get<string>('mailer.workingDirectory', {
           infer: true,
@@ -32,8 +57,14 @@ export class MailsService {
         'reset-password.hbs',
       ),
       context: {
+        subject: subject,
         username: mailData.data.user_name,
         resetLink: `${this.configService.get<string>('app.clientURL') || 'http://localhost:3001'}/reset-password?token=${mailData.data.token}`,
+        greeting: greeting,
+        content: content,
+        buttonText: buttonText,
+        footer: footer,
+        expiry: expiry,
       },
     });
   }
