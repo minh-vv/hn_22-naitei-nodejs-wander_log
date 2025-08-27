@@ -1,11 +1,26 @@
-import React from "react";
+import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Header from "../../component/Header/Header";
-import styles from "./Home.module.css";
 import ItineraryFeature from "../Itinerary/ItineraryFeature/ItineraryFeature";
+import ItineraryModal from "../../component/ItineraryModal/ItineraryModal"; 
+import styles from "./Home.module.css";
 
 export default function Home() {
   const navigate = useNavigate();
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
+  const handleOpenCreateModal = () => {
+    setIsModalOpen(true);
+  };
+
+  const handleCloseModal = () => {
+    setIsModalOpen(false);
+  };
+
+  const handleSaveSuccess = () => {
+    console.log("Lịch trình đã được tạo thành công!");
+  };
+
   return (
     <div className={styles.container}>
       <Header />
@@ -26,7 +41,7 @@ export default function Home() {
               Xem bảng tin
             </button>
             <button
-              onClick={() => navigate("/itineraries/new")}
+              onClick={handleOpenCreateModal} 
               className={styles.primaryBtn}
             >
               Tạo lịch trình mới
@@ -51,6 +66,13 @@ export default function Home() {
         <h2>Bắt đầu hành trình của bạn ngay hôm nay</h2>
         <p>Tham gia cộng đồng du lịch và khám phá những điều tuyệt vời</p>
       </div>
+
+      <ItineraryModal
+        isOpen={isModalOpen}
+        onClose={handleCloseModal}
+        onSave={handleSaveSuccess}
+        initialItineraryData={null} 
+      />
     </div>
   );
 }

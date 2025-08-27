@@ -7,10 +7,12 @@ import itineraryService from "../../../services/itinerary";
 import activityService from "../../../services/activity";
 import bookmarkService from "../../../services/bookmark";
 import postService from "../../../services/post";
+import ratingsService from "../../../services/ratings";
+
+import ItineraryModal from "../../../component/ItineraryModal/ItineraryModal";
 import ActivityFormModal from "../../Activity/ActivityFormModal/ActivityFormModal";
 import CreatePost from "../../Post/CreatePost/CreatePost";
 import PostCard from "../../Post/PostCard/PostCard";
-import ratingsService from "../../../services/ratings";
 import StarRating from "../../../component/StarRating/StarRating";
 
 import styles from "./ItineraryDetail.module.css";
@@ -117,6 +119,7 @@ const ItineraryDetail = () => {
   const [ratingCount, setRatingCount] = useState(0);
   const [userRating, setUserRating] = useState(0);
 
+  const [isEditItineraryModalOpen, setIsEditItineraryModalOpen] = useState(false);
   const navigate = useNavigate();
   const { slug } = useParams();
 
@@ -400,6 +403,19 @@ const ItineraryDetail = () => {
     }
   };
 
+  const handleOpenEditItineraryModal = () => {
+    setIsEditItineraryModalOpen(true);
+  };
+
+  const handleCloseEditItineraryModal = () => {
+    setIsEditItineraryModalOpen(false);
+  };
+
+  const handleItinerarySaveSuccess = () => {
+    fetchItineraryData();
+    handleCloseEditItineraryModal();
+  };
+
   const groupActivitiesByDate = (activities) => {
     if (!activities) return {};
     const grouped = {};
@@ -512,7 +528,7 @@ const ItineraryDetail = () => {
     <div className={styles.mainWrapper}>
       <div className={styles.container}>
         <div className={styles.header}>
-          <button onClick={() => navigate(-1)} className={styles.backLink}>
+          <button onClick={() => navigate("/itineraries")} className={styles.backLink}>
             <i className="ri-arrow-left-line"></i>
           </button>
           <h1 className={styles.headerTitle}>{itinerary.title}</h1>
@@ -631,6 +647,7 @@ const ItineraryDetail = () => {
             </div>
           </div>
         </div>
+        
         {currentUser && !isOwner && (
           <div className={styles.userRatingSection}>
             <p className={styles.userRatingPrompt}>
@@ -642,6 +659,7 @@ const ItineraryDetail = () => {
             />
           </div>
         )}
+
 
         {isOwner && showCreatePost && (
           <CreatePost
@@ -661,7 +679,7 @@ const ItineraryDetail = () => {
               <span>Thêm hoạt động</span>
             </button>
             <button
-              onClick={() => navigate(`/itineraries/edit/${itinerary.id}`)}
+              onClick={handleOpenEditItineraryModal}
               className={`${styles.actionButton} ${styles.editActionButton}`}
             >
               <i className="ri-edit-line"></i>
@@ -810,6 +828,15 @@ const ItineraryDetail = () => {
           itineraryId={itinerary.id}
           itineraryStartDate={itinerary.startDate}
           itineraryEndDate={itinerary.endDate}
+        />
+      )}
+
+      {isOwner && itinerary && (
+        <ItineraryModal
+          isOpen={isEditItineraryModalOpen}
+          onClose={handleCloseEditItineraryModal}
+          onSave={handleItinerarySaveSuccess}
+          initialItineraryData={itinerary}
         />
       )}
 

@@ -1,151 +1,260 @@
-:root {
-    --pink-light: #FFC0CB;
-    --pink-medium: #FF8F9B;
-    --pink-dark: #FF69B4;
-    --text-color: #555;
-    --background-color: #FFF0F5;
-    --red-alert: #F44336;
+.container {
+  min-height: 100vh;
+  background: linear-gradient(135deg, #fce4ec 0%, #f8bbd0 100%);
+  padding: 2rem;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  color: #3f51b5;
 }
 
-.container {
-    padding: 2rem;
-    max-width: 1200px;
-    margin: 0 auto;
-    text-align: center;
+.loadingContainer {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    color: #e91e63;
+}
+
+.loadingHeart {
+    animation: heartbeat 1.5s ease-in-out infinite;
+    margin-bottom: 1rem;
+}
+
+.heartIcon {
+    color: #ff80ab;
+    width: 50px;
+    height: 50px;
+}
+
+@keyframes heartbeat {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.2); }
+}
+
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
 }
 
 .header {
-    margin-bottom: 2rem;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  margin-bottom: 2rem;
+}
+
+.backButton {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: rgba(255, 255, 255, 0.8);
+  border: none;
+  padding: 0.75rem 1.25rem;
+  border-radius: 16px;
+  color: #c2185b;
+  font-weight: 600;
+  text-decoration: none;
+  transition: all 0.3s ease;
+  width: fit-content;
+  margin-bottom: 1rem;
+}
+
+.backButton:hover {
+  background: rgba(255, 255, 255, 0.9);
+  transform: translateY(-2px);
 }
 
 .title {
-    font-size: 2.5rem;
-    color: var(--pink-dark);
-    font-weight: bold;
+  font-size: 2.5rem;
+  font-weight: 700;
+  background: linear-gradient(135deg, #ff80ab, #e91e63);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  margin-top: 0.5rem;
 }
 
-.subtitle {
-    font-size: 1.2rem;
-    color: var(--pink-medium);
+.statsGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 1.5rem;
+  margin-bottom: 2rem;
+}
+
+.statCard {
+  background: rgba(255, 255, 255, 0.8);
+  backdrop-filter: blur(20px);
+  border-radius: 20px;
+  padding: 1.5rem;
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+  box-shadow: 0 8px 32px rgba(255, 105, 186, 0.15);
+  border: 2px solid rgba(255, 182, 208, 0.3);
+}
+
+.statIconTotal { color: #3f51b5; }
+.statIconPublic { color: #4caf50; }
+.statIconPrivate { color: #f44336; }
+
+.statContent {
+  display: flex;
+  flex-direction: column;
+}
+
+.statValue {
+  font-size: 2rem;
+  font-weight: 700;
+  color: #3f51b5;
+}
+
+.statLabel {
+  color: #7986cb;
+  font-weight: 600;
+  font-size: 0.9rem;
+}
+
+.searchAndTableContainer {
+  background: rgba(255, 255, 255, 0.8);
+  backdrop-filter: blur(20px);
+  border-radius: 20px;
+  padding: 2rem;
+  box-shadow: 0 8px 32px rgba(255, 105, 186, 0.15);
+  border: 2px solid rgba(255, 182, 208, 0.3);
+}
+
+.searchContainer {
+  position: relative;
+  margin-bottom: 1.5rem;
+}
+
+.searchInput {
+  width: 100%;
+  padding: 0.75rem 1.25rem;
+  padding-right: 3rem;
+  border: 1px solid #ff80ab;
+  border-radius: 12px;
+  font-size: 1rem;
+  color: #3f51b5;
+  background: rgba(255, 255, 255, 0.5);
+  transition: all 0.3s ease;
+}
+
+.searchInput:focus {
+  outline: none;
+  border-color: #e91e63;
+  box-shadow: 0 0 0 3px rgba(233, 30, 99, 0.2);
+}
+
+.searchIcon {
+  position: absolute;
+  top: 50%;
+  right: 1.25rem;
+  transform: translateY(-50%);
+  color: #c2185b;
 }
 
 .tableContainer {
-    background-color: #fff;
-    border-radius: 15px;
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
-    padding: 1.5rem;
-    overflow-x: auto;
+  overflow-x: auto;
 }
 
 .itineraryTable {
-    width: 100%;
-    border-collapse: collapse;
-    min-width: 600px;
+  width: 100%;
+  border-collapse: collapse;
+  white-space: nowrap;
 }
 
 .itineraryTable th,
 .itineraryTable td {
-    text-align: left;
-    padding: 1rem;
-    border-bottom: 1px solid #ddd;
+  padding: 1rem;
+  text-align: left;
 }
 
 .itineraryTable th {
-    background-color: var(--pink-light);
-    color: white;
-    text-transform: uppercase;
-    font-size: 0.9rem;
+  font-weight: 700;
+  color: #c2185b;
+  border-bottom: 2px solid #f8bbd0;
 }
 
-.itineraryTable tr:last-child td {
-    border-bottom: none;
+.itineraryTable tr:not(:last-child) td {
+  border-bottom: 1px solid #f8bbd0;
 }
 
-.loading {
-    font-size: 1.5rem;
-    color: var(--pink-dark);
-    text-align: center;
-    padding-top: 5rem;
+.statusPublic {
+  background-color: #d4edda;
+  color: #155724;
+  padding: 0.25rem 0.75rem;
+  border-radius: 12px;
+  font-weight: 600;
+}
+
+.statusPrivate {
+  background-color: #f8d7da;
+  color: #721c24;
+  padding: 0.25rem 0.75rem;
+  border-radius: 12px;
+  font-weight: 600;
 }
 
 .actions {
-    display: flex;
-    gap: 0.5rem;
-    flex-wrap: wrap;
+  display: flex;
+  gap: 0.5rem;
+  justify-content: center;
+  align-items: center;
 }
 
 .actionButton {
-    display: flex;
-    align-items: center;
-    gap: 0.3rem;
-    padding: 0.5rem 1rem;
-    border-radius: 20px;
-    border: none;
-    color: white;
-    cursor: pointer;
-    transition: background-color 0.3s ease;
-    text-decoration: none; 
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.5rem;
+  height: 2.5rem;
+  border: none;
+  border-radius: 50%;
+  color: white;
+  cursor: pointer;
+  transition: all 0.3s ease;
 }
 
-.view {
-    background-color: var(--green-success); 
-}
-
-.delete {
-    background-color: var(--red-alert);
-}
-
-.actionButton:hover {
-    filter: brightness(1.2);
-}
+.actionButton.view { background-color: #ff80ab; }
+.actionButton.delete { background-color: #f44336; }
 
 .actionButton:disabled {
-    background-color: #ccc;
-    cursor: not-allowed;
+  opacity: 0.5;
+  cursor: not-allowed;
 }
 
-.searchContainer {
-    position: relative;
-    max-width: 500px;
-    margin: 0 auto 2rem auto;
+.actionButton.view:hover:not(:disabled) { background-color: #c2185b; }
+.actionButton.delete:hover:not(:disabled) { background-color: #d32f2f; }
+
+.noData {
+  text-align: center;
+  padding: 2rem;
+  color: #c2185b;
+  font-style: italic;
 }
 
-.searchInput {
-    width: 100%;
-    padding: 0.8rem 1rem;
-    padding-right: 3rem;
-    border: 1px solid #ddd;
-    border-radius: 25px;
-    font-size: 1rem;
-    transition: box-shadow 0.3s ease;
-}
-
-.searchInput:focus {
-    outline: none;
-    box-shadow: 0 0 5px var(--pink-light);
-}
-
-.searchIcon {
-    position: absolute;
-    right: 1.5rem;
-    top: 50%;
-    transform: translateY(-50%);
-    color: var(--pink-medium);
-}
-
-.backButton {
-    position: absolute;
-    top: 1rem;
-    left: 1rem;
-    font-size: 1rem;
-    display: flex;
-    align-items: center;
+@media (max-width: 768px) {
+  .container {
+    padding: 1rem;
+  }
+  .title {
+    font-size: 2rem;
+  }
+  .statsGrid {
+    grid-template-columns: 1fr;
+  }
+  .statCard {
+    flex-direction: column;
+    text-align: center;
     gap: 0.5rem;
-    color: var(--pink-medium);
-    text-decoration: none;
-    transition: color 0.3s ease;
-}
-
-.backButton:hover {
-    color: var(--pink-dark);
+  }
+  .itineraryTable th,
+  .itineraryTable td {
+    padding: 0.75rem;
+  }
+  .itineraryTable {
+    font-size: 0.9rem;
+  }
 }

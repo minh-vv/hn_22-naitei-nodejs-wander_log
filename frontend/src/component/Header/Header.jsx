@@ -5,10 +5,12 @@ import avatarDefault from "../../assets/images/default_avatar.png";
 import { useAuth } from "../../context/AuthContext";
 import { useUser } from "../../context/UserContext";
 import NotificationDropdown from "../Notification/NotificationDropdown";
+import ItineraryModal from "../ItineraryModal/ItineraryModal";
 
 export default function Header() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
+  const [isModalOpen, setIsModalOpen] = useState(false);
   const navigate = useNavigate();
 
   const { user, isLoggedIn, logout } = useAuth();
@@ -22,6 +24,20 @@ export default function Header() {
       navigate(`/search?query=${encodeURIComponent(searchQuery.trim())}`);
       setSearchQuery("");
     }
+  };
+
+  const handleOpenCreateModal = (e) => {
+    e.preventDefault();
+    setIsModalOpen(true);
+  };
+
+  const handleCloseModal = () => {
+    setIsModalOpen(false);
+  };
+
+  const handleSaveSuccess = () => {
+    window.alert("Lịch trình đã được tạo thành công!");
+    window.location.reload();
   };
 
   return (
@@ -48,8 +64,9 @@ export default function Header() {
               Bảng tin
             </Link>
             <Link to="/itineraries/new" className={styles.navLink}>
+            <a href="#" className={styles.navLink} onClick={handleOpenCreateModal}>
               Tạo lịch trình
-            </Link>
+            </a>
           </nav>
 
           <div className={styles.searchContainer}>
@@ -118,6 +135,12 @@ export default function Header() {
           </div>
         </div>
       </div>
+      <ItineraryModal
+        isOpen={isModalOpen}
+        onClose={handleCloseModal}
+        onSave={handleSaveSuccess}
+        initialItineraryData={null}
+      />
     </header>
   );
 }

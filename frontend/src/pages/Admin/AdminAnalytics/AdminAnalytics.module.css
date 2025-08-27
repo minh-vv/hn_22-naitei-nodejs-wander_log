@@ -1,0 +1,123 @@
+/* AdminAnalytics.module.css */
+
+.analyticsContainer {
+  min-height: 100vh;
+  background: linear-gradient(135deg, #fce4ec 0%, #f8bbd0 100%);
+  padding: 2rem;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+}
+
+.analyticsHeader {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+  margin-bottom: 2rem;
+}
+
+.backButton {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: rgba(255, 255, 255, 0.8);
+  border: none;
+  padding: 0.75rem 1.25rem;
+  border-radius: 16px;
+  color: #c2185b;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.backButton:hover {
+  background: rgba(255, 255, 255, 0.9);
+  transform: translateY(-2px);
+}
+
+.analyticsTitle {
+  font-size: 2.2rem;
+  font-weight: 700;
+  color: #c2185b;
+  margin-bottom: 0.5rem;
+}
+
+.analyticsSubtitle {
+  font-size: 1.1rem;
+  color: #e91e63;
+  font-weight: 500;
+}
+
+.chartGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+  gap: 2rem;
+}
+
+.chartCard {
+  background: rgba(255, 255, 255, 0.8);
+  backdrop-filter: blur(20px);
+  border-radius: 20px;
+  padding: 2rem;
+  box-shadow: 0 8px 32px rgba(255, 105, 186, 0.15);
+  border: 2px solid rgba(255, 182, 208, 0.3);
+  transition: all 0.3s ease;
+}
+
+.chartCard:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 12px 40px rgba(255, 105, 186, 0.25);
+}
+
+.chartTitleWrapper {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 1.5rem;
+}
+
+.chartIcon {
+  color: #ff80ab;
+}
+
+.chartTitle {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: #3f51b5;
+}
+
+@media (max-width: 768px) {
+  .analyticsHeader {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  .analyticsTitle {
+    font-size: 1.8rem;
+  }
+  .chartGrid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.loadingContainer {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  color: #e91e63;
+}
+
+.loadingHeart {
+  animation: heartbeat 1.5s ease-in-out infinite;
+  margin-bottom: 1rem;
+}
+
+.heartIcon {
+  color: #ff80ab;
+  width: 50px;
+  height: 50px;
+}
+
+@keyframes heartbeat {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.2); }
+}

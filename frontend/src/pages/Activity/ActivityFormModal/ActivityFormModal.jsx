@@ -14,7 +14,7 @@ const toISODate = (d) => {
 const formatDateForDisplay = (dateString) => {
   const options = { weekday: 'long', year: 'numeric', month: 'long', day: '2-digit' };
   const date = new Date(dateString);
-  return new Intl.DateTimeFormat('en-GB', options).format(date);
+  return new Intl.DateTimeFormat('vi-VN', options).format(date);
 };
 
 const ActivityFormModal = ({
@@ -76,13 +76,13 @@ const ActivityFormModal = ({
     setFormError(null);
 
     if (!name || !date) {
-      setFormError('Activity name and date are required.');
+      setFormError('Tên hoạt động và ngày là bắt buộc.');
       setSaving(false);
       return;
     }
 
     if (!dateOptions.some(option => option.value === date)) {
-        setFormError('Please select a valid date from the list.');
+        setFormError('Vui lòng chọn một ngày hợp lệ trong danh sách.');
         setSaving(false);
         return;
     }
@@ -100,7 +100,7 @@ const ActivityFormModal = ({
       });
       onClose();
     } catch (err) {
-      setFormError(err.message || 'Failed to save activity.');
+      setFormError(err.message || 'Lưu hoạt động thất bại.');
     } finally {
       setSaving(false);
     }
@@ -112,12 +112,12 @@ const ActivityFormModal = ({
     <div className={styles.modalOverlay}>
       <div className={styles.modalContainer}>
         <h3 className={styles.modalTitle}>
-          {activityData ? 'Edit Activity' : 'Add New Activity'}
+          {activityData ? 'Chỉnh sửa hoạt động' : 'Thêm hoạt động mới'}
         </h3>
         <form onSubmit={handleSubmit}>
           <div className={styles.formGroup}>
             <label htmlFor="activityName" className={styles.label}>
-              Activity Name:
+              Tên hoạt động:
             </label>
             <input
               type="text"
@@ -130,7 +130,7 @@ const ActivityFormModal = ({
           </div>
           <div className={styles.formGroup}>
             <label htmlFor="activityDate" className={styles.label}>
-              Date:
+              Ngày:
             </label>
             <select
               id="activityDate"
@@ -139,7 +139,7 @@ const ActivityFormModal = ({
               onChange={(e) => setDate(e.target.value)}
               required
             >
-              <option value="" disabled>Select a date...</option>
+              <option value="" disabled>Chọn ngày...</option>
               {dateOptions.map(option => (
                 <option key={option.value} value={option.value}>
                   {option.label}
@@ -149,7 +149,7 @@ const ActivityFormModal = ({
           </div>
           <div className={styles.formGroup}>
             <label htmlFor="activityStartTime" className={styles.label}>
-              Start Time (HH:MM):
+              Giờ bắt đầu (HH:MM):
             </label>
             <input
               type="time"
@@ -161,7 +161,7 @@ const ActivityFormModal = ({
           </div>
           <div className={styles.formGroup}>
             <label htmlFor="activityLocation" className={styles.label}>
-              Location:
+              Địa điểm:
             </label>
             <input
               type="text"
@@ -173,7 +173,7 @@ const ActivityFormModal = ({
           </div>
           <div className={styles.formGroup}>
             <label htmlFor="activityDescription" className={styles.label}>
-              Description:
+              Mô tả:
             </label>
             <textarea
               id="activityDescription"
@@ -183,7 +183,7 @@ const ActivityFormModal = ({
             ></textarea>
           </div>
           <div className={styles.formGroup}>
-            <label htmlFor="cost" className={styles.label}>Cost:</label>
+            <label htmlFor="cost" className={styles.label}>Chi phí:</label>
             <input
               type="number"
               id="cost"
@@ -191,7 +191,7 @@ const ActivityFormModal = ({
               value={cost}
               onChange={(e) => setCost(e.target.value)}
               className={styles.input}
-              placeholder="Cost (optional)"
+              placeholder="Chi phí (không bắt buộc)"
             />
           </div>
           {formError && (
@@ -204,7 +204,7 @@ const ActivityFormModal = ({
               className={styles.cancelButton}
               disabled={saving}
             >
-              Cancel
+              Hủy
             </button>
             <button
               type="submit"
@@ -217,7 +217,7 @@ const ActivityFormModal = ({
                   <path className={styles.spinnerSegment} fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                 </svg>
               ) : null}
-              {activityData ? (saving ? 'Saving...' : 'Update') : (saving ? 'Adding...' : 'Add')}
+              {activityData ? (saving ? 'Đang lưu...' : 'Cập nhật') : (saving ? 'Đang thêm...' : 'Thêm')}
             </button>
           </div>
         </form>
