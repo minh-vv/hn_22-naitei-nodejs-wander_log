@@ -12,11 +12,25 @@ export default function Header() {
   const [searchQuery, setSearchQuery] = useState("");
   const [isModalOpen, setIsModalOpen] = useState(false);
   const navigate = useNavigate();
+  const menuRef = useRef(null);
 
   const { user, isLoggedIn, logout } = useAuth();
   const { currentUser } = useUser();
 
   const toggleUserMenu = () => setIsMenuOpen(!isMenuOpen);
+
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (menuRef.current && !menuRef.current.contains(event.target)) {
+        setIsMenuOpen(false);
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, []);
 
   const handleSearchSubmit = (e) => {
     e.preventDefault();
@@ -91,7 +105,7 @@ export default function Header() {
               <>
                 <NotificationDropdown />
 
-                <div className={styles.userMenu}>
+                <div className={styles.userMenu} ref={menuRef}>
                   <button
                     onClick={toggleUserMenu}
                     className={styles.userMenuButton}
@@ -111,6 +125,11 @@ export default function Header() {
                       <a href="/profile" className={styles.dropdownItem}>
                         Trang cá nhân
                       </a>
+                      {user?.authProvider !== 'GOOGLE' && (
+                        <a href="/change-password" className={styles.dropdownItem}>
+                          Đổi mật khẩu
+                        </a>
+                      )}
                       <button
                         type="button"
                         className={styles.logoutButton}
