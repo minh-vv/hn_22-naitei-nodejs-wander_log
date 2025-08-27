@@ -19,7 +19,7 @@ import Home from "./pages/Home/Home";
 import AdminDashboard from "./pages/Admin/AdminDashboard/AdminDashboard";
 import AdminUsers from "./pages/Admin/AdminUsers/AdminUsers";
 import AdminItineraries from "./pages/Admin/AdminItineraries/AdminItineraries";
-import AdminItineraryDetail from './pages/Admin/AdminItineraryDetail/AdminItineraryDetail'; 
+import AdminItineraryDetail from "./pages/Admin/AdminItineraryDetail/AdminItineraryDetail";
 import AdminUserDetail from "./pages/Admin/AdminUserDetail/AdminUserDetail";
 import Profile from "./pages/Profile/Profile";
 import Search from "./pages/Search/Search";
@@ -50,160 +50,143 @@ function App() {
         <Router>
           <ToastContainer />
           <Routes>
-        <Route path="/signup" element={<Signup />} />
-        <Route path="/signin" element={<Signin />} />
-        <Route path="/forgot-password" element={<ForgotPassword />} />
-        <Route path="/reset-password" element={<ResetPassword />} />
-        <Route path="/auth/success" element={<AuthSuccess />} />
-        <Route
-          path="/change-password"
-          element={
-            <ProtectedRoute>
-              <ChangePassword />
-            </ProtectedRoute>
-          }
-        />
-        
-        {/* Trang chính được bảo vệ */}
-        <Route 
-          path="/home" 
-          element={
-            <ProtectedRoute>
-              <Home />
-            </ProtectedRoute>
-          } 
-        />
+            <Route path="/home" element={<Home />} />
+            <Route path="/" element={<Navigate to="/home" replace />} />
+            <Route path="/signup" element={<Signup />} />
+            <Route path="/signin" element={<Signin />} />
+            <Route path="/forgot-password" element={<ForgotPassword />} />
+            <Route path="/reset-password" element={<ResetPassword />} />
+            <Route path="/auth/success" element={<AuthSuccess />} />
+            <Route
+              path="/change-password"
+              element={
+                <ProtectedRoute>
+                  <ChangePassword />
+                </ProtectedRoute>
+              }
+            />
 
-        {/* Search route */}
-        <Route 
-          path="/search" 
-          element={
-            <ProtectedRoute>
-              <Search />
-            </ProtectedRoute>
-          } 
-        />
+            {/* Search route */}
+            <Route
+              path="/search"
+              element={
+                <ProtectedRoute>
+                  <Search />
+                </ProtectedRoute>
+              }
+            />
 
-        {/* Profile routes */}
-        <Route 
-          path="/profile" 
-          element={
-            <ProtectedRoute>
-              <Profile />
-            </ProtectedRoute>
-          } 
-        />
-        <Route 
-          path="/profile/:userId" 
-          element={
-            <ProtectedRoute>
-              <Profile />
-            </ProtectedRoute>
-          } 
-        />
-        
-        <Route path="/" element={<Navigate to="/home" replace />} />
-        
-        <Route 
-          path="/itineraries" 
-          element={
-            <ProtectedRoute>
-              <ItineraryList />
-            </ProtectedRoute>
-          } 
-        />
-        <Route 
-          path="/itineraries/new" 
-          element={
-            <ProtectedRoute>
-              <ItineraryForm />
-            </ProtectedRoute>
-          } 
-        />
-        <Route 
-          path="/itineraries/edit/:id" 
-          element={
-            <ProtectedRoute>
-              <ItineraryForm />
-            </ProtectedRoute>
-          } 
-        />
-        <Route 
-          path="/itineraries/:slug" 
-          element={
-            <ProtectedRoute>
-              <ItineraryDetail />
-            </ProtectedRoute>
-          } 
-        />
-        <Route 
-          path="/posts/feed" 
-          element={
-            <ProtectedRoute>
-              <NewsFeed />
-            </ProtectedRoute>
-          } 
-        />
-        
-        {/* Admin routes */}
-        <Route
-            path="/admin/dashboard"
-            element={
-              <AdminProtectedRoute>
-                <AdminDashboard />
-              </AdminProtectedRoute>
-            }
-          />
-          <Route
-            path="/admin/users"
-            element={
-              <AdminProtectedRoute>
-                <AdminUsers />
-              </AdminProtectedRoute>
-            }
-          />
-          <Route
-            path="/admin/users/:userId"
-            element={
-              <AdminProtectedRoute>
-                <AdminUserDetail />
-              </AdminProtectedRoute>
-            }
-          />
-          <Route
-            path="/admin/itineraries"
-            element={
-              <AdminProtectedRoute>
-                <AdminItineraries />
-              </AdminProtectedRoute>
-            }
-          />
-          <Route
-          path="/admin/itineraries/:itineraryId" 
-          element={
-            <AdminProtectedRoute>
-              <AdminItineraryDetail />
-            </AdminProtectedRoute>
-          }
-        />
-        <Route
-          path="/admin/users"
-          element={
-            <AdminProtectedRoute>
-              <AdminUsers />
-            </AdminProtectedRoute>
-          }
-        />
-        <Route
-          path="/admin/itineraries"
-          element={
-            <AdminProtectedRoute>
-              <AdminItineraries />
-            </AdminProtectedRoute>
-          }
-        />
-        
-        <Route path="*" element={<div>404 - Page Not Found</div>} />
+            {/* Profile routes */}
+            <Route
+              path="/profile"
+              element={
+                <ProtectedRoute>
+                  <Profile />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/profile/:userId"
+              element={
+                <ProtectedRoute>
+                  <Profile />
+                </ProtectedRoute>
+              }
+            />
+
+            <Route
+              path="/itineraries"
+              element={
+                <ProtectedRoute>
+                  <ItineraryList />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/itineraries/new"
+              element={
+                <ProtectedRoute>
+                  <ItineraryForm />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/itineraries/edit/:id"
+              element={
+                <ProtectedRoute>
+                  <ItineraryForm />
+                </ProtectedRoute>
+              }
+            />
+            <Route path="/itineraries/:slug" element={<ItineraryDetail />} />
+            <Route
+              path="/posts/feed"
+              element={
+                <ProtectedRoute>
+                  <NewsFeed />
+                </ProtectedRoute>
+              }
+            />
+
+            {/* Admin routes */}
+            <Route
+              path="/admin/dashboard"
+              element={
+                <AdminProtectedRoute>
+                  <AdminDashboard />
+                </AdminProtectedRoute>
+              }
+            />
+            <Route
+              path="/admin/users"
+              element={
+                <AdminProtectedRoute>
+                  <AdminUsers />
+                </AdminProtectedRoute>
+              }
+            />
+            <Route
+              path="/admin/users/:userId"
+              element={
+                <AdminProtectedRoute>
+                  <AdminUserDetail />
+                </AdminProtectedRoute>
+              }
+            />
+            <Route
+              path="/admin/itineraries"
+              element={
+                <AdminProtectedRoute>
+                  <AdminItineraries />
+                </AdminProtectedRoute>
+              }
+            />
+            <Route
+              path="/admin/itineraries/:itineraryId"
+              element={
+                <AdminProtectedRoute>
+                  <AdminItineraryDetail />
+                </AdminProtectedRoute>
+              }
+            />
+            <Route
+              path="/admin/users"
+              element={
+                <AdminProtectedRoute>
+                  <AdminUsers />
+                </AdminProtectedRoute>
+              }
+            />
+            <Route
+              path="/admin/itineraries"
+              element={
+                <AdminProtectedRoute>
+                  <AdminItineraries />
+                </AdminProtectedRoute>
+              }
+            />
+
+            <Route path="*" element={<div>404 - Page Not Found</div>} />
           </Routes>
         </Router>
       </NotificationProvider>

@@ -6,12 +6,14 @@ import moment from "moment";
 import styles from "./ItineraryFeature.module.css";
 import avatarDefault from "../../../assets/images/default_avatar.png";
 import bookmarkService from "../../../services/bookmark";
+import { useNotification } from "../../../hooks/useNotification";
 
 const ItineraryFeature = () => {
   const [itineraries, setItineraries] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const navigate = useNavigate();
+  const { showNotification } = useNotification();
 
   useEffect(() => {
     const fetchItineraries = async () => {
@@ -32,6 +34,8 @@ const ItineraryFeature = () => {
   useEffect(() => {
     const fetchBookmarks = async () => {
       try {
+        const token = sessionStorage.getItem("userToken");
+        if (!token) return;
         const statusPromises = itineraries.map(async (itinerary) => {
           const res = await bookmarkService.check("ITINERARY", itinerary.id);
           return {
@@ -62,6 +66,11 @@ const ItineraryFeature = () => {
 
   const handleBookmark = async (itineraryId) => {
     try {
+      const token = sessionStorage.getItem("userToken");
+      if (!token) {
+        showNotification("Vui lòng đăng nhập để lưu lịch trình!", "warning");
+        return;
+      }
       const current = bookmarks[itineraryId] || {};
       if (current.isBookmarked) {
         await bookmarkService.remove(current.bookmarkId);

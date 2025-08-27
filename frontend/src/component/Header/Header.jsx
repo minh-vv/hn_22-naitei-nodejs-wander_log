@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import styles from "./Header.module.css";
 import avatarDefault from "../../assets/images/default_avatar.png";
 import { useAuth } from "../../context/AuthContext";
@@ -29,7 +29,7 @@ export default function Header() {
       <div className={styles.container}>
         <div className={styles.flexContainer}>
           <div className={styles.logoContainer}>
-            <a href="/" className={styles.logoLink}>
+            <Link to="/home" className={styles.logoLink}>
               <div>
                 <img
                   src="/logo.png"
@@ -37,19 +37,19 @@ export default function Header() {
                   className={styles.logoIconWrapper}
                 />
               </div>
-            </a>
+            </Link>
           </div>
 
           <nav className={styles.desktopNav}>
-            <a href="/home" className={styles.navLink}>
+            <Link to="/home" className={styles.navLink}>
               Trang chủ
-            </a>
-            <a href="/posts/feed" className={styles.navLink}>
+            </Link>
+            <Link to="/posts/feed" className={styles.navLink}>
               Bảng tin
-            </a>
-            <a href="/itineraries/new" className={styles.navLink}>
+            </Link>
+            <Link to="/itineraries/new" className={styles.navLink}>
               Tạo lịch trình
-            </a>
+            </Link>
           </nav>
 
           <div className={styles.searchContainer}>
@@ -93,9 +93,6 @@ export default function Header() {
                     <div className={styles.dropdownMenu}>
                       <a href="/profile" className={styles.dropdownItem}>
                         Trang cá nhân
-                      </a>
-                      <a href="/notifications" className={styles.dropdownItem}>
-                        Thông báo
                       </a>
                       <button
                         type="button"

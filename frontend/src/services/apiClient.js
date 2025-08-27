@@ -31,9 +31,6 @@ apiClient.interceptors.response.use(
       );
       sessionStorage.removeItem("user");
       sessionStorage.removeItem("userToken");
-      if (window.location.pathname !== "/signin") {
-        window.location.href = "/signin";
-      }
     }
     return Promise.reject(error);
   }
