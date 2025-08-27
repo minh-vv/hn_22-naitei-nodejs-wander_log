@@ -690,3 +690,13 @@
     width: 100%;
   }
 }
+
+.statsItem:hover {
+    color: #007bff; 
+}
+
+
+.statsItem{
+  color: inherit; 
+  text-decoration: none;
+}

@@ -327,4 +327,86 @@ export class UsersService {
 
     return formattedPosts;
   }
+
+
+// Trong users.service.ts
+
+async getFollowersList(userId: string, currentUserId: string) {
+    const user = await this.findById(userId);
+
+    const followers = await this.prisma.follow.findMany({
+        where: {
+            followingId: user.id,
+        },
+        select: {
+            follower: {
+                select: {
+                    id: true,
+                    name: true,
+                    avatar: true,
+                    bio: true,
+                },
+            },
+        },
+    });
+
+    const followerIds = followers.map(f => f.follower.id);
+
+    const followedByCurrentUser = await this.prisma.follow.findMany({
+        where: {
+            followerId: currentUserId,
+            followingId: { in: followerIds },
+        },
+        select: {
+            followingId: true,
+        },
+    });
+
+    const followedByIds = new Set(followedByCurrentUser.map(f => f.followingId));
+
+    return followers.map(f => ({
+        ...f.follower,
+        isFollowing: followedByIds.has(f.follower.id),
+    }));
+}
+
+
+async getFollowingList(userId: string, currentUserId: string) {
+    const user = await this.findById(userId);
+
+    const following = await this.prisma.follow.findMany({
+        where: {
+            followerId: user.id,
+        },
+        select: {
+            following: {
+                select: {
+                    id: true,
+                    name: true,
+                    avatar: true,
+                    bio: true,
+                },
+            },
+        },
+    });
+
+    const followingIds = following.map(f => f.following.id);
+
+    const followedByCurrentUser = await this.prisma.follow.findMany({
+        where: {
+            followerId: currentUserId,
+            followingId: { in: followingIds },
+        },
+        select: {
+            followingId: true,
+        },
+    });
+
+    const followedByIds = new Set(followedByCurrentUser.map(f => f.followingId));
+
+    return following.map(f => ({
+        ...f.following,
+        isFollowing: followedByIds.has(f.following.id),
+    }));
+}
 }
