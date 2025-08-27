@@ -26,7 +26,7 @@ import { AdminModule } from './admin/admin.module';
 import { BookmarksModule } from './bookmarks/bookmarks.module';
 import { CloudinaryModule } from './cloudinary/cloudinary.module';
 import { UploadModule } from './uploads/uploads.module';
-import { SearchModule } from './search/search.module'; 
+import { SearchModule } from './search/search.module';
 import { RatingsModule } from './ratings/ratings.module';
 import { NotificationsModule } from './notifications/notifications.module';
 

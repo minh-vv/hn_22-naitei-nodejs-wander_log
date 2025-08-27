@@ -6,12 +6,14 @@ import moment from "moment";
 import styles from "./ItineraryFeature.module.css";
 import avatarDefault from "../../../assets/images/default_avatar.png";
 import bookmarkService from "../../../services/bookmark";
+import { useNotification } from "../../../hooks/useNotification";
 
 const ItineraryFeature = () => {
   const [itineraries, setItineraries] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const navigate = useNavigate();
+  const { showNotification } = useNotification();
 
   useEffect(() => {
     const fetchItineraries = async () => {
@@ -32,6 +34,8 @@ const ItineraryFeature = () => {
   useEffect(() => {
     const fetchBookmarks = async () => {
       try {
+        const token = sessionStorage.getItem("userToken");
+        if (!token) return;
         const statusPromises = itineraries.map(async (itinerary) => {
           const res = await bookmarkService.check("ITINERARY", itinerary.id);
           return {
@@ -62,6 +66,11 @@ const ItineraryFeature = () => {
 
   const handleBookmark = async (itineraryId) => {
     try {
+      const token = sessionStorage.getItem("userToken");
+      if (!token) {
+        showNotification("Vui lòng đăng nhập để lưu lịch trình!", "warning");
+        return;
+      }
       const current = bookmarks[itineraryId] || {};
       if (current.isBookmarked) {
         await bookmarkService.remove(current.bookmarkId);
@@ -112,7 +121,7 @@ const ItineraryFeature = () => {
               className={styles.itineraryCard}
               onClick={() => navigate(`/itineraries/${itinerary.slug}`)}
             >
-              <h2 className={styles.cardTitle}>{itinerary.title}</h2>
+              <h3 className={styles.cardTitle}>{itinerary.title}</h3>
               <button
                 className={styles.bookmarkButton}
                 onClick={(e) => {
@@ -158,8 +167,8 @@ const ItineraryFeature = () => {
                   <span className={styles.userName}>{itinerary.user.name}</span>
                 </div>
                 <div className={styles.stats}>
-                  <i className={`ri-heart-fill ${styles.likeIcon}`}></i>
-                  <span>{itinerary.totalLikes}</span>
+                  <i className={`ri-eye-fill ${styles.viewIcon}`}></i>
+                  <span>{itinerary.views}</span>
                 </div>
               </div>
             </div>

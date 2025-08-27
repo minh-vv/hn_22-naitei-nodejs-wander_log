@@ -53,6 +53,7 @@ export class PostsService {
         media: true,
         user: {
           select: {
+            id: true,
             name: true,
             avatar: true,
           },

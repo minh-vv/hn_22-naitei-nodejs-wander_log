@@ -20,14 +20,22 @@ export class ItineraryService {
   async create(userId: string, createItineraryDto: CreateItineraryDto) {
     const { title, ...rest } = createItineraryDto;
 
-    let baseSlug = slugify(title, { lower: true, locale: 'vi', remove: /[*+~.()'"!:@]/g });
+    let baseSlug = slugify(title, {
+      lower: true,
+      locale: 'vi',
+      remove: /[*+~.()'"!:@]/g,
+    });
     let slug = baseSlug;
-    let existingItinerary = await this.prisma.itinerary.findUnique({ where: { slug } });
+    let existingItinerary = await this.prisma.itinerary.findUnique({
+      where: { slug },
+    });
     let count = 1;
 
     while (existingItinerary) {
       slug = `${baseSlug}-${count}`;
-      existingItinerary = await this.prisma.itinerary.findUnique({ where: { slug } });
+      existingItinerary = await this.prisma.itinerary.findUnique({
+        where: { slug },
+      });
       count++;
     }
 
@@ -44,7 +52,7 @@ export class ItineraryService {
         user: true,
         posts: true,
         activities: true,
-        ratings: true, 
+        ratings: true,
       },
     });
   }
@@ -64,18 +72,18 @@ export class ItineraryService {
       where: { slug },
       include: {
         user: true,
-        ratings: { select: { value: true, userId: true } }, 
+        ratings: { select: { value: true, userId: true } },
         activities: {
           orderBy: {
             startTime: 'asc',
           },
         },
-        posts: { 
+        posts: {
           include: {
             user: true,
             media: true,
           },
-          orderBy: { createdAt: 'desc' }, 
+          orderBy: { createdAt: 'desc' },
         },
       },
     });
@@ -90,13 +98,15 @@ export class ItineraryService {
       throw new ForbiddenException(this.i18n.t('itinerary.forbidden_access'));
     }
 
-    const averageRating = itinerary.ratings.length > 0
-      ? itinerary.ratings.reduce((acc, cur) => acc + cur.value, 0) / itinerary.ratings.length
-      : 0;
-      
+    const averageRating =
+      itinerary.ratings.length > 0
+        ? itinerary.ratings.reduce((acc, cur) => acc + cur.value, 0) /
+          itinerary.ratings.length
+        : 0;
+
     return {
       ...itinerary,
-      averageRating: parseFloat(averageRating.toFixed(1)), 
+      averageRating: parseFloat(averageRating.toFixed(1)),
       ratingCount: itinerary.ratings.length,
     };
   }
@@ -106,18 +116,18 @@ export class ItineraryService {
       where: { id },
       include: {
         user: true,
-        ratings: { select: { value: true, userId: true } }, 
+        ratings: { select: { value: true, userId: true } },
         activities: {
           orderBy: {
             startTime: 'asc',
           },
         },
-        posts: { 
+        posts: {
           include: {
             user: true,
             media: true,
           },
-          orderBy: { createdAt: 'desc' }, 
+          orderBy: { createdAt: 'desc' },
         },
       },
     });
@@ -128,13 +138,15 @@ export class ItineraryService {
       );
     }
 
-    const averageRating = itinerary.ratings.length > 0
-      ? itinerary.ratings.reduce((acc, cur) => acc + cur.value, 0) / itinerary.ratings.length
-      : 0;
-      
+    const averageRating =
+      itinerary.ratings.length > 0
+        ? itinerary.ratings.reduce((acc, cur) => acc + cur.value, 0) /
+          itinerary.ratings.length
+        : 0;
+
     return {
       ...itinerary,
-      averageRating: parseFloat(averageRating.toFixed(1)), 
+      averageRating: parseFloat(averageRating.toFixed(1)),
       ratingCount: itinerary.ratings.length,
     };
   }
@@ -162,15 +174,26 @@ export class ItineraryService {
 
     const dataToUpdate: any = { ...updateItineraryDto };
 
-    if (updateItineraryDto.title && updateItineraryDto.title !== itinerary.title) {
-      let baseSlug = slugify(updateItineraryDto.title, { lower: true, locale: 'vi', remove: /[*+~.()'"!:@]/g });
+    if (
+      updateItineraryDto.title &&
+      updateItineraryDto.title !== itinerary.title
+    ) {
+      let baseSlug = slugify(updateItineraryDto.title, {
+        lower: true,
+        locale: 'vi',
+        remove: /[*+~.()'"!:@]/g,
+      });
       let newSlug = baseSlug;
-      let existingItinerary = await this.prisma.itinerary.findUnique({ where: { slug: newSlug } });
+      let existingItinerary = await this.prisma.itinerary.findUnique({
+        where: { slug: newSlug },
+      });
       let count = 1;
 
       while (existingItinerary && existingItinerary.id !== id) {
         newSlug = `${baseSlug}-${count}`;
-        existingItinerary = await this.prisma.itinerary.findUnique({ where: { slug: newSlug } });
+        existingItinerary = await this.prisma.itinerary.findUnique({
+          where: { slug: newSlug },
+        });
         count++;
       }
       dataToUpdate.slug = newSlug;
@@ -206,8 +229,8 @@ export class ItineraryService {
     await this.prisma.bookmark.deleteMany({
       where: { itemId: id, type: 'ITINERARY' },
     });
-    
-    await this.prisma.rating.deleteMany({ 
+
+    await this.prisma.rating.deleteMany({
       where: { itineraryId: id },
     });
 
@@ -229,25 +252,16 @@ export class ItineraryService {
       slug: string;
       user: {
         id: string;
-        name: string;
+        name: string | null;
         avatar: string | null;
       };
+      views: number;
     };
 
-    const groupedPosts = await this.prisma.post.groupBy({
-      by: ['itineraryId'],
-      where: { itinerary: { visibility: 'PUBLIC' } },
-      _sum: { likeCount: true },
-      orderBy: { _sum: { likeCount: 'desc' } },
-      take: limit,
-    });
-
-    if (!groupedPosts.length) return [];
-
-    const itineraryIds = groupedPosts.map((p) => p.itineraryId);
-
     const itineraries = await this.prisma.itinerary.findMany({
-      where: { id: { in: itineraryIds } },
+      where: { visibility: 'PUBLIC' },
+      orderBy: { views: 'desc' },
+      take: limit,
       select: {
         id: true,
         title: true,
@@ -255,6 +269,7 @@ export class ItineraryService {
         startDate: true,
         endDate: true,
         slug: true,
+        views: true,
         user: {
           select: {
             id: true,
@@ -262,38 +277,34 @@ export class ItineraryService {
             avatar: true,
           },
         },
+        posts: {
+          select: { likeCount: true },
+        },
       },
     });
 
-    const itineraryMap = new Map(itineraries.map((it) => [it.id, it]));
-
-    const result: FeaturedItineraryDto[] = groupedPosts
-      .map(({ itineraryId, _sum }) => {
-        const itinerary = itineraryMap.get(itineraryId);
-        if (!itinerary) return null;
-        return {
-          id: itinerary.id,
-          title: itinerary.title,
-          budget: itinerary.budget?.toNumber() ?? null,
-          startDate: itinerary.startDate,
-          endDate: itinerary.endDate,
-          totalLikes: _sum.likeCount ?? 0,
-          user: itinerary.user,
-          slug: itinerary.slug,
-        };
-      })
-      .filter(
-        (itinerary): itinerary is FeaturedItineraryDto => itinerary !== null,
-      );
+    const result: FeaturedItineraryDto[] = itineraries.map((it) => {
+      const totalLikes = it.posts.reduce((sum, p) => sum + p.likeCount, 0);
+      return {
+        id: it.id,
+        title: it.title,
+        budget: it.budget?.toNumber() ?? null,
+        startDate: it.startDate,
+        endDate: it.endDate,
+        totalLikes,
+        user: it.user,
+        slug: it.slug,
+        views: it.views,
+      };
+    });
 
     return result;
   }
 
-  
   async increaseViews(slug: string) {
-      return this.prisma.itinerary.update({
-        where: { slug },
-        data: { views: { increment: 1 } },
-      });
-    }
+    return this.prisma.itinerary.update({
+      where: { slug },
+      data: { views: { increment: 1 } },
+    });
+  }
 }

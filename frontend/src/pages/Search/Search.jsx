@@ -11,7 +11,7 @@ export default function Search() {
   const [results, setResults] = useState({
     users: { data: [], total: 0, page: 1, totalPages: 0 },
     itineraries: { data: [], total: 0, page: 1, totalPages: 0 },
-    locations: { data: [], total: 0, page: 1, totalPages: 0 }
+    locations: { data: [], total: 0, page: 1, totalPages: 0 },
   });
   const [loading, setLoading] = useState(false);
   const [activeTab, setActiveTab] = useState("all");
@@ -34,21 +34,25 @@ export default function Search() {
       setResults({
         users: { data: [], total: 0, page: 1, totalPages: 0 },
         itineraries: { data: [], total: 0, page: 1, totalPages: 0 },
-        locations: { data: [], total: 0, page: 1, totalPages: 0 }
+        locations: { data: [], total: 0, page: 1, totalPages: 0 },
       });
       return;
     }
 
     setLoading(true);
     try {
-      const searchResults = await searchService.search(searchQuery, page, itemsPerPage);
+      const searchResults = await searchService.search(
+        searchQuery,
+        page,
+        itemsPerPage
+      );
       setResults(searchResults);
     } catch (error) {
       console.error("Search failed:", error);
       setResults({
         users: { data: [], total: 0, page: 1, totalPages: 0 },
         itineraries: { data: [], total: 0, page: 1, totalPages: 0 },
-        locations: { data: [], total: 0, page: 1, totalPages: 0 }
+        locations: { data: [], total: 0, page: 1, totalPages: 0 },
       });
     } finally {
       setLoading(false);
@@ -72,6 +76,7 @@ export default function Search() {
     navigate(`/profile/${userId}`);
   };
 
+
   const handleItineraryClick = (itineraryId) => {
     navigate(`/itineraries/${itineraryId}`);  
   };
@@ -79,22 +84,22 @@ export default function Search() {
   const filteredResults = () => {
     switch (activeTab) {
       case "users":
-        return { 
-          users: results.users, 
-          itineraries: { data: [], total: 0, page: 1, totalPages: 0 }, 
-          locations: { data: [], total: 0, page: 1, totalPages: 0 } 
+        return {
+          users: results.users,
+          itineraries: { data: [], total: 0, page: 1, totalPages: 0 },
+          locations: { data: [], total: 0, page: 1, totalPages: 0 },
         };
       case "itineraries":
-        return { 
-          users: { data: [], total: 0, page: 1, totalPages: 0 }, 
-          itineraries: results.itineraries, 
-          locations: { data: [], total: 0, page: 1, totalPages: 0 } 
+        return {
+          users: { data: [], total: 0, page: 1, totalPages: 0 },
+          itineraries: results.itineraries,
+          locations: { data: [], total: 0, page: 1, totalPages: 0 },
         };
       case "locations":
-        return { 
-          users: { data: [], total: 0, page: 1, totalPages: 0 }, 
-          itineraries: { data: [], total: 0, page: 1, totalPages: 0 }, 
-          locations: results.locations 
+        return {
+          users: { data: [], total: 0, page: 1, totalPages: 0 },
+          itineraries: { data: [], total: 0, page: 1, totalPages: 0 },
+          locations: results.locations,
         };
       default:
         return results;
@@ -102,7 +107,8 @@ export default function Search() {
   };
 
   const currentResults = filteredResults();
-  const totalResults = results.users.total + results.itineraries.total + results.locations.total;
+  const totalResults =
+    results.users.total + results.itineraries.total + results.locations.total;
 
   const getCurrentPagination = () => {
     switch (activeTab) {
@@ -113,8 +119,11 @@ export default function Search() {
       case "locations":
         return results.locations;
       default:
-        const maxResult = [results.users, results.itineraries, results.locations]
-          .sort((a, b) => b.total - a.total)[0];
+        const maxResult = [
+          results.users,
+          results.itineraries,
+          results.locations,
+        ].sort((a, b) => b.total - a.total)[0];
         return maxResult;
     }
   };
@@ -146,25 +155,33 @@ export default function Search() {
           <>
             <div className={styles.tabsContainer}>
               <button
-                className={`${styles.tab} ${activeTab === "all" ? styles.active : ""}`}
+                className={`${styles.tab} ${
+                  activeTab === "all" ? styles.active : ""
+                }`}
                 onClick={() => setActiveTab("all")}
               >
                 Tất cả ({totalResults})
               </button>
               <button
-                className={`${styles.tab} ${activeTab === "users" ? styles.active : ""}`}
+                className={`${styles.tab} ${
+                  activeTab === "users" ? styles.active : ""
+                }`}
                 onClick={() => setActiveTab("users")}
               >
                 Người dùng ({results.users.total})
               </button>
               <button
-                className={`${styles.tab} ${activeTab === "itineraries" ? styles.active : ""}`}
+                className={`${styles.tab} ${
+                  activeTab === "itineraries" ? styles.active : ""
+                }`}
                 onClick={() => setActiveTab("itineraries")}
               >
                 Lịch trình ({results.itineraries.total})
               </button>
               <button
-                className={`${styles.tab} ${activeTab === "locations" ? styles.active : ""}`}
+                className={`${styles.tab} ${
+                  activeTab === "locations" ? styles.active : ""
+                }`}
                 onClick={() => setActiveTab("locations")}
               >
                 Địa điểm ({results.locations.total})
@@ -214,7 +231,7 @@ export default function Search() {
                           <div
                             key={itinerary.id}
                             className={styles.itineraryCard}
-                            onClick={() => handleItineraryClick(itinerary.id)}
+                            onClick={() => handleItineraryClick(itinerary.slug)}
                           >
                             {itinerary.coverImage && (
                               <img
@@ -234,11 +251,20 @@ export default function Search() {
                                 </p>
                               )}
                               <p className={styles.itineraryDates}>
-                                {new Date(itinerary.startDate).toLocaleDateString("vi-VN")} - {new Date(itinerary.endDate).toLocaleDateString("vi-VN")}
+                                {new Date(
+                                  itinerary.startDate
+                                ).toLocaleDateString("vi-VN")}{" "}
+                                -{" "}
+                                {new Date(itinerary.endDate).toLocaleDateString(
+                                  "vi-VN"
+                                )}
                               </p>
                               <div className={styles.itineraryAuthor}>
                                 <img
-                                  src={itinerary.user.avatar || "/default-avatar.png"}
+                                  src={
+                                    itinerary.user.avatar ||
+                                    "/default-avatar.png"
+                                  }
                                   alt={itinerary.user.name}
                                   className={styles.authorAvatar}
                                 />
@@ -257,19 +283,21 @@ export default function Search() {
                     <div className={styles.resultGroup}>
                       <h3 className={styles.resultGroupTitle}>Địa điểm</h3>
                       <div className={styles.locationResults}>
-                        {currentResults.locations.data.map((location, index) => (
-                          <div key={index} className={styles.locationCard}>
-                            <div className={styles.locationIcon}>
-                              <i className="ri-map-pin-line"></i>
+                        {currentResults.locations.data.map(
+                          (location, index) => (
+                            <div key={index} className={styles.locationCard}>
+                              <div className={styles.locationIcon}>
+                                <i className="ri-map-pin-line"></i>
+                              </div>
+                              <div className={styles.locationInfo}>
+                                <h4 className={styles.locationName}>
+                                  {location.name}
+                                </h4>
+                                <p className={styles.locationType}>Địa điểm</p>
+                              </div>
                             </div>
-                            <div className={styles.locationInfo}>
-                              <h4 className={styles.locationName}>
-                                {location.name}
-                              </h4>
-                              <p className={styles.locationType}>Địa điểm</p>
-                            </div>
-                          </div>
-                        ))}
+                          )
+                        )}
                       </div>
                     </div>
                   )}
@@ -287,28 +315,40 @@ export default function Search() {
                   {totalResults > 0 && currentPagination.totalPages > 1 && (
                     <div className={styles.pagination}>
                       <button
-                        className={`${styles.pageButton} ${currentPage === 1 ? styles.disabled : ''}`}
+                        className={`${styles.pageButton} ${
+                          currentPage === 1 ? styles.disabled : ""
+                        }`}
                         onClick={() => handlePageChange(currentPage - 1)}
                         disabled={currentPage === 1}
                       >
                         <i className="ri-arrow-left-line"></i>
                         Trước
                       </button>
-                      
+
                       <div className={styles.pageNumbers}>
-                        {Array.from({ length: currentPagination.totalPages }, (_, i) => i + 1)
-                          .filter(page => {
-                            return page === 1 || 
-                                   page === currentPagination.totalPages || 
-                                   Math.abs(page - currentPage) <= 2;
+                        {Array.from(
+                          { length: currentPagination.totalPages },
+                          (_, i) => i + 1
+                        )
+                          .filter((page) => {
+                            return (
+                              page === 1 ||
+                              page === currentPagination.totalPages ||
+                              Math.abs(page - currentPage) <= 2
+                            );
                           })
                           .map((page, index, array) => {
-                            const showEllipsis = index > 0 && page - array[index - 1] > 1;
+                            const showEllipsis =
+                              index > 0 && page - array[index - 1] > 1;
                             return (
                               <React.Fragment key={page}>
-                                {showEllipsis && <span className={styles.ellipsis}>...</span>}
+                                {showEllipsis && (
+                                  <span className={styles.ellipsis}>...</span>
+                                )}
                                 <button
-                                  className={`${styles.pageNumber} ${page === currentPage ? styles.active : ''}`}
+                                  className={`${styles.pageNumber} ${
+                                    page === currentPage ? styles.active : ""
+                                  }`}
                                   onClick={() => handlePageChange(page)}
                                 >
                                   {page}
@@ -319,7 +359,11 @@ export default function Search() {
                       </div>
 
                       <button
-                        className={`${styles.pageButton} ${currentPage === currentPagination.totalPages ? styles.disabled : ''}`}
+                        className={`${styles.pageButton} ${
+                          currentPage === currentPagination.totalPages
+                            ? styles.disabled
+                            : ""
+                        }`}
                         onClick={() => handlePageChange(currentPage + 1)}
                         disabled={currentPage === currentPagination.totalPages}
                       >
@@ -331,7 +375,13 @@ export default function Search() {
 
                   {totalResults > 0 && (
                     <div className={styles.pageInfo}>
-                      Hiển thị {Math.min((currentPage - 1) * itemsPerPage + 1, totalResults)} - {Math.min(currentPage * itemsPerPage, totalResults)} trong tổng số {totalResults} kết quả
+                      Hiển thị{" "}
+                      {Math.min(
+                        (currentPage - 1) * itemsPerPage + 1,
+                        totalResults
+                      )}{" "}
+                      - {Math.min(currentPage * itemsPerPage, totalResults)}{" "}
+                      trong tổng số {totalResults} kết quả
                     </div>
                   )}
                 </>

@@ -1,5 +1,5 @@
-import React, { useState, useEffect, useRef } from "react";
-import { useNavigate } from "react-router-dom";
+import React, { useState } from "react";
+import { useNavigate, Link } from "react-router-dom";
 import styles from "./Header.module.css";
 import avatarDefault from "../../assets/images/default_avatar.png";
 import { useAuth } from "../../context/AuthContext";
@@ -59,21 +59,25 @@ export default function Header() {
       <div className={styles.container}>
         <div className={styles.flexContainer}>
           <div className={styles.logoContainer}>
-            <a href="/" className={styles.logoLink}>
-              <div className={styles.logoIconWrapper}>
-                <i className="ri-map-pin-line"></i>
+            <Link to="/home" className={styles.logoLink}>
+              <div>
+                <img
+                  src="/logo.png"
+                  alt="WanderLog Logo"
+                  className={styles.logoIconWrapper}
+                />
               </div>
-              <span className={styles.logoText}>WanderLog</span>
-            </a>
+            </Link>
           </div>
 
           <nav className={styles.desktopNav}>
-            <a href="/home" className={styles.navLink}>
+            <Link to="/home" className={styles.navLink}>
               Trang chủ
-            </a>
-            <a href="/posts/feed" className={styles.navLink}>
+            </Link>
+            <Link to="/posts/feed" className={styles.navLink}>
               Bảng tin
-            </a>
+            </Link>
+            <Link to="/itineraries/new" className={styles.navLink}>
             <a href="#" className={styles.navLink} onClick={handleOpenCreateModal}>
               Tạo lịch trình
             </a>

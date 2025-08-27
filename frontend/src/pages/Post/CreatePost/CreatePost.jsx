@@ -6,6 +6,7 @@ import itineraryService from "../../../services/itinerary";
 import postService from "../../../services/post";
 import { useAuth } from "../../../context/AuthContext";
 import uploadService from "../../../services/upload";
+import { useNotification } from "../../../hooks/useNotification";
 
 const CreatePost = ({ itinerary, onPostCreated, onCancel }) => {
   const [postContent, setPostContent] = useState("");
@@ -23,6 +24,7 @@ const CreatePost = ({ itinerary, onPostCreated, onCancel }) => {
   const { user, token } = useAuth();
   const navigate = useNavigate();
   const fileInputRef = useRef(null);
+  const { showNotification } = useNotification();
 
   const isPostButtonEnabled =
     postContent.trim() &&
@@ -104,7 +106,7 @@ const CreatePost = ({ itinerary, onPostCreated, onCancel }) => {
       if (onPostCreated) {
         onPostCreated(createdPost);
       }
-      alert("Post created successfully!");
+      showNotification("Tạo bài viết thành công!", "susses");
       handleCancel();
     } catch (error) {
       console.error("Error posting:", error.message);
