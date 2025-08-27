@@ -1,0 +1,562 @@
+/* Project Design System Variables */
+:root {
+  --primary-color: #3b82f6;
+  --primary-hover: #2563eb;
+  --text-color: #1e293b;
+  --text-secondary: #64748b;
+  --border-color: #e2e8f0;
+  --hover-bg-color: #f8fafc;
+  --bg-glass: rgba(255, 255, 255, 0.95);
+  --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.1);
+  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -4px rgba(0, 0, 0, 0.1);
+}
+
+.filterContainer {
+  background: var(--bg-glass);
+  backdrop-filter: blur(20px);
+  border: 1px solid var(--border-color);
+  border-radius: 12px;
+  box-shadow: var(--shadow-md);
+  overflow: hidden;
+  position: sticky;
+  top: 20px;
+  height: fit-content;
+  transition: all 0.3s ease;
+}
+
+.filterContainer:hover {
+  box-shadow: var(--shadow-lg);
+  transform: translateY(-2px);
+}
+
+.filterHeader {
+  padding: 0;
+  display: flex;
+  align-items: center;
+  position: relative;
+}
+
+.filterToggle {
+  flex: 1;
+  padding: 16px 50px 16px 20px;
+  background: transparent;
+  border: none;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 16px;
+  font-weight: 500;
+  color: var(--text-color);
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+}
+
+.filterToggle:hover {
+  background-color: var(--hover-bg-color);
+  color: var(--primary-color);
+  transform: translateY(-1px);
+}
+
+.filterToggle .arrow {
+  margin-left: auto;
+  transition: transform 0.3s ease;
+  color: var(--text-secondary);
+}
+
+.filterToggle:hover .arrow {
+  color: var(--primary-color);
+}
+
+.activeIndicator {
+  width: 8px;
+  height: 8px;
+  background: linear-gradient(135deg, var(--primary-color), #10b981);
+  border-radius: 50%;
+  margin-left: auto;
+  margin-right: 8px;
+  box-shadow: 0 0 0 2px white, 0 0 0 3px var(--primary-color);
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.7; }
+}
+
+.headerClearButton {
+  position: absolute;
+  right: 8px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 32px;
+  height: 32px;
+  border: none;
+  background: linear-gradient(135deg, #ef4444, #dc2626);
+  color: white;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  font-size: 14px;
+  z-index: 1;
+  box-shadow: var(--shadow-sm);
+}
+
+.headerClearButton:hover {
+  background: linear-gradient(135deg, #dc2626, #b91c1c);
+  transform: translateY(-50%) scale(1.1);
+  box-shadow: var(--shadow-md);
+}
+
+.filterContent {
+  border-top: 1px solid var(--border-color);
+  padding: 16px;
+  background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+}
+
+.searchInfo {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px;
+  background: linear-gradient(135deg, #eff6ff, #dbeafe);
+  border: 1px solid #93c5fd;
+  border-radius: 8px;
+  margin-bottom: 16px;
+  font-size: 14px;
+  color: var(--text-color);
+}
+
+.searchInfo i {
+  color: var(--primary-color);
+  font-size: 16px;
+}
+
+.searchInfo strong {
+  color: var(--primary-hover);
+}
+
+.filterForm {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.filterSections {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.filterSection {
+  padding: 12px;
+  background: white;
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  box-shadow: var(--shadow-sm);
+  transition: all 0.3s ease;
+}
+
+.filterSection:hover {
+  box-shadow: var(--shadow-md);
+  border-color: var(--primary-color);
+}
+
+.filterRow {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+.filterGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.filterLabel {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text-color);
+  margin-bottom: 4px;
+}
+
+.filterLabel i {
+  font-size: 16px;
+  color: var(--primary-color);
+  transition: color 0.3s ease;
+}
+
+.filterSection:hover .filterLabel i {
+  color: var(--primary-hover);
+}
+
+.filterInput {
+  padding: 12px 16px;
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 500;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  background: white;
+  color: var(--text-color);
+  box-shadow: var(--shadow-sm);
+}
+
+.filterInput:focus {
+  outline: none;
+  border-color: var(--primary-color);
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+  transform: translateY(-1px);
+}
+
+.filterInput::placeholder {
+  color: var(--text-secondary);
+  font-weight: 400;
+}
+
+.filterSelect {
+  padding: 12px 16px;
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 500;
+  background: white;
+  color: var(--text-color);
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: var(--shadow-sm);
+}
+
+.filterSelect:focus {
+  outline: none;
+  border-color: var(--primary-color);
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+  transform: translateY(-1px);
+}
+
+.filterSelect:hover {
+  border-color: var(--primary-color);
+  box-shadow: var(--shadow-md);
+}
+
+/* Country dropdown */
+.selectContainer {
+  position: relative;
+}
+
+.dropdown {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  background: white;
+  border: 1px solid var(--border-color);
+  border-top: none;
+  border-radius: 0 0 8px 8px;
+  max-height: 200px;
+  overflow-y: auto;
+  z-index: 1000;
+  box-shadow: var(--shadow-lg);
+  backdrop-filter: blur(8px);
+}
+
+.dropdownItem {
+  padding: 12px 16px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--text-color);
+  border-bottom: 1px solid var(--border-color);
+}
+
+.dropdownItem:hover {
+  background-color: var(--hover-bg-color);
+  color: var(--primary-color);
+  transform: translateX(4px);
+}
+
+.dropdownItem:last-child {
+  border-bottom: none;
+}
+
+.dropdownMore {
+  padding: 12px 16px;
+  font-size: 12px;
+  color: var(--text-secondary);
+  font-style: italic;
+  border-top: 1px solid var(--border-color);
+  background: linear-gradient(135deg, var(--hover-bg-color) 0%, #f1f5f9 100%);
+  text-align: center;
+  font-weight: 500;
+}
+
+.overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 999;
+}
+
+/* Budget range inputs */
+.rangeInputs {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.rangeInputs .filterInput {
+  flex: 1;
+}
+
+.verticalRangeInputs {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.rangeInput {
+  width: 100%;
+  padding: 12px 16px;
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 500;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  background: white;
+  color: var(--text-color);
+  box-shadow: var(--shadow-sm);
+}
+
+.rangeInput:focus {
+  outline: none;
+  border-color: var(--primary-color);
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+  transform: translateY(-1px);
+}
+
+.rangeInput::placeholder {
+  color: var(--text-secondary);
+  font-weight: 400;
+}
+
+.rangeSeparator {
+  color: #6c757d;
+  font-weight: 500;
+}
+
+/* Rating selection */
+.ratingSelect {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.ratingButton {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 10px 16px;
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  background: white;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text-color);
+  box-shadow: var(--shadow-sm);
+  min-width: 80px;
+}
+
+.ratingButton:hover {
+  border-color: var(--primary-color);
+  background-color: var(--hover-bg-color);
+  color: var(--primary-color);
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-md);
+}
+
+.ratingButton.active {
+  background: linear-gradient(135deg, var(--primary-color), var(--primary-hover));
+  border-color: var(--primary-color);
+  color: white;
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-md);
+}
+
+.stars {
+  display: flex;
+  gap: 2px;
+}
+
+.stars i {
+  font-size: 14px;
+  color: #ffc107;
+}
+
+/* Sort controls */
+.sortControls {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 8px;
+  align-items: center;
+}
+
+/* Clear action */
+.clearAction {
+  margin-top: 16px;
+  padding-top: 16px;
+  border-top: 1px solid var(--border-color);
+  display: flex;
+  justify-content: center;
+}
+
+.clearButton {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 20px;
+  background: linear-gradient(135deg, #fee2e2, #fecaca);
+  border: 1px solid #f87171;
+  border-radius: 8px;
+  color: #dc2626;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: var(--shadow-sm);
+}
+
+.clearButton:hover {
+  background: linear-gradient(135deg, #fecaca, #fca5a5);
+  border-color: #ef4444;
+  color: #b91c1c;
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-md);
+}
+
+
+
+/* Mobile responsive */
+@media (max-width: 768px) {
+  .filterContainer {
+    position: relative;
+    top: 0;
+    height: auto;
+    margin-bottom: 16px;
+  }
+
+  .filterContent {
+    padding: 10px;
+  }
+
+  .filterSection {
+    padding-bottom: 6px;
+  }
+
+  .filterGroup {
+    gap: 3px;
+  }
+
+  .filterRow {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+
+  .sortControls {
+    grid-template-columns: 1fr;
+    gap: 8px;
+  }
+
+  .rangeInputs {
+    flex-direction: column;
+    gap: 6px;
+  }
+
+  .verticalRangeInputs {
+    gap: 4px;
+  }
+
+  .rangeSeparator {
+    display: none;
+  }
+
+  .ratingSelect {
+    justify-content: center;
+  }
+
+  .ratingButton {
+    flex: 1;
+    min-width: 60px;
+  }
+
+  .clearAction {
+    margin-top: 8px;
+    padding-top: 8px;
+  }
+
+  .filterToggle {
+    padding: 14px 50px 14px 16px;
+    font-size: 15px;
+  }
+
+  .headerClearButton {
+    width: 28px;
+    height: 28px;
+    right: 6px;
+    font-size: 12px;
+  }
+
+  .dropdown {
+    max-height: 150px;
+  }
+}
+
+/* Animation for expand/collapse */
+.filterContent {
+  animation: slideDown 0.3s ease-out;
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    max-height: 0;
+    padding-top: 0;
+    padding-bottom: 0;
+  }
+  to {
+    opacity: 1;
+    max-height: 800px;
+    padding-top: 24px;
+    padding-bottom: 24px;
+  }
+}
+
+/* Scrollbar styling for dropdown */
+.dropdown::-webkit-scrollbar {
+  width: 6px;
+}
+
+.dropdown::-webkit-scrollbar-track {
+  background: #f1f1f1;
+}
+
+.dropdown::-webkit-scrollbar-thumb {
+  background: #c1c1c1;
+  border-radius: 3px;
+}
+
+.dropdown::-webkit-scrollbar-thumb:hover {
+  background: #a8a8a8;
+}

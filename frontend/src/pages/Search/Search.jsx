@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useCallback } from "react";
 import { useSearchParams, useNavigate } from "react-router-dom";
 import Header from "../../component/Header/Header";
+import SearchFilter from "../../component/SearchFilter/SearchFilter";
 import searchService from "../../services/search";
 import styles from "./Search.module.css";
 
@@ -17,17 +18,8 @@ export default function Search() {
   const [activeTab, setActiveTab] = useState("all");
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage] = useState(10);
-
-  useEffect(() => {
-    const queryParam = searchParams.get("query");
-    const pageParam = searchParams.get("page");
-    if (queryParam) {
-      setQuery(queryParam);
-      const page = parseInt(pageParam) || 1;
-      setCurrentPage(page);
-      performSearch(queryParam, page);
-    }
-  }, [searchParams, performSearch]);
+  const [filterResults, setFilterResults] = useState(null);
+  const [isFiltering, setIsFiltering] = useState(false);
 
   const performSearch = useCallback(async (searchQuery, page = 1) => {
     if (!searchQuery.trim()) {
@@ -59,10 +51,23 @@ export default function Search() {
     }
   }, [itemsPerPage]);
 
+  useEffect(() => {
+    const queryParam = searchParams.get("query");
+    const pageParam = searchParams.get("page");
+    if (queryParam) {
+      setQuery(queryParam);
+      const page = parseInt(pageParam) || 1;
+      setCurrentPage(page);
+      performSearch(queryParam, page);
+    }
+  }, [searchParams, performSearch]);
+
   const handleSearchSubmit = (e) => {
     e.preventDefault();
     if (query.trim()) {
       setCurrentPage(1);
+      setFilterResults(null); // Clear any existing filter results
+      setActiveTab("all"); // Reset to all tab
       setSearchParams({ query: query.trim(), page: 1 });
     }
   };
@@ -81,7 +86,56 @@ export default function Search() {
     navigate(`/itineraries/${itineraryId}`);  
   };
 
+  const handleFilter = async (filters) => {
+    setIsFiltering(true);
+    try {
+      // Search query has priority - filter runs on search results
+      const combinedFilters = {
+        ...filters,
+        // Always include search query if present - search has higher priority
+        ...(query.trim() && { searchQuery: query.trim() })
+      };
+      
+      const filterData = await searchService.filterSchedules(combinedFilters);
+      setFilterResults(filterData);
+      // Keep current tab, don't force switch to itineraries
+      // setActiveTab("itineraries"); // Removed: Keep default "all" tab
+      
+      // Update URL to include filter state
+      const newParams = new URLSearchParams(searchParams);
+      if (query.trim()) {
+        newParams.set('query', query.trim());
+      }
+      newParams.set('filtered', 'true');
+      setSearchParams(newParams);
+    } catch (error) {
+      console.error("Filter failed:", error);
+      setFilterResults(null);
+    } finally {
+      setIsFiltering(false);
+    }
+  };
+
+  const handleClearFilter = () => {
+    setFilterResults(null);
+    setActiveTab("all");
+    
+    // Remove filter state from URL but keep search query
+    const newParams = new URLSearchParams(searchParams);
+    newParams.delete('filtered');
+    setSearchParams(newParams);
+    
+    // Re-perform original search if we have a query
+    if (query.trim()) {
+      performSearch(query, 1);
+      setCurrentPage(1);
+    }
+  };
+
   const filteredResults = () => {
+    // Priority: Filter results override search results for itineraries
+    const currentItineraries = filterResults || results.itineraries;
+    
     switch (activeTab) {
       case "users":
         return {
@@ -92,7 +146,7 @@ export default function Search() {
       case "itineraries":
         return {
           users: { data: [], total: 0, page: 1, totalPages: 0 },
-          itineraries: results.itineraries,
+          itineraries: currentItineraries,
           locations: { data: [], total: 0, page: 1, totalPages: 0 },
         };
       case "locations":
@@ -102,26 +156,37 @@ export default function Search() {
           locations: results.locations,
         };
       default:
-        return results;
+        // "all" tab: show all results, with filtered itineraries if available
+        return {
+          users: results.users,
+          itineraries: currentItineraries,
+          locations: results.locations,
+        };
     }
   };
 
   const currentResults = filteredResults();
-  const totalResults =
-    results.users.total + results.itineraries.total + results.locations.total;
+  const totalResults = filterResults 
+    ? results.users.total + filterResults.total + results.locations.total
+    : results.users.total + results.itineraries.total + results.locations.total;
+  
+  // Check if we're in filtered mode
+  const isFiltered = !!filterResults;
+  const hasSearchQuery = query.trim().length > 0;
 
   const getCurrentPagination = () => {
     switch (activeTab) {
       case "users":
         return results.users;
       case "itineraries":
-        return results.itineraries;
+        return filterResults || results.itineraries;
       case "locations":
         return results.locations;
       default:
+        const itineraryResults = filterResults || results.itineraries;
         const maxResult = [
           results.users,
-          results.itineraries,
+          itineraryResults,
           results.locations,
         ].sort((a, b) => b.total - a.total)[0];
         return maxResult;
@@ -151,7 +216,19 @@ export default function Search() {
           </form>
         </div>
 
-        {query && (
+        <div className={styles.searchContent}>
+          <div className={styles.filterSidebar}>
+            <SearchFilter 
+              onFilter={handleFilter}
+              onClear={handleClearFilter}
+              isLoading={isFiltering}
+              isFiltered={isFiltered}
+              searchQuery={query}
+            />
+          </div>
+
+          <div className={styles.searchResults}>
+            {(query || filterResults) && (
           <>
             <div className={styles.tabsContainer}>
               <button
@@ -176,7 +253,7 @@ export default function Search() {
                 }`}
                 onClick={() => setActiveTab("itineraries")}
               >
-                Lịch trình ({results.itineraries.total})
+                Lịch trình ({filterResults ? filterResults.total : results.itineraries.total})
               </button>
               <button
                 className={`${styles.tab} ${
@@ -189,10 +266,10 @@ export default function Search() {
             </div>
 
             <div className={styles.resultsSection}>
-              {loading ? (
+              {(loading || isFiltering) ? (
                 <div className={styles.loading}>
                   <div className={styles.spinner}></div>
-                  <p>Đang tìm kiếm...</p>
+                  <p>{isFiltering ? "Đang lọc..." : "Đang tìm kiếm..."}</p>
                 </div>
               ) : (
                 <>
@@ -302,7 +379,7 @@ export default function Search() {
                     </div>
                   )}
 
-                  {totalResults === 0 && !loading && (
+                  {totalResults === 0 && !loading && !isFiltering && (
                     <div className={styles.noResults}>
                       <div className={styles.noResultsIcon}>
                         <i className="ri-search-line"></i>
@@ -389,6 +466,8 @@ export default function Search() {
             </div>
           </>
         )}
+          </div>
+        </div>
       </div>
     </div>
   );

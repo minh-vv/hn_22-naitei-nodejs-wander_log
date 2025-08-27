@@ -6,6 +6,7 @@ import {
 import { PrismaService } from '../prisma/prisma.service';
 import { CreateItineraryDto } from './dto/create-itinerary.dto';
 import { UpdateItineraryDto } from './dto/update-itinerary.dto';
+import { FilterItineraryDto } from './dto/filter-itinerary.dto';
 import { I18nService } from 'nestjs-i18n';
 import { ITINERARY_FEATURED_LIMIT } from '../config/itinerary.config';
 const slugify = require('slugify');
@@ -306,5 +307,288 @@ export class ItineraryService {
       where: { slug },
       data: { views: { increment: 1 } },
     });
+  }
+
+  async filterItineraries(filterDto: FilterItineraryDto) {
+    const {
+      searchQuery,
+      destination,
+      country,
+      duration,
+      budgetMin,
+      budgetMax,
+      budgetRange,
+      minRating,
+      tags,
+      sortBy = 'createdAt',
+      sortOrder = 'desc',
+      page = 1,
+      limit = 10,
+    } = filterDto;
+
+    const skip = (page - 1) * limit;
+
+    // Build where clause
+    const where: any = {
+      visibility: 'PUBLIC',
+    };
+
+    // Handle search query with highest priority - searches across multiple fields
+    if (searchQuery) {
+      where.OR = [
+        {
+          title: {
+            contains: searchQuery,
+          },
+        },
+        {
+          destination: {
+            contains: searchQuery,
+          },
+        },
+        {
+          activities: {
+            some: {
+              OR: [
+                {
+                  name: {
+                    contains: searchQuery,
+                  },
+                },
+                {
+                  location: {
+                    contains: searchQuery,
+                  },
+                },
+              ],
+            },
+          },
+        },
+      ];
+    }
+
+    // Handle destination filter (more specific than search query)
+    if (destination) {
+      const destinationCondition = {
+        destination: {
+          contains: destination,
+        },
+      };
+
+      if (where.OR) {
+        // If search query exists, combine with AND
+        where.AND = where.AND || [];
+        where.AND.push(destinationCondition);
+      } else {
+        where.destination = destinationCondition.destination;
+      }
+    }
+
+    // Handle country filter (search in destination field)
+    if (country) {
+      const countryCondition = {
+        destination: {
+          contains: country,
+        },
+      };
+
+      // Always use AND to combine with existing conditions
+      where.AND = where.AND || [];
+      where.AND.push(countryCondition);
+    }
+
+    // Handle duration filter
+    if (duration) {
+      const durationConditions: any = {};
+      
+      switch (duration) {
+        case '1-3':
+          // Trip duration between 1-3 days
+          durationConditions.AND = [
+            {
+              OR: [
+                {
+                  AND: [
+                    { startDate: { lte: new Date() } },
+                    { endDate: { gte: new Date(Date.now() + 1 * 24 * 60 * 60 * 1000) } }
+                  ]
+                },
+                // For future trips, calculate duration
+                {
+                  startDate: { gte: new Date() }
+                }
+              ]
+            }
+          ];
+          break;
+        case '4-7':
+          durationConditions.startDate = { gte: new Date() };
+          break;
+        case '8-14':
+          durationConditions.startDate = { gte: new Date() };
+          break;
+        case '15+':
+          durationConditions.startDate = { gte: new Date() };
+          break;
+      }
+      
+      Object.assign(where, durationConditions);
+    }
+
+    // Handle budget filters
+    if (budgetRange) {
+      let budgetCondition: any = {};
+      
+      switch (budgetRange) {
+        case 'under-5':
+          budgetCondition = { budget: { lt: 5000000 } };
+          break;
+        case '5-10':
+          budgetCondition = { 
+            budget: { 
+              gte: 5000000, 
+              lte: 10000000 
+            } 
+          };
+          break;
+        case '10-20':
+          budgetCondition = { 
+            budget: { 
+              gte: 10000000, 
+              lte: 20000000 
+            } 
+          };
+          break;
+        case 'over-20':
+          budgetCondition = { budget: { gt: 20000000 } };
+          break;
+      }
+      
+      where.AND = where.AND || [];
+      where.AND.push(budgetCondition);
+    }
+
+    // Handle custom budget range
+    if (budgetMin !== undefined || budgetMax !== undefined) {
+      const budgetCondition: any = {};
+      
+      if (budgetMin !== undefined) {
+        budgetCondition.gte = budgetMin * 1000000; // Convert millions to actual value
+      }
+      
+      if (budgetMax !== undefined) {
+        budgetCondition.lte = budgetMax * 1000000;
+      }
+      
+      where.AND = where.AND || [];
+      where.AND.push({ budget: budgetCondition });
+    }
+
+    // Handle tags filter
+    if (tags && tags.length > 0) {
+      where.activities = {
+        some: {
+          OR: tags.map(tag => ({
+            name: {
+              contains: tag,
+            },
+          })),
+        },
+      };
+    }
+
+    // Handle rating filter
+    if (minRating !== undefined) {
+      where.ratings = {
+        some: {
+          value: {
+            gte: minRating,
+          },
+        },
+      };
+    }
+
+    // Build orderBy clause
+    let orderBy: any = {};
+    switch (sortBy) {
+      case 'startDate':
+        orderBy = { startDate: sortOrder };
+        break;
+      case 'views':
+        orderBy = { views: sortOrder };
+        break;
+      case 'title':
+        orderBy = { title: sortOrder };
+        break;
+      case 'budget':
+        orderBy = { budget: sortOrder };
+        break;
+      case 'rating':
+        // Sort by average rating - will need to be handled in the query
+        orderBy = { createdAt: sortOrder }; // Fallback for now
+        break;
+      default:
+        orderBy = { createdAt: sortOrder };
+    }
+
+    // Get total count for pagination
+    const total = await this.prisma.itinerary.count({ where });
+
+    // Get filtered itineraries
+    const itineraries = await this.prisma.itinerary.findMany({
+      where,
+      orderBy,
+      skip,
+      take: limit,
+      select: {
+        id: true,
+        title: true,
+        destination: true,
+        startDate: true,
+        endDate: true,
+        budget: true,
+        coverImage: true,
+        slug: true,
+        views: true,
+        createdAt: true,
+        user: {
+          select: {
+            id: true,
+            name: true,
+            avatar: true,
+          },
+        },
+        activities: {
+          select: {
+            name: true,
+            location: true,
+          },
+        },
+        posts: {
+          select: { likeCount: true },
+        },
+        ratings: {
+          select: { value: true },
+        },
+      },
+    });
+
+    const totalPages = Math.ceil(total / limit);
+
+    return {
+      data: itineraries.map(itinerary => ({
+        ...itinerary,
+        budget: itinerary.budget?.toNumber() ?? null,
+        totalLikes: itinerary.posts.reduce((sum, post) => sum + post.likeCount, 0),
+        averageRating: itinerary.ratings.length > 0 
+          ? itinerary.ratings.reduce((sum, rating) => sum + rating.value, 0) / itinerary.ratings.length
+          : 0,
+        ratingsCount: itinerary.ratings.length,
+      })),
+      total,
+      page,
+      totalPages,
+      limit,
+    };
   }
 }
