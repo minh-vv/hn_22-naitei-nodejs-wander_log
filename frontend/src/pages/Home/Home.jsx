@@ -4,6 +4,7 @@ import Header from "../../component/Header/Header";
 import ItineraryFeature from "../Itinerary/ItineraryFeature/ItineraryFeature";
 import ItineraryModal from "../../component/ItineraryModal/ItineraryModal"; 
 import styles from "./Home.module.css";
+import FeatureBlogger from "../FeatureBlogger/FeatureBlogger";
 
 export default function Home() {
   const navigate = useNavigate();
@@ -55,6 +56,13 @@ export default function Home() {
         <p>Những hành trình được yêu thích nhất từ cộng đồng</p>
         <div className={styles.tripGrid}>
           <ItineraryFeature />
+        </div>
+      </section>
+      <section className={styles.section}>
+        <h2>Blogger nổi bật</h2>
+        <p>Những người có nhiều lịch trình được đánh giá cao nhất</p>
+        <div className={styles.bloggerGrid}>
+          <FeatureBlogger />
         </div>
       </section>
       <section className={styles.section}>

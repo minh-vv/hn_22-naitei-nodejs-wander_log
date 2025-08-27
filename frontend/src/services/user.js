@@ -119,6 +119,17 @@ const userService = {
       );
     }
   },
+
+  getFeaturedBloggers: async (limit = 10) => {
+    try {
+      const response = await apiClient.get(`/users/featured?take=${limit}`);
+      return response.data;
+    } catch (error) {
+      throw new Error(
+        error.response?.data?.message || "Failed to fetch featured bloggers"
+      );
+    }
+  },
 };
 
 export default userService;

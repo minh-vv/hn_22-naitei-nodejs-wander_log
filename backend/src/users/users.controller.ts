@@ -9,6 +9,7 @@ import {
   HttpStatus,
   Post,
   Delete,
+  Query,
 } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { UpdateProfileDto } from './dto/update-profile.dto';
@@ -103,5 +104,16 @@ export class UsersController {
   @Get(':userId/stats')
   async getUserStats(@Param('userId') userId: string): Promise<UserStatsDto> {
     return this.usersService.getUserStats(userId);
-}
+  }
+
+  @Get('featured')
+  @UseGuards(JwtAuthGuard)
+  @HttpCode(HttpStatus.OK)
+  async getFeaturedBloggers(
+    @Query('take') take?: number,
+    @GetUser() user?: any,
+  ) {
+    const limit = take ? parseInt(take.toString(), 10) : undefined;
+    return this.usersService.getFeaturedBloggers(limit, user?.id);
+  }
 }
