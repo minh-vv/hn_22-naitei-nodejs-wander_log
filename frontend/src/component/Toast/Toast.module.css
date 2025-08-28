@@ -87,6 +87,23 @@
   word-wrap: break-word;
 }
 
+.actionText {
+  font-size: 12px;
+  color: #3b82f6;
+  margin-top: 4px;
+  font-weight: 500;
+}
+
+.clickable {
+  cursor: pointer;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.clickable:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 15px 30px rgba(0, 0, 0, 0.15);
+}
+
 .closeButton {
   background: none;
   border: none;

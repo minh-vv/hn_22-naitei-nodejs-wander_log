@@ -1,0 +1,61 @@
+.container {
+  min-height: 100vh;
+  background-color: #f3f4f6;
+}
+
+.content {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+.postContainer {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.backButton {
+  background-color: #3b82f6;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  padding: 10px 20px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+  align-self: flex-start;
+}
+
+.backButton:hover {
+  background-color: #2563eb;
+}
+
+.loadingMessage,
+.errorMessage {
+  text-align: center;
+  padding: 40px 20px;
+  background-color: white;
+  border-radius: 12px;
+  border: 1px solid #e5e7eb;
+  box-shadow: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+}
+
+.loadingMessage {
+  color: #6b7280;
+  font-size: 16px;
+}
+
+.errorMessage {
+  color: #ef4444;
+  font-size: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  align-items: center;
+}
+
+.errorMessage .backButton {
+  margin-top: 0;
+}

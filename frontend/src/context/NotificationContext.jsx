@@ -72,6 +72,7 @@ export const NotificationProvider = ({ children }) => {
           type: 'info',
           title: notification.title,
           message: notification.message,
+          url: notification.url,
           duration: 5000,
         });
       });

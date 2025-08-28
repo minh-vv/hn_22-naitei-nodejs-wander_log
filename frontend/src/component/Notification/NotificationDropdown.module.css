@@ -164,6 +164,14 @@
   border-left: 3px solid #3b82f6;
 }
 
+.notificationItem.clickable {
+  cursor: pointer;
+}
+
+.notificationItem.clickable:hover {
+  background-color: #f3f4f6;
+}
+
 .notificationItem.unread::before {
   content: '';
   position: absolute;

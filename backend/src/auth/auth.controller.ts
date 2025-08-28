@@ -50,7 +50,6 @@ export class AuthController {
     return this.authService.resetPassword(resetPasswordDto);
   }
 
-  // Debug endpoint to check active tokens (remove in production)
   @Get('debug/reset-tokens')
   async debugResetTokens() {
     return this.authService.checkActiveResetTokens();
