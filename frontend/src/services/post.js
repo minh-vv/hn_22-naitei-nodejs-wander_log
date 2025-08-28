@@ -63,6 +63,17 @@ const postService = {
     }
   },
 
+  getPostById: async (id) => {
+    try {
+      const res = await apiClient.get(`/posts/${id}`, { skipAuth: true });
+      return res.data;
+    } catch (error) {
+      throw new Error(
+        error.response?.data?.message || `Failed to fetch post with ID ${id}`
+      );
+    }
+  },
+
   getComments: async (id) => {
     try {
       const res = await apiClient.get(`/posts/${id}/comment`, {

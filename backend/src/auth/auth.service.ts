@@ -218,7 +218,6 @@ export class AuthService {
     };
   }
 
-  // Debug method to check active reset tokens
   async checkActiveResetTokens(email?: string) {
     const whereClause = email ? {
       user: { email },
@@ -268,7 +267,6 @@ export class AuthService {
       );
     }
 
-    // Check if user logged in with OAuth (Google)
     if (user.authProvider === 'GOOGLE' || !user.passwordHash) {
       throw new BadRequestException(
         this.i18n.t('auth.oauth_user_cannot_change_password', {

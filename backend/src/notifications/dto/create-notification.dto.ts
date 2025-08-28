@@ -23,6 +23,10 @@ export class CreateNotificationDto {
   postId?: string;
 
   @IsOptional()
+  @IsString()
+  url?: string;
+
+  @IsOptional()
   @IsBoolean()
   isRead?: boolean;
 }

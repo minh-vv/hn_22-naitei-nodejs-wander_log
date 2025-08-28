@@ -101,6 +101,41 @@ export class PostsService {
     return posts;
   }
 
+  async getById(id: string) {
+    const post = await this.prisma.post.findUnique({
+      where: { id },
+      include: {
+        user: {
+          select: {
+            id: true,
+            name: true,
+            avatar: true,
+          },
+        },
+        itinerary: {
+          select: {
+            id: true,
+            title: true,
+            budget: true,
+            slug: true,
+          },
+        },
+        media: {
+          select: {
+            id: true,
+            url: true,
+          },
+        },
+      },
+    });
+
+    if (!post) {
+      throw new NotFoundException(this.i18n.t('post.post_not_found'));
+    }
+
+    return post;
+  }
+
   async getNewsFeed(userId: string) {
     const followedUsers = await this.prisma.follow.findMany({
       where: {

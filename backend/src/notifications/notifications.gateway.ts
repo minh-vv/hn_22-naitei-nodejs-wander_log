@@ -8,10 +8,10 @@ import {
   OnGatewayDisconnect,
 } from '@nestjs/websockets';
 import { Server, Socket } from 'socket.io';
+import { Logger } from '@nestjs/common';
 import { NotificationsService } from './notifications.service';
 import { CreateNotificationDto } from './dto/create-notification.dto';
 import { JwtService } from '@nestjs/jwt';
-import { Logger } from '@nestjs/common';
 
 @WebSocketGateway({
   cors: {
@@ -187,6 +187,7 @@ export class NotificationsGateway implements OnGatewayConnection, OnGatewayDisco
 
     if (notification) {
       const targetSocket = this.connectedUsers.get(notification.userId);
+      
       if (targetSocket) {
         targetSocket.emit('notification:newInteraction', notification);
         
