@@ -158,7 +158,9 @@ export class NotificationsService {
   async createCommentNotification(commenterId: string, postId: string): Promise<NotificationResponseDto | null> {
     const post = await this.prisma.post.findUnique({
       where: { id: postId },
-      select: { userId: true },
+      select: { 
+        userId: true
+      },
     });
 
     if (!post || post.userId === commenterId) {
@@ -174,10 +176,14 @@ export class NotificationsService {
       return null;
     }
 
+    // Tạo URL đến trang chi tiết bài đăng
+    const url = `/posts/${postId}`;
+
     const createNotificationDto: CreateNotificationDto = {
       type: NotificationType.NEW_COMMENT,
       title: 'Bình luận mới',
       message: `${commenter.name || 'Ai đó'} đã bình luận về bài viết của bạn`,
+      url,
       userId: post.userId,
       fromUserId: commenterId,
       postId,
@@ -189,7 +195,9 @@ export class NotificationsService {
   async createLikeNotification(likerId: string, postId: string): Promise<NotificationResponseDto | null> {
     const post = await this.prisma.post.findUnique({
       where: { id: postId },
-      select: { userId: true },
+      select: { 
+        userId: true
+      },
     });
 
     if (!post || post.userId === likerId) {
@@ -205,10 +213,14 @@ export class NotificationsService {
       return null;
     }
 
+    // Tạo URL đến trang chi tiết bài đăng
+    const url = `/posts/${postId}`;
+
     const createNotificationDto: CreateNotificationDto = {
       type: NotificationType.NEW_LIKE,
       title: 'Lượt thích mới',
       message: `${liker.name || 'Ai đó'} đã thích bài viết của bạn`,
+      url,
       userId: post.userId,
       fromUserId: likerId,
       postId,

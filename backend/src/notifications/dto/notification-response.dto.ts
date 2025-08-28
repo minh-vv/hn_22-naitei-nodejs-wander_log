@@ -5,6 +5,7 @@ export class NotificationResponseDto {
   type: NotificationType;
   title: string;
   message: string;
+  url?: string | null;
   isRead: boolean;
   userId: string;
   fromUserId?: string | null;

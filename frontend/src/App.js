@@ -14,6 +14,7 @@ import ItineraryForm from "./pages/Itinerary/ItineraryForm/ItineraryForm";
 import ItineraryList from "./pages/Itinerary/ItineraryList/ItineraryList";
 import ItineraryDetail from "./pages/Itinerary/ItineraryDetail/ItineraryDetail";
 import NewsFeed from "./pages/Post/NewsFeed/NewsFeed";
+import PostDetail from "./pages/Post/PostDetail/PostDetail";
 import AuthSuccess from "./pages/Auth/AuthSuccess/AuthSuccess";
 import Home from "./pages/Home/Home";
 import AdminDashboard from "./pages/Admin/AdminDashboard/AdminDashboard";
@@ -140,6 +141,14 @@ function App() {
               element={
                 <ProtectedRoute>
                   <NewsFeed />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/posts/:id"
+              element={
+                <ProtectedRoute>
+                  <PostDetail />
                 </ProtectedRoute>
               }
             />

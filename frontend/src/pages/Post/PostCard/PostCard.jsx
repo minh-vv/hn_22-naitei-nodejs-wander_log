@@ -113,6 +113,25 @@ const PostCard = ({
     }
   };
 
+  const handlePostClick = (e) => {
+    // Không navigate nếu click vào button, link, hoặc input
+    if (
+      e.target.tagName === 'BUTTON' ||
+      e.target.tagName === 'A' ||
+      e.target.tagName === 'INPUT' ||
+      e.target.tagName === 'TEXTAREA' ||
+      e.target.closest('button') ||
+      e.target.closest('a') ||
+      e.target.closest('input') ||
+      e.target.closest('textarea') ||
+      e.target.closest('.action-area')
+    ) {
+      return;
+    }
+    
+    navigate(`/posts/${post.id}`);
+  };
+
   const [isBookmarked, setIsBookmarked] = useState(false);
   const [bookmarkId, setBookmarkId] = useState(null);
 
@@ -378,7 +397,11 @@ const PostCard = ({
   };
 
   return (
-    <div className={styles.postCard}>
+    <div 
+      className={`${styles.postCard} ${styles.clickable}`} 
+      id={`post-${post.id}`}
+      onClick={handlePostClick}
+    >
       {uploading && (
         <div className={styles.uploadingNotice}>
           Uploading files, please wait...
@@ -401,7 +424,7 @@ const PostCard = ({
             </div>
           </div>
         </div>
-        <div ref={menuRef} className={styles.moreButtonContainer}>
+        <div ref={menuRef} className={`${styles.moreButtonContainer} action-area`}>
           <button className={styles.bookmarkButton} onClick={handleBookmark}>
             <div className={styles.iconWrapper}>
               {isBookmarked ? (
@@ -588,7 +611,7 @@ const PostCard = ({
         </div>
       </div>
 
-      <div className={styles.actionsSection}>
+      <div className={`${styles.actionsSection} action-area`}>
         <div className={styles.actionsWrapper}>
           <button
             onClick={handleLike}
@@ -612,7 +635,7 @@ const PostCard = ({
       </div>
 
       {showComments && (
-        <div className={styles.commentsSection}>
+        <div className={`${styles.commentsSection} action-area`}>
           <div className={styles.commentInputWrapper}>
             <img
               src={currentUser?.avatar || avatarDefault}

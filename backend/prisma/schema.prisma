@@ -7,6 +7,216 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+model User {
+  id                String          @id @default(cuid())
+  email             String          @unique
+  passwordHash      String?         @map("password_hash")
+  name              String?
+  avatar            String?
+  coverPhoto        String?         @map("cover_photo")
+  bio               String?         @db.Text
+  role              Role            @default(USER)
+  isActive          Boolean         @default(true) @map("is_active")
+  googleId          String?         @unique @map("google_id")
+  authProvider      AuthProvider?   @map("auth_provider")
+  createdAt         DateTime        @default(now()) @map("created_at")
+  updatedAt         DateTime        @updatedAt
+  location          String?
+  ratings           Rating[]
+  bookmarks         Bookmark[]
+  comments          Comment[]
+  favorites         Favorite[]
+  following         Follow[]        @relation("FollowingUsers")
+  followedBy        Follow[]        @relation("FollowerUsers")
+  itineraries       Itinerary[]
+  sentNotifications Notification[]  @relation("NotificationFromUser")
+  notifications     Notification[]
+  passwordResets    PasswordReset[]
+  posts             Post[]
+
+  @@map("users")
+}
+
+model Bookmark {
+  id        String       @id @default(cuid())
+  createdAt DateTime     @default(now())
+  type      BookmarkType
+  itemId    String
+  userId    String
+  user      User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, type, itemId])
+  @@map("bookmark")
+}
+
+model PasswordReset {
+  id        String   @id @default(cuid())
+  userId    String   @map("user_id")
+  token     String   @unique
+  expiresAt DateTime @map("expires_at")
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId], map: "password_resets_user_id_fkey")
+  @@map("password_resets")
+}
+
+model Itinerary {
+  id          String     @id @default(cuid())
+  title       String
+  slug        String     @unique
+  destination String?
+  startDate   DateTime   @map("start_date")
+  endDate     DateTime   @map("end_date")
+  budget      Decimal?
+  visibility  Visibility @default(PRIVATE)
+  userId      String     @map("user_id")
+  createdAt   DateTime   @default(now()) @map("created_at")
+  updatedAt   DateTime   @updatedAt
+  coverImage  String?
+  views       Int        @default(0)
+  ratings     Rating[]
+  activities  Activity[]
+  user        User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  posts       Post[]
+
+  @@index([userId], map: "itineraries_user_id_fkey")
+  @@map("itineraries")
+}
+
+model Activity {
+  id          String    @id @default(cuid())
+  itineraryId String    @map("itinerary_id")
+  date        DateTime  @db.Date
+  startTime   String?   @map("start_time")
+  name        String
+  description String?   @db.Text
+  location    String?
+  cost        Decimal?
+  itinerary   Itinerary @relation(fields: [itineraryId], references: [id], onDelete: Cascade)
+
+  @@index([itineraryId], map: "activities_itinerary_id_fkey")
+  @@map("activities")
+}
+
+model Post {
+  id            String         @id @default(cuid())
+  content       String?        @db.Text
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
+  userId        String         @map("user_id")
+  itineraryId   String         @map("itinerary_id")
+  likeCount     Int            @default(0)
+  commentsCount Int            @default(0)
+  comments      Comment[]
+  favoritedBy   Favorite[]
+  media         Media[]
+  notifications Notification[]
+  itinerary     Itinerary      @relation(fields: [itineraryId], references: [id], onDelete: Cascade)
+  user          User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([itineraryId])
+  @@map("posts")
+}
+
+model Media {
+  id        String   @id @default(cuid())
+  url       String   @db.Text
+  postId    String   @map("post_id")
+  createdAt DateTime @default(now()) @map("created_at")
+  publicId  String?  @map("public_id")
+  post      Post     @relation(fields: [postId], references: [id], onDelete: Cascade)
+
+  @@index([postId])
+  @@map("media")
+}
+
+model Follow {
+  followerId  String
+  followingId String
+  follower    User   @relation("FollowingUsers", fields: [followerId], references: [id], onDelete: Cascade)
+  following   User   @relation("FollowerUsers", fields: [followingId], references: [id], onDelete: Cascade)
+
+  @@id([followerId, followingId])
+  @@index([followingId], map: "follow_followingId_fkey")
+  @@map("follow")
+}
+
+model Favorite {
+  userId      String
+  postId      String
+  favoritedAt DateTime @default(now())
+  post        Post     @relation(fields: [postId], references: [id], onDelete: Cascade)
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@id([userId, postId])
+  @@index([postId], map: "favorite_postId_fkey")
+  @@map("favorite")
+}
+
+model Comment {
+  id        String   @id @default(cuid())
+  body      String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  userId    String
+  postId    String
+  post      Post     @relation(fields: [postId], references: [id], onDelete: Cascade)
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([postId])
+  @@map("comment")
+}
+
+model AdminLog {
+  id         String   @id @default(cuid())
+  adminId    String   @map("admin_id")
+  action     String   @db.Text
+  targetId   String   @map("target_id")
+  targetType String   @map("target_type")
+  createdAt  DateTime @default(now()) @map("created_at")
+
+  @@map("admin_logs")
+}
+
+model Rating {
+  id          String    @id @default(uuid())
+  itineraryId String
+  userId      String
+  value       Int
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  itinerary   Itinerary @relation(fields: [itineraryId], references: [id], onDelete: Cascade)
+  user        User      @relation(fields: [userId], references: [id])
+
+  @@unique([userId, itineraryId])
+  @@index([itineraryId], map: "Rating_itineraryId_fkey")
+}
+
+model Notification {
+  id         String           @id @default(cuid())
+  type       NotificationType
+  title      String
+  message    String
+  url        String?          // URL để điều hướng đến bài đăng hoặc trang liên quan
+  isRead     Boolean          @default(false)
+  userId     String           @map("user_id")
+  fromUserId String?          @map("from_user_id")
+  postId     String?          @map("post_id")
+  createdAt  DateTime         @default(now()) @map("created_at")
+  updatedAt  DateTime         @updatedAt
+  fromUser   User?            @relation("NotificationFromUser", fields: [fromUserId], references: [id], onDelete: Cascade)
+  post       Post?            @relation(fields: [postId], references: [id], onDelete: Cascade)
+  user       User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([isRead])
+  @@index([fromUserId], map: "notifications_from_user_id_fkey")
+  @@index([postId], map: "notifications_post_id_fkey")
+  @@map("notifications")
+}
+
 enum Role {
   USER
   ADMIN
@@ -24,200 +234,7 @@ enum Visibility {
 
 enum BookmarkType {
   ITINERARY
-  POST     
-}
-
-model User {
-  id              String            @id @default(cuid())
-  email           String            @unique
-  passwordHash    String?           @map("password_hash")
-  name            String?
-  avatar          String?
-  coverPhoto      String?           @map("cover_photo")
-  bio             String?           @db.Text
-  role            Role              @default(USER)
-  isActive        Boolean           @default(true) @map("is_active")
-
-  googleId        String?           @unique @map("google_id")
-  authProvider    AuthProvider?     @map("auth_provider")
-  
-  createdAt       DateTime          @default(now()) @map("created_at")
-  updatedAt       DateTime          @updatedAt
-
-  passwordResets  PasswordReset[]
-  itineraries     Itinerary[]
-  posts           Post[]
-  ratings         Rating[]
-
-  followedBy      Follow[]               @relation("FollowerUsers")
-  following       Follow[]               @relation("FollowingUsers")
-  favorites       Favorite[]
-  comments        Comment[]
-  bookmarks       Bookmark[]
-  notifications   Notification[]
-  sentNotifications Notification[]       @relation("NotificationFromUser")
-
-  @@map("users")
-}
-
-model Bookmark {
-  id        String          @id @default(cuid())
-  createdAt DateTime     @default(now())
-  
-  type      BookmarkType 
-  itemId    String         
-
-  userId    String
-  user      User         @relation(fields: [userId], references: [id], onDelete: Cascade)
-
-  @@unique([userId, type, itemId])
-  @@map("bookmark")
-}
-
-model PasswordReset {
-  id        String   @id @default(cuid())
-  userId    String   @map("user_id")
-  token     String   @unique
-  expiresAt DateTime @map("expires_at")
-  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-
-  @@map("password_resets")
-}
-
-model Itinerary {
-  id          String     @id @default(cuid())
-  title       String
-  slug        String     @unique
-  destination String?
-  startDate   DateTime   @map("start_date")
-  endDate     DateTime   @map("end_date")
-  budget      Decimal?
-  visibility  Visibility @default(PRIVATE)
-  userId      String     @map("user_id")
-  createdAt   DateTime   @default(now()) @map("created_at")
-  updatedAt   DateTime   @updatedAt
-  coverImage  String?
-  views            Int   @default(0)
-  user        User       @relation(fields: [userId], references: [id], onDelete: Cascade)
-  posts       Post[]
-  activities  Activity[]
-  ratings     Rating[]
-  @@map("itineraries")
-}
-
-model Activity {
-  id           String    @id @default(cuid())
-  itineraryId  String    @map("itinerary_id")
-  date         DateTime  @db.Date 
-  startTime    String?   @map("start_time")
-  name         String
-  description  String?   @db.Text
-  location     String?
-  cost         Decimal?
-  itinerary    Itinerary @relation(fields: [itineraryId], references: [id], onDelete: Cascade)
-  @@map("activities")
-}
-
-model Post {
-  id          String    @id @default(cuid())
-  content     String?   @db.Text
-  media       Media[]
-  createdAt   DateTime  @default(now())
-  updatedAt   DateTime  @updatedAt
-
-  userId      String    @map("user_id")
-  user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
-
-  itineraryId String    @map("itinerary_id")
-  itinerary   Itinerary @relation(fields: [itineraryId], references: [id], onDelete: Cascade)
-
-  favoritedBy Favorite[]
-  likeCount Int @default(0)
-
-  comments Comment[]
-  commentsCount Int @default(0)
-  notifications Notification[]
-
-  @@index([userId])
-  @@index([itineraryId])
-  @@map("posts")
-}
-
-model Media {
-  id        String   @id @default(cuid())
-  url       String   @db.Text 
-  publicId  String?  @map("public_id")
-  postId    String   @map("post_id")
-  createdAt DateTime @default(now()) @map("created_at")
-  
-  post      Post     @relation(fields: [postId], references: [id], onDelete: Cascade)
-
-  @@index([postId])
-  @@map("media")
-}
-
-model Follow {
-  followerId      String
-  followingId     String
-
-  follower    User  @relation("FollowingUsers", fields: [followerId], references: [id], onDelete: Cascade)
-  following   User  @relation("FollowerUsers", fields: [followingId], references: [id], onDelete: Cascade)
-
-  @@id([followerId, followingId])
-  @@map("follow")
-}
-
-model Favorite {
-  userId    String
-  postId    String
-  favoritedAt DateTime @default(now())
-
-  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  post      Post     @relation(fields: [postId], references: [id], onDelete: Cascade)
-
-  @@id([userId, postId])
-  @@map("favorite")
-}
-
-model Comment {
-  id        String      @id @default(cuid())
-  body      String   
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  userId    String
-  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-
-  postId    String
-  post      Post  @relation(fields: [postId], references: [id], onDelete: Cascade)
-
-  @@index([userId])
-  @@index([postId])
-  @@map("comment")
-}
-
-model AdminLog {
-  id        String   @id @default(cuid())
-  adminId   String   @map("admin_id")
-  action    String   @db.Text
-  targetId  String   @map("target_id")
-  targetType String   @map("target_type")
-  createdAt DateTime @default(now()) @map("created_at")
-
-  @@map("admin_logs")
-}
-
-model Rating {
-  id            String    @id @default(uuid())
-  itineraryId   String
-  itinerary     Itinerary @relation(fields: [itineraryId], references: [id], onDelete: Cascade)
-  userId        String
-  user          User      @relation(fields: [userId], references: [id])
-  value         Int       
-  createdAt     DateTime  @default(now())
-  updatedAt     DateTime  @updatedAt
-
-  @@unique([userId, itineraryId])
+  POST
 }
 
 enum NotificationType {
@@ -225,27 +242,4 @@ enum NotificationType {
   NEW_COMMENT
   NEW_LIKE
   NEW_RATING
-}
-
-model Notification {
-  id         String           @id @default(cuid())
-  type       NotificationType
-  title      String
-  message    String
-  isRead     Boolean          @default(false)
-  userId     String           @map("user_id")
-  user       User             @relation(fields: [userId], references: [id], onDelete: Cascade)
-  
-  // Optional references to related entities
-  fromUserId String?          @map("from_user_id")
-  fromUser   User?            @relation("NotificationFromUser", fields: [fromUserId], references: [id], onDelete: Cascade)
-  postId     String?          @map("post_id")
-  post       Post?            @relation(fields: [postId], references: [id], onDelete: Cascade)
-  
-  createdAt  DateTime         @default(now()) @map("created_at")
-  updatedAt  DateTime         @updatedAt
-
-  @@index([userId])
-  @@index([isRead])
-  @@map("notifications")
 }

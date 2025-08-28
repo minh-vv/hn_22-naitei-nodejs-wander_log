@@ -1,4 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Bell, Check, CheckCheck } from 'lucide-react';
 import { useNotification } from '../../context/NotificationContext';
 import { formatDistanceToNow } from 'date-fns';
@@ -8,6 +9,7 @@ import styles from './NotificationDropdown.module.css';
 const NotificationDropdown = () => {
   const [isOpen, setIsOpen] = useState(false);
   const dropdownRef = useRef(null);
+  const navigate = useNavigate();
   const {
     notifications,
     unreadCount,
@@ -39,6 +41,19 @@ const NotificationDropdown = () => {
   const handleMarkAsRead = (notificationId, event) => {
     event.stopPropagation();
     markAsRead(notificationId);
+  };
+
+  const handleNotificationClick = (notification) => {
+    // Đánh dấu là đã đọc nếu chưa đọc
+    if (!notification.isRead) {
+      markAsRead(notification.id);
+    }
+    
+    // Điều hướng nếu có URL
+    if (notification.url) {
+      navigate(notification.url);
+      setIsOpen(false);
+    }
   };
 
   const handleMarkAllAsRead = () => {
@@ -113,7 +128,8 @@ const NotificationDropdown = () => {
                   key={notification.id}
                   className={`${styles.notificationItem} ${
                     !notification.isRead ? styles.unread : ''
-                  }`}
+                  } ${notification.url ? styles.clickable : ''}`}
+                  onClick={() => handleNotificationClick(notification)}
                 >
                   <div className={styles.notificationIcon}>
                     {getNotificationIcon(notification.type)}
