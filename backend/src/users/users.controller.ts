@@ -17,6 +17,7 @@ import { UserProfileDto } from './dto/user-profile.dto';
 import { UserStatsDto } from './dto/user-stats.dto';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { GetUser } from '../auth/get-user.decorator';
+import { OptionalJwtAuthGuard } from '../auth/optional-jwt-auth.guard'; 
 
 @Controller('users')
 export class UsersController {
@@ -107,7 +108,7 @@ export class UsersController {
   }
 
   @Get('featured')
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(OptionalJwtAuthGuard)
   @HttpCode(HttpStatus.OK)
   async getFeaturedBloggers(
     @Query('take') take?: number,
