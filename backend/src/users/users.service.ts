@@ -12,8 +12,9 @@ import { UpdateProfileDto } from './dto/update-profile.dto';
 import { UserProfileDto } from './dto/user-profile.dto';
 import { UserStatsDto } from './dto/user-stats.dto';
 import { I18nService } from 'nestjs-i18n';
-import { User } from '@prisma/client';
+import { User, Visibility } from '@prisma/client';
 import { NotificationsGateway } from '../notifications/notifications.gateway';
+import { RatingsService } from '../ratings/ratings.service'; 
 
 @Injectable()
 export class UsersService {
@@ -22,6 +23,7 @@ export class UsersService {
     private readonly i18n: I18nService,
     @Inject(forwardRef(() => NotificationsGateway))
     private notificationsGateway: NotificationsGateway,
+    private ratingsService: RatingsService, 
   ) {}
 
   async getProfile(userId: string): Promise<UserProfileDto> {
@@ -216,6 +218,7 @@ export class UsersService {
       avatar: user.avatar,
       coverPhoto: user.coverPhoto,
       bio: user.bio,
+      location: user.location,
       role: user.role,
       isActive: user.isActive,
       createdAt: user.createdAt,
@@ -230,6 +233,7 @@ export class UsersService {
       avatar: user.avatar,
       coverPhoto: user.coverPhoto,
       bio: user.bio,
+      location: user.location,
       role: user.role,
       isActive: user.isActive,
       createdAt: user.createdAt,
@@ -305,6 +309,7 @@ export class UsersService {
             id: true,
             title: true,
             budget: true,
+            slug: true,
           },
         },
         media: {
@@ -329,9 +334,7 @@ export class UsersService {
   }
 
 
-// Trong users.service.ts
-
-async getFollowersList(userId: string, currentUserId: string) {
+  async getFollowersList(userId: string, currentUserId: string) {
     const user = await this.findById(userId);
 
     const followers = await this.prisma.follow.findMany({
@@ -368,10 +371,10 @@ async getFollowersList(userId: string, currentUserId: string) {
         ...f.follower,
         isFollowing: followedByIds.has(f.follower.id),
     }));
-}
+  }
 
 
-async getFollowingList(userId: string, currentUserId: string) {
+  async getFollowingList(userId: string, currentUserId: string) {
     const user = await this.findById(userId);
 
     const following = await this.prisma.follow.findMany({
@@ -408,5 +411,95 @@ async getFollowingList(userId: string, currentUserId: string) {
         ...f.following,
         isFollowing: followedByIds.has(f.following.id),
     }));
-}
+  }
+
+  async getFeaturedBloggers(take: number = 8, currentUserId?: string) {
+    const publicItineraries = await this.prisma.itinerary.findMany({
+      where: { visibility: 'PUBLIC' },
+      select: {
+        id: true,
+        userId: true,
+        views: true,
+      },
+    });
+
+    const userRatingCounts = new Map<string, number>();
+    const userItineraryViews = new Map<string, number>();
+
+    for (const itinerary of publicItineraries) {
+      const { averageRating } = await this.ratingsService.getAverageRating(itinerary.id);
+      
+      if (averageRating >= 4.0) {
+        userRatingCounts.set(
+          itinerary.userId,
+          (userRatingCounts.get(itinerary.userId) || 0) + 1,
+        );
+      }
+      
+      userItineraryViews.set(
+        itinerary.userId,
+        (userItineraryViews.get(itinerary.userId) || 0) + (itinerary.views || 0),
+      );
+    }
+
+    const sortedUserIds = Array.from(userRatingCounts.entries())
+      .sort(([, countA], [, countB]) => countB - countA)
+      .slice(0, take)
+      .map(([userId]) => userId);
+
+    if (sortedUserIds.length === 0) {
+      return [];
+    }
+
+    const featuredBloggers = await this.prisma.user.findMany({
+      where: {
+        id: {
+          in: sortedUserIds,
+        },
+      },
+      select: {
+        id: true,
+        name: true,
+        avatar: true,
+        bio: true,
+        location: true,
+        _count: {
+          select: {
+            followedBy: true,
+            itineraries: { where: { visibility: Visibility.PUBLIC } },
+          },
+        },
+      },
+    });
+    
+    let followingIds = new Set<string>();
+    if (currentUserId) {
+        const following = await this.prisma.follow.findMany({
+            where: {
+                followerId: currentUserId,
+                followingId: { in: sortedUserIds },
+            },
+            select: { followingId: true },
+        });
+        followingIds = new Set(following.map(f => f.followingId));
+    }
+
+    return featuredBloggers.map(blogger => {
+      const totalViews = userItineraryViews.get(blogger.id) || 0;
+      const itinerariesCount = blogger._count.itineraries;
+      const followersCount = blogger._count.followedBy;
+      
+      return {
+        id: blogger.id,
+        name: blogger.name,
+        avatar: blogger.avatar,
+        bio: blogger.bio,
+        location: blogger.location,
+        isFollowing: followingIds.has(blogger.id),
+        followersCount,
+        itinerariesCount,
+        totalViews,
+      };
+    });
+  }
 }

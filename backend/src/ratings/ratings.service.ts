@@ -45,7 +45,7 @@ export class RatingsService {
       },
     });
   }
-  // Thêm method này vào class RatingsService
+
   async getAverageRating(itineraryId: string) {
     const result = await this.prisma.rating.aggregate({
       _avg: {

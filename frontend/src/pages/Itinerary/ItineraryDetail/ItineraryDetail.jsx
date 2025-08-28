@@ -385,10 +385,13 @@ const ItineraryDetail = () => {
 
   const handleUpdatePost = async (updatedPostData) => {
     try {
+      const { id, ...postDataToSend } = updatedPostData;
+
       const res = await postService.updatePost(
-        updatedPostData.id,
-        updatedPostData
+        id,
+        postDataToSend 
       );
+
       setPosts((prevPosts) =>
         prevPosts.map((p) => (p.id === res.id ? res : p))
       );

@@ -210,6 +210,14 @@ function App() {
                 </AdminProtectedRoute>
               }
             />
+            <Route
+              path="/admin/analytics"
+              element={
+                <AdminProtectedRoute>
+                  <AdminAnalytics/>
+                </AdminProtectedRoute>
+              }
+            />
 
             <Route path="*" element={<div>404 - Page Not Found</div>} />
           </Routes>

@@ -33,7 +33,6 @@ model User {
   notifications     Notification[]
   passwordResets    PasswordReset[]
   posts             Post[]
-
   @@map("users")
 }
 
@@ -56,7 +55,7 @@ model PasswordReset {
   expiresAt DateTime @map("expires_at")
   user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-  @@index([userId], map: "password_resets_user_id_fkey")
+  @@index([userId])
   @@map("password_resets")
 }
 
@@ -79,7 +78,7 @@ model Itinerary {
   user        User       @relation(fields: [userId], references: [id], onDelete: Cascade)
   posts       Post[]
 
-  @@index([userId], map: "itineraries_user_id_fkey")
+  @@index([userId])
   @@map("itineraries")
 }
 
@@ -94,25 +93,25 @@ model Activity {
   cost        Decimal?
   itinerary   Itinerary @relation(fields: [itineraryId], references: [id], onDelete: Cascade)
 
-  @@index([itineraryId], map: "activities_itinerary_id_fkey")
+  @@index([itineraryId])
   @@map("activities")
 }
 
 model Post {
-  id            String         @id @default(cuid())
-  content       String?        @db.Text
-  createdAt     DateTime       @default(now())
-  updatedAt     DateTime       @updatedAt
-  userId        String         @map("user_id")
-  itineraryId   String         @map("itinerary_id")
-  likeCount     Int            @default(0)
-  commentsCount Int            @default(0)
+  id            String          @id @default(cuid())
+  content       String?         @db.Text
+  createdAt     DateTime        @default(now())
+  updatedAt     DateTime        @updatedAt
+  userId        String          @map("user_id")
+  itineraryId   String          @map("itinerary_id")
+  likeCount     Int             @default(0)
+  commentsCount Int             @default(0)
   comments      Comment[]
   favoritedBy   Favorite[]
   media         Media[]
   notifications Notification[]
-  itinerary     Itinerary      @relation(fields: [itineraryId], references: [id], onDelete: Cascade)
-  user          User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+  itinerary     Itinerary       @relation(fields: [itineraryId], references: [id], onDelete: Cascade)
+  user          User            @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@index([userId])
   @@index([itineraryId])
@@ -138,7 +137,7 @@ model Follow {
   following   User   @relation("FollowerUsers", fields: [followingId], references: [id], onDelete: Cascade)
 
   @@id([followerId, followingId])
-  @@index([followingId], map: "follow_followingId_fkey")
+  @@index([followingId])
   @@map("follow")
 }
 
@@ -150,7 +149,7 @@ model Favorite {
   user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@id([userId, postId])
-  @@index([postId], map: "favorite_postId_fkey")
+  @@index([postId])
   @@map("favorite")
 }
 
@@ -191,29 +190,29 @@ model Rating {
   user        User      @relation(fields: [userId], references: [id])
 
   @@unique([userId, itineraryId])
-  @@index([itineraryId], map: "Rating_itineraryId_fkey")
+  @@map("ratings")
 }
 
 model Notification {
-  id         String           @id @default(cuid())
-  type       NotificationType
-  title      String
-  message    String
-  url        String?          // URL để điều hướng đến bài đăng hoặc trang liên quan
-  isRead     Boolean          @default(false)
-  userId     String           @map("user_id")
-  fromUserId String?          @map("from_user_id")
-  postId     String?          @map("post_id")
-  createdAt  DateTime         @default(now()) @map("created_at")
-  updatedAt  DateTime         @updatedAt
-  fromUser   User?            @relation("NotificationFromUser", fields: [fromUserId], references: [id], onDelete: Cascade)
-  post       Post?            @relation(fields: [postId], references: [id], onDelete: Cascade)
-  user       User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+  id          String           @id @default(cuid())
+  type        NotificationType
+  title       String
+  message     String
+  url         String?          // URL để điều hướng đến bài đăng hoặc trang liên quan
+  isRead      Boolean          @default(false)
+  userId      String           @map("user_id")
+  fromUserId  String?          @map("from_user_id")
+  postId      String?          @map("post_id")
+  createdAt   DateTime         @default(now()) @map("created_at")
+  updatedAt   DateTime         @updatedAt
+  fromUser    User?            @relation("NotificationFromUser", fields: [fromUserId], references: [id], onDelete: Cascade)
+  post        Post?            @relation(fields: [postId], references: [id], onDelete: Cascade)
+  user        User             @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@index([userId])
   @@index([isRead])
-  @@index([fromUserId], map: "notifications_from_user_id_fkey")
-  @@index([postId], map: "notifications_post_id_fkey")
+  @@index([fromUserId])
+  @@index([postId])
   @@map("notifications")
 }
 

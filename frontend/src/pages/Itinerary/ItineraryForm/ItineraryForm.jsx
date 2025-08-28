@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from "react";
 import { Plus, Edit } from "lucide-react";
+import { useNavigate } from "react-router-dom"; // Thêm dòng này
 import styles from "./ItineraryForm.module.css";
 import itineraryService from "../../../services/itinerary";
 import uploadService from "../../../services/upload";
@@ -22,6 +23,8 @@ const ItineraryForm = ({ initialItineraryData, onSave, onClose }) => {
   const [coverImageFile, setCoverImageFile] = useState(null);
   const [coverImagePreview, setCoverImagePreview] = useState(null);
   const fileInputRef = useRef(null);
+
+  const navigate = useNavigate(); // Thêm dòng này để khởi tạo navigate
 
   useEffect(() => {
     if (isEditing) {
@@ -123,18 +126,30 @@ const ItineraryForm = ({ initialItineraryData, onSave, onClose }) => {
         coverImage: finalCoverImageUrl,
       };
 
+      let itinerarySlug;
+
       if (isEditing) {
         await itineraryService.updateItinerary(initialItineraryData.id, dataToSend);
         setMessage("Cập nhật lịch trình thành công!");
+        itinerarySlug = initialItineraryData.slug;
       } else {
-        await itineraryService.createItinerary(dataToSend);
+        const newItinerary = await itineraryService.createItinerary(dataToSend);
         setMessage("Tạo lịch trình thành công!");
+        itinerarySlug = newItinerary.slug; 
       }
 
       if (onSave) {
         onSave();
       }
-      setTimeout(onClose, 2000); 
+      
+      setTimeout(() => {
+        onClose(); 
+        if (itinerarySlug) {
+          navigate(`/itineraries/${itinerarySlug}`); 
+        } else {
+          navigate("/itineraries"); 
+        }
+      }, 2000); 
     } catch (err) {
       setError(`Lỗi: ${err.message || "Không thể lưu lịch trình."}`);
     } finally {
