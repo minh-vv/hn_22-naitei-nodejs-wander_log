@@ -13,6 +13,11 @@ apiClient.interceptors.request.use(
     if (token) {
       config.headers["Authorization"] = `Bearer ${token}`;
     }
+    
+    // Set default language header
+    const language = localStorage.getItem("language") || "en";
+    config.headers["Accept-Language"] = language;
+    
     return config;
   },
   (error) => {

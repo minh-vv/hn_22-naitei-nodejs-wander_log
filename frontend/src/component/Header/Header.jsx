@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import styles from "./Header.module.css";
 import avatarDefault from "../../assets/images/default_avatar.png";
@@ -77,7 +77,6 @@ export default function Header() {
             <Link to="/posts/feed" className={styles.navLink}>
               Bảng tin
             </Link>
-            <Link to="/itineraries/new" className={styles.navLink}>
             <a href="#" className={styles.navLink} onClick={handleOpenCreateModal}>
               Tạo lịch trình
             </a>

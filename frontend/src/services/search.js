@@ -13,6 +13,19 @@ const searchService = {
       );
     }
   },
+
+  filterSchedules: async (filters = {}) => {
+    try {
+      const response = await apiClient.get("/schedules/filter", {
+        params: filters
+      });
+      return response.data;
+    } catch (error) {
+      throw new Error(
+        error.response?.data?.message || "Failed to filter schedules"
+      );
+    }
+  },
 };
 
 export default searchService;

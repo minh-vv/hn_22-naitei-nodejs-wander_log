@@ -9,15 +9,17 @@ import {
   UseGuards,
   UnauthorizedException,
   Patch,
+  Query,
 } from '@nestjs/common';
 import { ItineraryService } from './itinerary.service';
 import { CreateItineraryDto } from './dto/create-itinerary.dto';
 import { UpdateItineraryDto } from './dto/update-itinerary.dto';
+import { FilterItineraryDto } from './dto/filter-itinerary.dto';
 import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
 import { GetUser } from 'src/auth/get-user.decorator';
 import { User } from '@prisma/client';
 
-@Controller('itineraries')
+@Controller(['itineraries', 'schedules'])
 export class ItineraryController {
   constructor(private readonly itineraryService: ItineraryService) {}
 
@@ -44,6 +46,11 @@ export class ItineraryController {
   @Get('feature')
   findFeaturedItinerary() {
     return this.itineraryService.findFeaturedItinerary();
+  }
+
+  @Get('filter')
+  async filterItineraries(@Query() filterDto: FilterItineraryDto) {
+    return this.itineraryService.filterItineraries(filterDto);
   }
 
   @Get('id/:id')
