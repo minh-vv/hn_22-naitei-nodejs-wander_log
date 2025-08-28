@@ -54,7 +54,7 @@ export default function Header() {
     window.location.reload();
   };
 
-return (
+  return (
     <>
       <header className={styles.header}>
         <div className={styles.container}>
@@ -104,6 +104,7 @@ return (
               {isLoggedIn ? (
                 <>
                   <NotificationDropdown />
+
                   <div className={styles.userMenu} ref={menuRef}>
                     <button
                       onClick={toggleUserMenu}
@@ -155,7 +156,6 @@ return (
         </div>
       </header>
 
-      {/* Modal để bên ngoài header */}
       <ItineraryModal
         isOpen={isModalOpen}
         onClose={handleCloseModal}
@@ -164,5 +164,4 @@ return (
       />
     </>
   );
-
 }

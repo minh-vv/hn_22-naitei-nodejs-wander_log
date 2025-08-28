@@ -45,6 +45,10 @@ const authService = {
       const response = await apiClient.post("/auth/forgot-password", { email });
       return response.data;
     } catch (error) {
+      // Handle validation errors
+      if (error.response?.data?.message && Array.isArray(error.response.data.message)) {
+        throw new Error(error.response.data.message.join(", "));
+      }
       throw new Error(
         error.response?.data?.message || "Failed to request password reset"
       );
@@ -59,6 +63,10 @@ const authService = {
       });
       return response.data;
     } catch (error) {
+      // Handle validation errors
+      if (error.response?.data?.message && Array.isArray(error.response.data.message)) {
+        throw new Error(error.response.data.message.join(", "));
+      }
       throw new Error(
         error.response?.data?.message || "Failed to reset password"
       );

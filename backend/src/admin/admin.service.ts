@@ -264,25 +264,67 @@ export class AdminService {
 }
 
 async getTopItinerariesByRatings(limit = 5) {
-  const topItineraries = await this.prisma.itinerary.findMany({
+  const averageRatings = await this.prisma.rating.groupBy({
+    by: ['itineraryId'],
+    _avg: {
+      value: true,
+    },
+    _count: {
+      value: true,
+    },
     orderBy: {
-      ratings: {
-        _count: 'desc',
+      _avg: {
+        value: 'desc',
       },
     },
     take: limit,
+  });
+
+  const topItineraryIds = averageRatings.map(rating => rating.itineraryId);
+
+  if (topItineraryIds.length === 0) {
+    return [];
+  }
+
+  const topItineraries = await this.prisma.itinerary.findMany({
+    where: {
+      id: {
+        in: topItineraryIds,
+      },
+    },
     select: {
+      id: true,
       title: true,
-      _count: {
-        select: { ratings: true },
+      slug: true,
+      coverImage: true,
+      user: {
+        select: {
+          id: true,
+          name: true,
+          avatar: true,
+        },
       },
     },
   });
 
-  return topItineraries.map(item => ({
-    title: item.title,
-    ratingCount: item._count.ratings,
-  }));
+  const sortedItineraries = topItineraries.sort((a, b) => {
+    const aRating = averageRatings.find(r => r.itineraryId === a.id);
+    const bRating = averageRatings.find(r => r.itineraryId === b.id);
+    return (bRating?._avg?.value || 0) - (aRating?._avg?.value || 0);
+  });
+  
+  return sortedItineraries.map(itinerary => {
+    const ratingData = averageRatings.find(r => r.itineraryId === itinerary.id);
+
+    const averageRating = ratingData ? ratingData._avg.value : 0;
+    const ratingCount = ratingData ? ratingData._count.value : 0;
+
+    return {
+      ...itinerary,
+      averageRating: parseFloat((averageRating || 0).toFixed(1)),
+      ratingCount: ratingCount,
+    };
+  });
 }
 
 async getTopPostsByLikes(limit = 5) {

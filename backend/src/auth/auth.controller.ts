@@ -9,6 +9,7 @@ import {
   Req,
   Res,
   UnauthorizedException,
+  Param,
 } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { Response } from 'express';
@@ -47,6 +48,17 @@ export class AuthController {
   @HttpCode(HttpStatus.OK)
   async resetPassword(@Body() resetPasswordDto: ResetPasswordDto) {
     return this.authService.resetPassword(resetPasswordDto);
+  }
+
+  // Debug endpoint to check active tokens (remove in production)
+  @Get('debug/reset-tokens')
+  async debugResetTokens() {
+    return this.authService.checkActiveResetTokens();
+  }
+
+  @Get('debug/reset-tokens/:email')
+  async debugResetTokensForEmail(@Param('email') email: string) {
+    return this.authService.checkActiveResetTokens(email);
   }
 
   @Post('change-password')

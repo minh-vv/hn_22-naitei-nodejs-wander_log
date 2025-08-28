@@ -4,10 +4,10 @@
   }
   
   .container {
-    max-width: 800px;
-    margin: 0 auto;
-    padding: 20px;
-  }
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 20px;
+}
   
   .searchSection {
     background: white;
@@ -15,6 +15,20 @@
     padding: 24px;
     margin-bottom: 24px;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  }
+
+  .searchContent {
+    display: grid;
+    grid-template-columns: 320px 1fr;
+    gap: 24px;
+    align-items: start;
+  }
+
+  .filterSidebar {
+  }
+
+  .searchResults {
+    min-width: 0; 
   }
   
   .searchForm {
@@ -267,6 +281,15 @@
   
     .searchSection {
       padding: 16px;
+    }
+
+    .searchContent {
+      grid-template-columns: 1fr;
+      gap: 16px;
+    }
+
+    .filterSidebar {
+      order: -1; 
     }
   
     .tabsContainer {

@@ -1,6 +1,6 @@
 import { I18nOptions } from 'nestjs-i18n';
 import * as path from 'path';
-import { AcceptLanguageResolver } from 'nestjs-i18n';
+import { AcceptLanguageResolver, HeaderResolver } from 'nestjs-i18n';
 
 export const i18nConfig: I18nOptions = {
   fallbackLanguage: 'en',
@@ -9,10 +9,11 @@ export const i18nConfig: I18nOptions = {
     watch: true,
   },
   resolvers: [
+    new HeaderResolver(['x-custom-lang']),
     {
       use: AcceptLanguageResolver,
       options: {
-        matchType: 'strict',
+        matchType: 'loose',
       },
     },
   ],

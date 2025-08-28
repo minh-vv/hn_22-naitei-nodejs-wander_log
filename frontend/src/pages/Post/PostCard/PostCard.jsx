@@ -7,6 +7,7 @@ import TimeAgo from "../../../component/TimeAgo";
 import postService from "../../../services/post";
 import bookmarkService from "../../../services/bookmark";
 import uploadService from "../../../services/upload";
+import { useUser } from "../../../context/UserContext";
 
 const PostCard = ({
   post,
@@ -16,8 +17,8 @@ const PostCard = ({
   onCancelEdit,
   onSubmitEdit,
   onBookmarkChange,
-  currentUser
 }) => {
+  const { currentUser } = useUser();
   const [isLiked, setIsLiked] = useState(post.isLiked);
   const [likesCount, setLikesCount] = useState(post.likeCount);
   const [isLiking, setIsLiking] = useState(false);
