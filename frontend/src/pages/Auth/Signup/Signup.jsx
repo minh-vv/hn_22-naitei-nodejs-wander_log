@@ -16,13 +16,13 @@ function Signup() {
     e.preventDefault();
     setError("");
     if (password !== confirmPassword) {
-      setError("Passwords do not match.");
+      setError("Mật khẩu không khớp.");
       return;
     }
     setLoading(true);
     try {
       await authService.signup(email, password, name);
-      alert("Sign up successful! Please log in.");
+      alert("Đăng ký thành công! Vui lòng đăng nhập.");
       navigate("/signin");
     } catch (err) {
       const errorMessage =
@@ -30,7 +30,7 @@ function Signup() {
           ? err.message
           : typeof err === "string"
           ? err
-          : "Sign up failed. Please try again.";
+          : "Đăng ký thất bại. Vui lòng thử lại.";
       setError(errorMessage);
     } finally {
       setLoading(false);
@@ -43,7 +43,7 @@ function Signup() {
       style={{ backgroundImage: `url(${backgroundImage})` }}
     >
       <div className={styles.container}>
-        <h2 className={styles.title}>Create Account</h2>
+        <h2 className={styles.title}>Tạo Tài Khoản</h2>
         <form onSubmit={handleSubmit} className={styles.form}>
           {error && <p className={styles.error}>{error}</p>}
           <div className={styles.formGroup}>
@@ -58,7 +58,7 @@ function Signup() {
             />
           </div>
           <div className={styles.formGroup}>
-            <label htmlFor="username">Username:</label>
+            <label htmlFor="username">Tên người dùng:</label>
             <input
               type="text"
               id="name"
@@ -69,7 +69,7 @@ function Signup() {
             />
           </div>
           <div className={styles.formGroup}>
-            <label htmlFor="password">Password:</label>
+            <label htmlFor="password">Mật khẩu:</label>
             <input
               type="password"
               id="password"
@@ -80,7 +80,7 @@ function Signup() {
             />
           </div>
           <div className={styles.formGroup}>
-            <label htmlFor="confirmPassword">Confirm Password:</label>
+            <label htmlFor="confirmPassword">Xác nhận mật khẩu:</label>
             <input
               type="password"
               id="confirmPassword"
@@ -91,11 +91,11 @@ function Signup() {
             />
           </div>
           <button type="submit" className={styles.button} disabled={loading}>
-            {loading ? "Signing Up..." : "Sign Up"}
+            {loading ? "Đang đăng ký..." : "Đăng Ký"}
           </button>
         </form>
         <p className={styles.linkText}>
-          Already have an account? <Link to="/signin">Sign In Here</Link>
+          Đã có tài khoản? <Link to="/signin">Đăng nhập tại đây</Link>
         </p>
       </div>
     </div>

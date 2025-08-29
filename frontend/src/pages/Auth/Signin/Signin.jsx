@@ -17,7 +17,7 @@ function Signin() {
   useEffect(() => {
     const authError = searchParams.get("error");
     if (authError === "auth_failed") {
-      setError("Google sign-in failed. Please try again.");
+      setError("Đăng nhập Google thất bại. Vui lòng thử lại.");
     }
   }, [searchParams]);
 
@@ -33,14 +33,14 @@ function Signin() {
       } else {
       navigate("/home");
       }
-      alert("Sign in successful!");
+      alert("Đăng nhập thành công!");
     } catch (err) {
       const errorMessage =
         typeof err === "object" && err.message
           ? err.message
           : typeof err === "string"
           ? err
-          : "Sign in failed. Please check your email and password.";
+          : "Đăng nhập thất bại. Vui lòng kiểm tra email và mật khẩu của bạn.";
       setError(errorMessage);
     } finally {
       setLoading(false);
@@ -52,7 +52,7 @@ function Signin() {
       const apiBaseUrl = process.env.REACT_APP_API_BASE_URL || "http://localhost:3000";
       window.location.href = `${apiBaseUrl}/auth/google`;
     } else {
-      alert(`Social sign-in with ${provider} will be implemented here.`);
+      alert(`Đăng nhập bằng ${provider} sẽ được triển khai tại đây.`);
     }
   };
 
@@ -62,7 +62,7 @@ function Signin() {
       style={{ backgroundImage: `url(${backgroundImage})` }}
     >
       <div className={styles.container}>
-        <h2 className={styles.title}>Sign In</h2>
+        <h2 className={styles.title}>Đăng Nhập</h2>
         <form onSubmit={handleSubmit} className={styles.form}>
           {error && <p className={styles.error}>{error}</p>}
           <div className={styles.formGroup}>
@@ -77,7 +77,7 @@ function Signin() {
             />
           </div>
           <div className={styles.formGroup}>
-            <label htmlFor="password">Password:</label>
+            <label htmlFor="password">Mật khẩu:</label>
             <input
               type="password"
               id="password"
@@ -88,14 +88,14 @@ function Signin() {
             />
           </div>
           <button type="submit" className={styles.button} disabled={loading}>
-            {loading ? "Signing In..." : "Sign In"}
+            {loading ? "Đang đăng nhập..." : "Đăng Nhập"}
           </button>
         </form>
         <p className={styles.linkText}>
-          <Link to="/forgot-password">Forgot Password?</Link>
+          <Link to="/forgot-password">Quên mật khẩu?</Link>
         </p>
         <div className={styles.socialLogin}>
-          <p>Or sign in with:</p>
+          <p>Hoặc đăng nhập bằng:</p>
           <button
             onClick={() => handleSocialSignin("google")}
             className={`${styles.socialButton} ${styles.google}`}
@@ -104,7 +104,7 @@ function Signin() {
           </button>
         </div>
         <p className={styles.linkText}>
-          Don't have an account? <Link to="/signup">Sign Up Now</Link>
+          Chưa có tài khoản? <Link to="/signup">Đăng ký ngay</Link>
         </p>
       </div>
     </div>

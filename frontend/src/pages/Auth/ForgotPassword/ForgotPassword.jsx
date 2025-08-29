@@ -17,11 +17,11 @@ function ForgotPassword() {
     setLoading(true);
     try {
       await authService.forgotPassword(email);
-      setMessage('A password reset link has been sent to your email. Please check your inbox.');
+      setMessage('Liên kết đặt lại mật khẩu đã được gửi đến email của bạn. Vui lòng kiểm tra hộp thư.');
     } catch (err) {
       const errorMessage = typeof err === 'object' 
         ? err.message || err.error || JSON.stringify(err)
-        : err || 'An error occurred while sending the request. Please try again.';
+        : err || 'Đã xảy ra lỗi khi gửi yêu cầu. Vui lòng thử lại.';
       setError(errorMessage);
     } finally {
       setLoading(false);
@@ -31,12 +31,12 @@ function ForgotPassword() {
   return (
     <div className={styles.wrapper} style={{ backgroundImage: `url(${backgroundImage})` }}>
       <div className={styles.container}>
-        <h2 className={styles.title}>Forgot Password</h2>
+        <h2 className={styles.title}>Quên Mật Khẩu</h2>
         <form onSubmit={handleSubmit} className={styles.form}>
           {message && <p className={styles.success}>{message}</p>}
           {error && <p className={styles.error}>{error}</p>}
           <div className={styles.formGroup}>
-            <label htmlFor="email">Your Email:</label>
+            <label htmlFor="email">Email của bạn:</label>
             <input
               type="email"
               id="email"
@@ -47,11 +47,11 @@ function ForgotPassword() {
             />
           </div>
           <button type="submit" className={styles.button} disabled={loading}>
-            {loading ? 'Sending Request...' : 'Send Reset Password Link'}
+            {loading ? 'Đang gửi yêu cầu...' : 'Gửi liên kết đặt lại mật khẩu'}
           </button>
         </form>
         <p className={styles.linkText}>
-          <Link to="/signin">Back to Sign In</Link>
+          <Link to="/signin">Quay lại đăng nhập</Link>
         </p>
       </div>
     </div>

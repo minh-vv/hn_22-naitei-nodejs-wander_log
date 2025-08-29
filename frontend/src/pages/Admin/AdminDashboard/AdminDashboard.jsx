@@ -65,7 +65,7 @@ const AdminDashboard = () => {
         <div className={styles.loadingHeart}>
           <Heart className={styles.heartIcon} />
         </div>
-        <p>Loading admin panel...</p>
+        <p>Đang tải bảng điều khiển quản trị...</p>
       </div>
     );
   }
@@ -75,12 +75,12 @@ const AdminDashboard = () => {
       <header className={styles.dashboardHeader}>
         <div className={styles.headerContent}>
           <div className={styles.welcomeSection}>
-            <h1 className={styles.welcomeTitle}>Hello Admin! 💖</h1>
-            <p className={styles.welcomeSubtitle}>Here's what's happening in WanderLog today</p>
+            <h1 className={styles.welcomeTitle}>Xin chào Admin! 💖</h1>
+            <p className={styles.welcomeSubtitle}>Đây là những gì đang xảy ra trong WanderLog hôm nay</p>
           </div>
           <button onClick={handleLogout} className={styles.logoutButton}>
             <LogOut size={20} />
-            <span>Logout</span>
+            <span>Đăng xuất</span>
           </button>
         </div>
       </header>
@@ -92,8 +92,8 @@ const AdminDashboard = () => {
           </div>
           <div className={styles.statInfo}>
             <div className={styles.statNumber}>{stats.totalUsers?.toLocaleString()}</div>
-            <div className={styles.statLabel}>Total Users</div>
-            <div className={styles.statChange}>+{stats.newUsersThisWeek} new this week</div>
+            <div className={styles.statLabel}>Tổng số người dùng</div>
+            <div className={styles.statChange}>+{stats.newUsersThisWeek} mới trong tuần</div>
           </div>
         </div>
 
@@ -103,8 +103,8 @@ const AdminDashboard = () => {
           </div>
           <div className={styles.statInfo}>
             <div className={styles.statNumber}>{stats.totalItineraries?.toLocaleString()}</div>
-            <div className={styles.statLabel}>Total Itineraries</div>
-            <div className={styles.statChange}>+{stats.newItinerariesThisWeek} new this week</div>
+            <div className={styles.statLabel}>Tổng số lịch trình</div>
+            <div className={styles.statChange}>+{stats.newItinerariesThisWeek} mới trong tuần</div>
           </div>
         </div>
         
@@ -114,8 +114,8 @@ const AdminDashboard = () => {
           </div>
           <div className={styles.statInfo}>
             <div className={styles.statNumber}>{stats.totalComments?.toLocaleString()}</div>
-            <div className={styles.statLabel}>Total Comments</div>
-            <div className={styles.statChange}>+{stats.newCommentsThisWeek} new this week</div>
+            <div className={styles.statLabel}>Tổng số bình luận</div>
+            <div className={styles.statChange}>+{stats.newCommentsThisWeek} mới trong tuần</div>
           </div>
         </div>
         
@@ -125,8 +125,8 @@ const AdminDashboard = () => {
           </div>
           <div className={styles.statInfo}>
             <div className={styles.statNumber}>{stats.totalPosts?.toLocaleString()}</div>
-            <div className={styles.statLabel}>Total Posts</div>
-            <div className={styles.statChange}>+{stats.newPostsThisWeek} new this week</div>
+            <div className={styles.statLabel}>Tổng số bài viết</div>
+            <div className={styles.statChange}>+{stats.newPostsThisWeek} mới trong tuần</div>
           </div>
         </div>
       </div>
@@ -136,22 +136,22 @@ const AdminDashboard = () => {
           <Link to="/admin/users" className={`${styles.actionCard} ${styles.primary}`}>
             <Users size={32} />
             <div className={styles.actionContent}>
-              <h3>Manage Users</h3>
-              <p>View, edit, and manage user accounts</p>
+              <h3>Quản lý người dùng</h3>
+              <p>Xem, chỉnh sửa và quản lý tài khoản người dùng</p>
             </div>
           </Link>
           <Link to="/admin/itineraries" className={`${styles.actionCard} ${styles.secondary}`}>
             <MapPin size={32} />
             <div className={styles.actionContent}>
-              <h3>Manage Itineraries</h3>
-              <p>Review and moderate travel itineraries</p>
+              <h3>Quản lý lịch trình</h3>
+              <p>Xem xét và kiểm duyệt lịch trình du lịch</p>
             </div>
           </Link>
           <Link to="/admin/analytics" className={`${styles.actionCard} ${styles.tertiary}`}>
             <BarChart3 size={32} />
             <div className={styles.actionContent}>
-              <h3>View Analytics</h3>
-              <p>See detailed platform statistics</p>
+              <h3>Xem phân tích</h3>
+              <p>Xem thống kê chi tiết của nền tảng</p>
             </div>
           </Link>
         </div>

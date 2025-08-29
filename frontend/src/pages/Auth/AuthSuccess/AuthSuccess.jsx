@@ -29,7 +29,7 @@ function AuthSuccess() {
   }, [searchParams, navigate, login]);
   return (
     <div className={styles.container}>
-      <div className={styles.loadingMessage}>Processing Google sign-in...</div>
+      <div className={styles.loadingMessage}>Đang xử lý đăng nhập Google...</div>
     </div>
   );
 }
